@@ -18,6 +18,12 @@ const evalute = createReducer(INITIAL_STATE, {
       allFormsTickets: action.data,
     };
   },
+  [types.GET_GRADED_JSON_WITH_TAGS](state, action) {
+    return {
+      ...state,
+      gradedJsonWithTags: action.data,
+    };
+  },
 });
 
 export default evalute;

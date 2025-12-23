@@ -15,6 +15,13 @@ export function setAllEvaluteTickets(data) {
   };
 }
 
+export function setTagsAndAiGradedJson(data) {
+  return {
+    type: types.GET_GRADED_JSON_WITH_TAGS,
+    data,
+  };
+}
+
 export const getAllEvaluteTickets = (pagination, filters) => {
   return (dispatch) => {
     try {
@@ -59,6 +66,27 @@ export const getAllEvaluteTickets = (pagination, filters) => {
         dispatch(setLoaderAction(false));
       });
     } catch (error) {
+      dispatch(setLoaderAction(false));
+    }
+  };
+};
+
+
+
+
+export const getTicketTagsAndAiGradedJson = (ticket_id,client_id) => {
+  return (dispatch) => {
+    try {
+      dispatch(setLoaderAction(true));
+
+      const url = `/qa_ai_apis/${ticket_id}/${client_id}`;
+      Api.get(url).then((resp) => {
+        console.log('resp in the tags api', resp)
+        dispatch(setTagsAndAiGradedJson(resp.data));
+        dispatch(setLoaderAction(false));
+      });
+    } catch (error) {
+      console.log('error', error)
       dispatch(setLoaderAction(false));
     }
   };
