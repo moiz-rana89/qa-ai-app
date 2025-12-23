@@ -9,16 +9,18 @@ import {
 import ConversationScreen from "./DynamicForm/ConversationScreen";
 import QAForm from "./DynamicForm/QAForm";
 import EvaluteHeader from "./EvaluteHeader";
-
+import {getTicketTagsAndAiGradedJson} from "../../reduxStore/action/evalute";
 export const EvaluteForm = () => {
   // NEW: lifted states that QAForm previously kept
   const dispatch = useDispatch();
 
   const [formState, setFormState] = useState({});
-
   const { selectedFormToEvaluate } = useSelector(
     (store) => store.formsManagement
   );
+  const { gradedJsonWithTags } = useSelector((store) => store.evalute);
+  // Add gradedJsonWithTags to the formState
+
 
   const [items, setItems] = useState(selectedFormToEvaluate || []);
   const [index, setIndex] = useState(0);
@@ -38,7 +40,17 @@ export const EvaluteForm = () => {
   }, [total]);
   useEffect(() => {
     setFormState(currentItem?.graded_form_json);
+    console.log('currentItem', currentItem)
+    // call the tags and ai_graded_json api here
+
+    dispatch(getTicketTagsAndAiGradedJson(currentItem?.ticket_id, currentItem?.client_id));
   }, [currentItem]);
+
+  // useEffect(() => {
+  //   if (gradedJsonWithTags) {
+  //     setFormState({ ...formState, ...gradedJsonWithTags });
+  //   }
+  // }, [gradedJsonWithTags]);
 
   const next = () => {
     setIndex((prev) => Math.min(prev + 1, total - 1));
@@ -69,6 +81,7 @@ export const EvaluteForm = () => {
     removeById(id);
   };
   // --- Render (only changed bits shown) ---
+
   return (
     <div className="bg-[#FFFFFF] flex flex-col w-[100vw] h-[100vh] overflow-auto scrollbar-hidden">
       <EvaluteHeader
@@ -76,8 +89,8 @@ export const EvaluteForm = () => {
         currentIndex={index}
         next={next}
         prev={prev}
-        id={currentItem?.id}
-        aiJson={currentItem?.graded_form_json?.categories}
+        id={gradedJsonWithTags?.ai_graded_json?.ticket_id || currentItem?.ticket_id}
+        aiJson={gradedJsonWithTags?.ai_graded_json?.categories}
         userJson={formState?.categories}
         submit={handleTicketSubmit}
       />
@@ -101,8 +114,8 @@ export const EvaluteForm = () => {
               tag={intialFormData?.tags}
             /> */}
             <ConversationScreen
-              ticketSubject="Re: Ticket #1234 - Login Error"
-              tags={TEST_TAGS}
+              ticketSubject={gradedJsonWithTags?.subject}
+              tags={gradedJsonWithTags?.tags || []}
               messages={currentItem?.conversation_json}
               // messages={conversationData}
               data={currentItem}

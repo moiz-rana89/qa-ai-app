@@ -12,6 +12,7 @@ const ConversationScreen = ({
   messages = [],
   data,
 }) => {
+  console.log('tags', tags)
   const formatDateTime = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleString("en-US", {
@@ -45,7 +46,7 @@ const ConversationScreen = ({
           {tags.map((tag, index) => (
             <div key={index} className="flex items-center gap-3">
               <span className="text-[12px] text-[#000000] bg-[#DBFFDF] px-[16px] py-[2px] rounded-[30px]">
-                {tag}
+                {tag.name || ""}
               </span>
             </div>
           ))}
