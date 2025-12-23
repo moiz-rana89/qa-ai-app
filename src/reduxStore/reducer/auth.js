@@ -4,6 +4,7 @@ import * as types from "../action/types";
 const INITIAL_STATE = {
   isLoadingAuth: false,
   isAuthenticated: false,
+  isAuthInitialized: false,
 };
 
 const auth = createReducer(INITIAL_STATE, {
@@ -17,6 +18,7 @@ const auth = createReducer(INITIAL_STATE, {
     return {
       ...state,
       isAuthenticated: action.data,
+      isAuthInitialized: true,
     };
   },
 });

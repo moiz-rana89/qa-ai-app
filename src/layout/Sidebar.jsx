@@ -13,8 +13,8 @@ const menuList = [
     route: "quality-assurance",
     submenu: [
       { title: "Evaluate Tickets", route: "evaluate-tickets" },
-      { title: "Ticket History", route: "ticket-history" },
-      { title: "Shadowing Form", route: "shadowing-form" },
+      // { title: "Ticket History", route: "ticket-history" },
+      // { title: "Shadowing Form", route: "shadowing-form" },
       { title: "Forms Management", route: "forms-management" },
     ],
   },
@@ -36,7 +36,7 @@ export default function Sidebar() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  const userData = JSON.parse(sessionStorage.getItem("tp_user"));
+  const userData = JSON.parse(localStorage.getItem("user_details"));
 
   const toggleSubmenu = (index, hasSubmenu, route) => {
     if (hasSubmenu) {
@@ -120,12 +120,12 @@ export default function Sidebar() {
       {/* FOOTER */}
       {isPopover && (
         <div
-          className="flex items-center absolute bottom-20 left-0 w-full p-4 bg-white rounded-t-2xl cursor-pointer"
+          className="flex items-center absolute bottom-20 left-0 w-full p-6 bg-white bg-white border-t border-[#EBF3F4] cursor-pointer"
           onClick={() => dispatch(logout(navigate))}
         >
           <Icon
             icon="tabler:logout-2"
-            className="text-[16px] ml-auto"
+            className="text-[16px]"
             style={{ color: "#163143" }}
           />
           <span className="text-[#163143] text-[14px] ml-1 font-Poppins">
@@ -133,36 +133,27 @@ export default function Sidebar() {
           </span>
         </div>
       )}
-      <div className="absolute bottom-0 left-0 w-full p-4 bg-white rounded-t-2xl shadow-[0_-2px_8px_rgba(0,0,0,0.08)]">
-        <div className="flex items-center w-full">
-          <div className="w-12 h-12 rounded-full bg-[#394E5E] text-white flex items-center justify-center text-md">
+      {/* shadow-[0_-2px_8px_rgba(0,0,0,0.08)] rounded-t-2xl */}
+      <div className="absolute bottom-0 left-0 w-full p-4 bg-white border-t border-[#EBF3F4]">
+        <div className="flex items-center gap-[20px] w-full">
+          <div className="w-[57px] h-[57px] rounded-full bg-[#394E5E] text-white flex items-center justify-center text-md">
             {userData?.name?.charAt(0)}
           </div>
 
-          <div className="flex flex-col ml-2 w-full">
-            <span className="text-[#394E5E] font-semibold text-[16px] font-Poppins">
-              {userData?.name}
-            </span>
+          <span className="text-[#394E5E] font-semibold text-[16px] font-Poppins">
+            {userData?.name}
+          </span>
 
-            <div
-              className="flex items-center"
-              onClick={() => setIsPopover(!isPopover)}
-            >
-              <Icon
-                icon="carbon:dot-mark"
-                className="text-[16px]"
-                style={{ color: activeStatus.color }}
-              />
-              <span className="text-[#A0B3C4] text-[14px] ml-1 font-Poppins">
-                {activeStatus.title}
-              </span>
-              <Icon
-                icon="mdi:chevron-down"
-                className={`text-[20px] transition-transform ml-auto ${
-                  isPopover ? "rotate-180" : "rotate-0"
-                }`}
-              />
-            </div>
+          <div
+            className="flex items-center ml-[auto]"
+            onClick={() => setIsPopover(!isPopover)}
+          >
+            <Icon
+              icon="mdi:chevron-down"
+              className={`text-[20px] transition-transform ml-auto ${
+                isPopover ? "rotate-180" : "rotate-0"
+              }`}
+            />
           </div>
         </div>
       </div>

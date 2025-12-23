@@ -10,27 +10,27 @@ import { setIsAuthAction } from "../reduxStore/action/auth";
 import FullWidthLayout from "./FullWidthLayout";
 import MainLayout from "./MainLayout";
 import ProtectedRoute from "./ProtectedRoute";
-
 export default function AppRouter() {
-  const { isAuthenticated } = useSelector((store) => store?.auth);
   const dispatch = useDispatch();
-  const login = false;
-  const currentlocation = window.location.pathname;
+  const { isAuthInitialized } = useSelector((state) => state.auth);
+
   useEffect(() => {
-    if (
-      localStorage.getItem("auth_token") &&
-      localStorage.getItem("user_details")
-    ) {
-      dispatch(setIsAuthAction(true));
-    }
-  }, [currentlocation]);
+    const token = localStorage.getItem("auth_token");
+    const user = localStorage.getItem("user_details");
+
+    dispatch(setIsAuthAction(!!(token && user)));
+  }, [dispatch]);
+
+  // BLOCK routing until auth is ready
+  if (!isAuthInitialized) {
+    return null; // or a spinner
+  }
+
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public Routes */}
         <Route path="/login" element={<LoginPage />} />
 
-        {/* Sidebar Layout */}
         <Route
           element={
             <ProtectedRoute>
@@ -40,21 +40,8 @@ export default function AppRouter() {
         >
           <Route path="/evaluate-tickets" element={<EvaluateTickets />} />
           <Route path="/forms-management" element={<FormsManagement />} />
-          <Route path="/shadowing-form" element={<div />} />
         </Route>
 
-        {/* Full Width Layout */}
-        <Route
-          element={
-            <ProtectedRoute>
-              <FullWidthLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route path="/evalute-form" element={<EvaluteForm />} />
-        </Route>
-
-        {/* Default */}
         <Route path="*" element={<Navigate to="/forms-management" replace />} />
       </Routes>
     </BrowserRouter>
