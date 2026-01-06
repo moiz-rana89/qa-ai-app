@@ -51,7 +51,7 @@ const QuestionItem = ({
           value={note}
           onChange={(e) => onNotesChange(question.question_id, e.target.value)}
           placeholder="Add notes here..."
-          className="w-full resize-none overflow-hidden text-[12px] mt-4 px-2 py-2 bg-[#FFFFFF] border border-[#D7E6E7] rounded-[12px] placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#69C920] focus:border-[#69C920] transition-all duration-200"
+          className="w-full text-[12px] mt-4 px-2 py-2 bg-[#FFFFFF] border border-[#D7E6E7] rounded-[12px] placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#69C920] focus:border-[#69C920] transition-all duration-200 overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
           rows={3}
         />
       </div>

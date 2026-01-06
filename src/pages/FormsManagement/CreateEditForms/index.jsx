@@ -7,6 +7,7 @@ import { AntDNotification } from "../../../components/AntDNotification";
 import GenericAntDeleteModal from "../../../components/GenericAntDeleteModal";
 import {
   enableForm,
+  getAllForms,
   setActiveForms,
 } from "../../../reduxStore/action/formsManagement";
 import { FormDetails } from "./FormDetails";
@@ -79,6 +80,7 @@ export const CreateEditForms = ({ setCreateNew }) => {
             onClick={() => {
               dispatch(setActiveForms(null));
               setCreateNew(false);
+              dispatch(getAllForms({ page: 1, size: 10 }, null));
             }}
             className={`w-[160px] min-h-[40px] ml-auto text-[14px] font-sm rounded-full border border-[#D7E6E7] bg-[#FFFFFF] hover:bg-[#FFFFFF] text-[#163143]`}
           >

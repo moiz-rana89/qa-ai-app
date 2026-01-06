@@ -8,27 +8,70 @@ import { logout } from "../reduxStore/action/auth";
 
 const menuList = [
   {
+    title: "Attendance Management",
+    icon: "ri:team-line",
+    route: "workforce-team-attendance",
+    submenu: [
+      {
+        title: "Remote Team Management",
+        route: "workforce-remote-team-attendance",
+      },
+      {
+        title: "Remote Team Reporting",
+        route: "workforce-remote-team-attendance-report",
+      },
+      {
+        title: "Internal Team Management",
+        route: "workforce-internal-team-attendance",
+      },
+      {
+        title: "Internal Team Reporting",
+        route: "workforce-internal-team-attendance-report",
+      },
+    ],
+  },
+  {
+    title: "WFA Attendance Management",
+    icon: "ri:team-line",
+    route: "",
+    submenu: [
+      { title: "Remote Team", route: "wfa-remote-team-attendance" },
+      { title: "Internal Team", route: "wfa-internal-team-attendance" },
+      { title: "Attendance Reporting", route: "wfa-attendance-reporting" },
+    ],
+  },
+  {
+    title: "Ticket Monitoring Form",
+    icon: "mage:file-2",
+    route: "",
+  },
+  {
+    title: "Performance Coaching Form",
+    icon: "mage:file-2",
+    route: "",
+  },
+  {
+    title: "Other Coaching Types",
+    icon: "mage:file-2",
+    route: "",
+  },
+  {
+    title: "Client Specific Forms",
+    icon: "mage:file-2",
+    route: "",
+  },
+  {
     title: "Quality Assurance",
     icon: "icon-park-outline:success",
     route: "quality-assurance",
     submenu: [
       { title: "Evaluate Tickets", route: "evaluate-tickets" },
-      // { title: "Ticket History", route: "ticket-history" },
-      // { title: "Shadowing Form", route: "shadowing-form" },
       { title: "Forms Management", route: "forms-management" },
     ],
   },
 ];
 
-const allStatus = [
-  { title: "Online", color: "#69C920" },
-  { title: "Break", color: "#9C27B0" },
-  { title: "Away", color: "#FBC02D" },
-  { title: "Offline", color: "#879EB2" },
-];
-
 export default function Sidebar() {
-  const [activeStatus] = useState(allStatus[0]);
   const [openMenu, setOpenMenu] = useState(null);
   const [isPopover, setIsPopover] = useState(false);
 
@@ -157,13 +200,13 @@ export default function Sidebar() {
           </div>
         </div>
       </div>
-      <div class="fixed bottom-2 right-2 p-2 bg-black text-white text-xs rounded">
+      {/* <div class="fixed bottom-2 right-2 p-2 bg-black text-white text-xs rounded">
         <span class="sm:hidden md:hidden lg:hidden xl:hidden">xs</span>
         <span class="hidden sm:inline md:hidden lg:hidden xl:hidden">sm</span>
         <span class="hidden md:inline lg:hidden xl:hidden">md</span>
         <span class="hidden lg:inline xl:hidden">lg</span>
         <span class="hidden xl:inline">xl</span>
-      </div>
+      </div> */}
     </div>
   );
 }

@@ -3,8 +3,9 @@
 import { useState, useEffect, useRef } from "react";
 import { Tabs } from "antd";
 import CategorySection from "./CategorySection";
+import { TicketDetails } from "./TicketDetails";
 
-const QAForm = ({ initialData, onStateChange }) => {
+const QAForm = ({ initialData, onStateChange, details }) => {
   const [formData, setFormData] = useState(initialData);
 
   const initializeState = (data) => {
@@ -119,7 +120,11 @@ const QAForm = ({ initialData, onStateChange }) => {
     {
       key: "2",
       label: "Ticket Details",
-      children: <div className="p-4">Ticket Details Content</div>,
+      children: (
+        <div className="p-4  h-[84vh] overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <TicketDetails details={details} />
+        </div>
+      ),
     },
   ];
 

@@ -95,3 +95,10 @@ export const RemoveFromSelect = (item, selectedList, setselectedList) => {
   temp = temp.filter((items) => items != item);
   setselectedList(temp);
 };
+
+export const roundTo = (value, decimals = 2) => {
+  if (typeof value !== "number") return value;
+
+  const factor = Math.pow(10, decimals);
+  return Math.round((value + Number.EPSILON) * factor) / factor;
+};

@@ -9,18 +9,26 @@ import {
 import ConversationScreen from "./DynamicForm/ConversationScreen";
 import QAForm from "./DynamicForm/QAForm";
 import EvaluteHeader from "./EvaluteHeader";
-import {getTicketTagsAndAiGradedJson} from "../../reduxStore/action/evalute";
+import {
+  getTicketTagsAndAiGradedJson,
+  submitFormTicket,
+} from "../../reduxStore/action/evalute";
+import Skeleton from "../../components/Skeleton";
+import { AntDNotification } from "../../components/AntDNotification";
+import { useNavigate } from "react-router-dom";
 export const EvaluteForm = () => {
   // NEW: lifted states that QAForm previously kept
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [formState, setFormState] = useState({});
   const { selectedFormToEvaluate } = useSelector(
     (store) => store.formsManagement
   );
-  const { gradedJsonWithTags } = useSelector((store) => store.evalute);
+  const { gradedJsonWithTags, isLoading, isLoadingSubmitTicket } = useSelector(
+    (store) => store.evalute
+  );
   // Add gradedJsonWithTags to the formState
-
 
   const [items, setItems] = useState(selectedFormToEvaluate || []);
   const [index, setIndex] = useState(0);
@@ -40,10 +48,14 @@ export const EvaluteForm = () => {
   }, [total]);
   useEffect(() => {
     setFormState(currentItem?.graded_form_json);
-    console.log('currentItem', currentItem)
     // call the tags and ai_graded_json api here
 
-    dispatch(getTicketTagsAndAiGradedJson(currentItem?.ticket_id, currentItem?.client_id));
+    dispatch(
+      getTicketTagsAndAiGradedJson(
+        currentItem?.ticket_id,
+        currentItem?.client_id
+      )
+    );
   }, [currentItem]);
 
   // useEffect(() => {
@@ -63,22 +75,85 @@ export const EvaluteForm = () => {
   /**
    * Remove object from JSON by id
    */
-  const removeById = (id) => {
-    setItems((prev) => prev.filter((item) => item.id !== id));
+  // const removeById = (id) => {
+  //   setItems((prev) =>
+  //     prev.filter((item) => {
+  //       console.log("first", item.id !== id);
+  //     })
+  //   );
+  // };
+
+  const nextAndRemove = () => {
+    setItems((prevItems) => {
+      if (!prevItems || prevItems.length === 0) return prevItems;
+
+      const updatedItems = [...prevItems];
+      updatedItems.splice(index, 1); // remove current item
+
+      return updatedItems;
+    });
+
+    setIndex((prevIndex) => {
+      // if we were at the last item, move index back safely
+      return Math.min(prevIndex, items.length - 2);
+    });
   };
 
   if (!total) {
-    return <div>No evaluations available</div>;
+    // return <div>No evaluations available</div>;
+    // AntDNotification({
+    //   status: "info",
+    //   title: "No Tickets Available",
+    //   description: "No tickets available to evaluate",
+    //   duration: 5,
+    // });
+    navigate("/evaluate-tickets");
   }
+
+  const handleTicketSubmitSuccess = (status) => {
+    if (status) {
+      AntDNotification({
+        status: "success",
+        title: "Ticket Submitted",
+        description: "Ticket Submitted successfully",
+        duration: 5,
+      });
+      nextAndRemove();
+    } else {
+      AntDNotification({
+        status: "error",
+        title: "Error Updating Ticket",
+        description: "Failed to submit Ticket, please try again",
+        duration: 5,
+      });
+    }
+  };
 
   const handleStateChange = (updatedData) => {
     setFormState(updatedData);
-    console.log("[v0] Form state updated:", updatedData);
+    // console.log("[v0] Form state updated:", updatedData);
   };
 
   const handleTicketSubmit = (id) => {
-    console.log("currentIndex", id);
-    removeById(id);
+    // console.log("currentIndex", currentItem?.ticket_id, currentItem?.client_id);
+    // removeById(id);
+    const userDetails = JSON.parse(localStorage.getItem("user_details"));
+    const role =
+      userDetails?.role == "tl" ? "tl_graded_json" : "qas_graded_json";
+    dispatch(
+      submitFormTicket(
+        {
+          ticket_id: currentItem?.ticket_id,
+          client_id: currentItem?.client_id,
+          grading_key: role,
+          grading_value: {
+            categories: formState?.categories,
+            ticket_id: currentItem?.ticket_id,
+          },
+        },
+        handleTicketSubmitSuccess
+      )
+    );
   };
   // --- Render (only changed bits shown) ---
 
@@ -89,10 +164,14 @@ export const EvaluteForm = () => {
         currentIndex={index}
         next={next}
         prev={prev}
-        id={gradedJsonWithTags?.ai_graded_json?.ticket_id || currentItem?.ticket_id}
+        id={
+          gradedJsonWithTags?.ai_graded_json?.ticket_id ||
+          currentItem?.ticket_id
+        }
         aiJson={gradedJsonWithTags?.ai_graded_json?.categories}
         userJson={formState?.categories}
         submit={handleTicketSubmit}
+        isLoading={isLoadingSubmitTicket}
       />
       <div className="flex-1 flex flex-row">
         {/* <MLSideBar /> */}
@@ -113,62 +192,30 @@ export const EvaluteForm = () => {
               loading={loading}
               tag={intialFormData?.tags}
             /> */}
-            <ConversationScreen
-              ticketSubject={gradedJsonWithTags?.subject}
-              tags={gradedJsonWithTags?.tags || []}
-              messages={currentItem?.conversation_json}
-              // messages={conversationData}
-              data={currentItem}
-            />
+            {isLoading ? (
+              <Skeleton className="w-[90%] h-[50vh] m-auto mt-[20px]" />
+            ) : (
+              <ConversationScreen
+                ticketSubject={gradedJsonWithTags?.subject}
+                tags={gradedJsonWithTags?.tags || []}
+                messages={gradedJsonWithTags?.conversation_json}
+                // messages={conversationData}
+                data={gradedJsonWithTags}
+              />
+            )}
           </main>
 
           {/* Sidebar (right) */}
           <aside className="bg-[#FCFCFC] shadow-[-4px_0_10px_0_rgba(22,49,67,0.09)]">
-            <QAForm initialData={formState} onStateChange={handleStateChange} />
-            {/* <Tabs>
-              <Tab data-label="QA Form">
-                <div className="flex flex-col overflow-auto scrollbar-hidden h-[84vh]">
-                  <QAForm
-                    setTypeScores={setTypeScores}
-                    responses={responses}
-                    setResponses={setResponses}
-                    loading={loading}
-                    extraQuestions={intialFormData?.extraQuestions}
-                    includedQuestions={includedQuestions}
-                    setIncludedQuestions={setIncludedQuestions}
-                    formData={formData}
-                    setFormData={setFormData}
-                    sectionScore={sectionScore}
-                    setSectionScore={setSectionScore}
-                    sectionQuestions={sectionQuestions}
-                    setSectionQuestions={setSectionQuestions}
-                  />
-                </div>
-              </Tab>
-              <Tab data-label="Ticket Details">
-                <ML_Tickets_Details_Tab
-                  loading={loading}
-                  AgentName={intialFormData?.agent_full_name}
-                  TeamLeadName={intialFormData?.team_lead}
-                  ClientName={intialFormData?.account}
-                  DateOfAudit={intialFormData?.dateOfAudit}
-                  MonitoringType={MonitoringType}
-                  TicketLink={intialFormData?.uri}
-                  TicketType={TicketType}
-                  CustomerConcerns={CustomerConcerns}
-                  setAgentName={() => {}}
-                  setTeamLeadName={() => {}}
-                  setClientName={() => {}}
-                  setDateOfAudit={() => {}}
-                  setMonitoringType={setMonitoringType}
-                  setTicketLink={() => {}}
-                  setTicketType={setTicketType}
-                  setCustomerConcerns={setCustomerConcerns}
-                  imageLink={""}
-                  setImageLink={() => {}}
-                />
-              </Tab>
-            </Tabs> */}
+            {isLoading ? (
+              <Skeleton className="w-[90%] h-[50vh] m-auto mt-[20px]" />
+            ) : (
+              <QAForm
+                initialData={gradedJsonWithTags?.ai_graded_json}
+                details={gradedJsonWithTags}
+                onStateChange={handleStateChange}
+              />
+            )}
           </aside>
         </div>
       </div>

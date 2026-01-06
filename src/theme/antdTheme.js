@@ -17,6 +17,7 @@ const antdTheme = {
       controlItemBgActive: "#69c920",
       cellHoverBg: "#e8f8da",
       colorTextPlaceholder: "#163143",
+      cellActiveWithRangeBg: "#DBFFDF",
     },
 
     Tabs: {

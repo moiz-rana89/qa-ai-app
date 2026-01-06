@@ -45,6 +45,7 @@ function AllForms({ setCreateNew, getData }) {
     if (status?.status == "success") {
       AntDNotification(status);
       setDrawerOpen(false);
+      dispatch(getAllForms({ page: 1, size: 10 }, null));
     } else {
       AntDNotification(status);
     }
@@ -237,7 +238,10 @@ function AllForms({ setCreateNew, getData }) {
     },
     {
       label: "Delete",
-      onClick: (row) => {},
+      onClick: (row) => {
+        setselectedRow(row);
+        setIsDeleteOpen(true);
+      },
     },
   ];
   const expandedRowRender = (record) => (
@@ -274,7 +278,9 @@ function AllForms({ setCreateNew, getData }) {
         <div className="">
           <div className="flex items-center ml-auto gap-[15px] border-b border-[#0505050F] pb-[25px]">
             <button
-              onClick={() => setDrawerOpen(false)}
+              onClick={() => {
+                setDrawerOpen(false);
+              }}
               className={`w-[130px] min-h-[32px] ml-auto text-[14px] font-sm rounded-full border border-[#D7E6E7] bg-[#FFFFFF] hover:bg-[#FFFFFF] text-[#163143]`}
             >
               Cancel
@@ -311,7 +317,7 @@ function AllForms({ setCreateNew, getData }) {
               className="h-[44px] w-[100%] border-[#d9d9d9]"
             />
           </div>
-          <div className="w-[50%] mt-[10px] flex flex-wrap gap-3 ">
+          <div className="w-[100%] h-[100%] overflow-y-scroll mt-[10px] flex flex-wrap gap-3 ">
             {selectedClients.length > 0 &&
               selectedClients.map((item) => (
                 <div

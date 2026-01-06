@@ -129,30 +129,31 @@ export default function CategoryWithQuestion() {
 
   useEffect(() => {
     if (formCategories) {
+      const sortedCategories = [...formCategories].sort(
+        (a, b) => (a.index ?? 0) - (b.index ?? 0)
+      );
+
       setCategories(
-        formCategories?.map((item) => {
-          return {
-            name: item.category_name,
-            id: item.category_id,
-            questions:
-              item?.questions?.map((item) => {
-                return {
-                  id: item?.question_id,
-                  text: item?.question_text,
-                  questionType: item?.question_type,
-                  select_options: item?.select_options,
-                  points: item?.max_points,
-                  isOptional: item?.optional,
-                  questions_criteria: item?.questions_criteria,
-                  allowNotes: item?.comments_notes,
-                };
-              }) || [],
-            totalScore: item?.questions?.reduce(
-              (sum, q) => sum + (q?.max_points || 0),
-              0
-            ),
-          };
-        })
+        sortedCategories.map((item) => ({
+          name: item.category_name,
+          id: item.category_id,
+          index: item.index,
+          questions:
+            item?.questions?.map((q) => ({
+              id: q?.question_id,
+              text: q?.question_text,
+              questionType: q?.question_type,
+              select_options: q?.select_options,
+              points: q?.max_points,
+              isOptional: q?.optional,
+              questions_criteria: q?.questions_criteria,
+              allowNotes: q?.comments_notes,
+            })) || [],
+          totalScore: item?.questions?.reduce(
+            (sum, q) => sum + (q?.max_points || 0),
+            0
+          ),
+        }))
       );
     }
   }, [formCategories]);
@@ -278,6 +279,7 @@ export default function CategoryWithQuestion() {
         name: category.name || formData.categoryName,
         totalScore: category.totalScore || formData.categoryTotal,
         questions: category.questions || [],
+        index: Math.max(...categories.map((c) => c.index), 0) + 1,
       };
       setCategories([...categories, newCategory]);
       AntDNotification({
@@ -835,7 +837,7 @@ export default function CategoryWithQuestion() {
                     placeholder="Explain how this question should be assessed..."
                     value={item.remarks}
                     onChange={(e) => handleRemarkChange(index, e.target.value)}
-                    className="!pt-[30px] !bg-[#fbfbfb] !border-[#efefef] !rounded-[12px] pt-10"
+                    className="!pt-[30px] !bg-[#fbfbfb] !border-[#efefef] !rounded-[12px] pt-10 overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                     autoSize={{ minRows: 3, maxRows: 5 }}
                   />
                 </div>
@@ -911,6 +913,9 @@ export default function CategoryWithQuestion() {
                 onClick={() => toggleCategory(category.id)}
                 className="flex items-center gap-3 text-left"
               >
+                <div className="w-max text-[#16314380] text-[14px]">
+                  {category.index}.
+                </div>
                 <div className="w-max bg-[#F1F5F5] px-[16px] py-[1px] rounded-[30px] text-[#163143] text-center font-poppins text-[14px] not-italic font-normal leading-6 tracking-[0.14px]">
                   {category.name}
                 </div>
@@ -999,7 +1004,6 @@ export default function CategoryWithQuestion() {
                     <div className="w-[85%]">
                       <p className="text-[14px] text-[#163143] whitespace-pre-line">
                         {question.text}
-                        {console.log("question", question)}
                       </p>
                       {/* <span className="text-sm text-gray-600">
                         ({question.code})

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { roundTo } from "../../../utils/helperFunctions";
 import QuestionItem from "./QuestionItem";
 
 const CategorySection = ({
@@ -29,7 +30,7 @@ const CategorySection = ({
               {category.category_name}
             </span>
             <span className="text-[14px] px-[16px] py-[2px] bg-[#FFFFFF] rounded-[30px] border-[1px] border-[#69C920]">
-              {totalScore}/{maxScore}
+              {roundTo(totalScore, 1)}/{maxScore}
             </span>
           </div>
           <div className="bg-white rounded-full border-[1px] border-[#D7E6E7] p-1">

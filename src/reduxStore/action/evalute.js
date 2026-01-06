@@ -21,6 +21,12 @@ export function setTagsAndAiGradedJson(data) {
     data,
   };
 }
+export function SetSubmitFormTicket(data) {
+  return {
+    type: types.IS_SUBMITTING_TICKET,
+    data,
+  };
+}
 
 export const getAllEvaluteTickets = (pagination, filters) => {
   return (dispatch) => {
@@ -71,23 +77,38 @@ export const getAllEvaluteTickets = (pagination, filters) => {
   };
 };
 
-
-
-
-export const getTicketTagsAndAiGradedJson = (ticket_id,client_id) => {
+export const getTicketTagsAndAiGradedJson = (ticket_id, client_id) => {
   return (dispatch) => {
     try {
       dispatch(setLoaderAction(true));
 
       const url = `/qa_ai_apis/${ticket_id}/${client_id}`;
       Api.get(url).then((resp) => {
-        console.log('resp in the tags api', resp)
+        console.log("resp in the tags api", resp);
         dispatch(setTagsAndAiGradedJson(resp.data));
         dispatch(setLoaderAction(false));
       });
     } catch (error) {
-      console.log('error', error)
+      console.log("error", error);
       dispatch(setLoaderAction(false));
+    }
+  };
+};
+
+export const submitFormTicket = (params, handle) => {
+  return (dispatch) => {
+    try {
+      dispatch(SetSubmitFormTicket(true));
+
+      const url = `/qa_ai_apis/update-ai-evaluation`;
+      Api.post(url, params).then((resp) => {
+        dispatch(SetSubmitFormTicket(false));
+        handle(true);
+      });
+    } catch (error) {
+      console.log("error", error);
+      dispatch(SetSubmitFormTicket(false));
+      handle(false);
     }
   };
 };

@@ -134,3 +134,34 @@ body {
 .qa-form-tabs .ant-tabs-content-holder {
   padding-top: 24px;
 }
+
+/* antd range picker */
+.range-picker {
+  transition: width 0.25s ease;
+}
+
+/* Initial state */
+.range-picker.collapsed {
+  width: 300px;
+}
+
+/* Expanded after end date */
+.range-picker.expanded {
+  width: 300px;
+}
+
+.range-picker.collapsed .ant-picker-input input {
+  text-overflow: clip;
+  white-space: nowrap;
+  overflow: visible;
+}
+
+.range-picker.collapsed .ant-picker-input:last-child,
+.range-picker.collapsed .ant-picker-range-separator {
+  display: none;
+}
+
+.range-picker.expanded .ant-picker-input:last-child,
+.range-picker.expanded .ant-picker-range-separator {
+  display: inline-flex;
+}

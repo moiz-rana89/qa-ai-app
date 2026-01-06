@@ -1,6 +1,8 @@
 import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ArrayProgressBar from "../../components/ArrayProgressBar";
+import { roundTo } from "../../utils/helperFunctions";
 
 export default function EvaluteHeader({
   typeScores = 100,
@@ -14,7 +16,9 @@ export default function EvaluteHeader({
   aiJson,
   userJson,
   submit,
+  isLoading,
 }) {
+  const navigate = useNavigate();
   const calculateScores = (categories = []) => {
     return categories.reduce(
       (acc, category) => {
@@ -33,7 +37,10 @@ export default function EvaluteHeader({
     <div className="w-full border-b border-[#D7E6E7] bg-white flex  h-[70px] justify-between pl-3 items-center">
       <div className=" w-full  justify-start  flex h-full">
         <div className=" flex w-[100%] items-center gap-5 justify-start">
-          <div className="bg-white rounded-full border-[1px] border-[#D7E6E7] p-2">
+          <div
+            className="bg-white rounded-full border-[1px] border-[#D7E6E7] p-2"
+            onClick={() => navigate("/evaluate-tickets")}
+          >
             <Icon
               icon="ci:exit"
               className="rotate-180 text-[22px] text-[#FF5546]"
@@ -66,14 +73,14 @@ export default function EvaluteHeader({
                 AI Score:
               </div>
               <div className="text-[#69C920] text-[16px] font-semibold mr-2">
-                {calculateScores(aiJson)?.totalScore}/
+                {roundTo(calculateScores(aiJson)?.totalScore, 1)}/
                 {calculateScores(aiJson)?.maxScore}
               </div>
               <div className="ml-5 text-[#163143] text-[16px] font-semibold mr-2">
                 Your Score:
               </div>
               <div className="text-[#69C920] text-[16px] font-semibold mr-8">
-                {calculateScores(userJson)?.totalScore}/
+                {roundTo(calculateScores(userJson)?.totalScore, 1)}/
                 {calculateScores(userJson)?.maxScore}
               </div>
             </div>
@@ -86,7 +93,7 @@ export default function EvaluteHeader({
           onClick={() => submit(id)}
           className=" w-[120px] h-[40px] text-[14px] cursor-pointer font-medium bg-[#69C920] text-white rounded-full flex items-center justify-center "
         >
-          {/* {isSubmitting ? "Submitting..." : "Submit"} */}
+          {isLoading ? "Submitting..." : "Submit"}
         </div>
       </div>
     </div>

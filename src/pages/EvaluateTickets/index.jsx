@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { AntDNotification } from "../../components/AntDNotification";
+import AntDRangePicker from "../../components/AntDRangePicker/index";
 import AntDTable from "../../components/AntDTable";
 import MainPageButton from "../../components/Buttons/MainPageButton";
 import UnifiedDropdown from "../../components/Dropdown/UnifiedDropdown";
@@ -22,6 +23,7 @@ import {
 import {
   formatDateTimeEnglish,
   RemoveFromSelect,
+  roundTo,
 } from "../../utils/helperFunctions";
 
 function EvaluateTickets() {
@@ -109,7 +111,6 @@ function EvaluateTickets() {
       dataIndex: "due_date",
       key: "due_date",
       width: 120,
-      disableSort: true,
       render: (_, { due_date }) => (
         <div>{due_date && formatDateTimeEnglish(due_date)}</div>
       ),
@@ -119,52 +120,63 @@ function EvaluateTickets() {
       dataIndex: "agent_id",
       key: "agent_id",
       width: 150,
+      disableSort: true,
     },
     {
       title: "Client ID",
       dataIndex: "client_id",
       key: "client_id",
       width: 150,
+      disableSort: true,
     },
     {
       title: "Form ID",
       dataIndex: "form_id",
       key: "form_id",
       width: 150,
+      disableSort: true,
     },
     {
       title: "Ticket ID",
       dataIndex: "ticket_id",
       key: "ticket_id",
       width: 150,
+      disableSort: true,
     },
     {
       title: "Max Score",
       dataIndex: "max_score",
       key: "max_score",
       width: 150,
+      disableSort: true,
     },
     {
       title: "Percentage Score",
       dataIndex: "percentage_score",
       key: "percentage_score",
       width: 200,
+      render: (_, { percentage_score }) => (
+        <div>{percentage_score && roundTo(percentage_score, 2)}</div>
+      ),
     },
     {
       title: "Final Score",
       dataIndex: "final_score",
       key: "final_score",
       width: 150,
-    },
-    {
-      title: "Evaluation Date",
-      dataIndex: "evaluation_date",
-      key: "evaluation_date",
-      width: 250,
-      render: (_, { evaluation_date }) => (
-        <div>{evaluation_date && formatDateTimeEnglish(evaluation_date)}</div>
+      render: (_, { final_score }) => (
+        <div>{final_score && roundTo(final_score, 2)}</div>
       ),
     },
+    // {
+    //   title: "Evaluation Date",
+    //   dataIndex: "evaluation_date",
+    //   key: "evaluation_date",
+    //   width: 250,
+    //   render: (_, { evaluation_date }) => (
+    //     <div>{evaluation_date && formatDateTimeEnglish(evaluation_date)}</div>
+    //   ),
+    // },
     {
       title: "Evaluated By TL Date",
       dataIndex: "evaluated_by_tl_date",
@@ -211,13 +223,14 @@ function EvaluateTickets() {
   const handleEvalute = () => {
     navigate("/evalute-form");
   };
-  const onChange = (date, dateString) => {
+  const onChange = (date) => {
     getData({ page: 1, size: 10 }, sorting, {
       client_id: selectedClients.map((item) => item.client_id),
       assigned_to_qas: selectedQas?.map((item) => item.owner),
       agent_id: selectedAgents?.map((item) => item.user_id),
       assigned_to_tl: selectedTL?.map((item) => item.teamlead_id),
-      due_date_to: dateString,
+      due_date_from: date[0],
+      due_date_to: date[1],
     });
     // setPagination({ page: 1, size: 10 });
   };
@@ -235,7 +248,7 @@ function EvaluateTickets() {
               <div className="font-semibold pr-2">Filters:</div>
             </div>
             <div className="flex space-x-0 flex-wrap gap-3 pl-3">
-              <DatePicker
+              {/* <DatePicker
                 open={open}
                 onOpenChange={setOpen}
                 onChange={onChange}
@@ -260,7 +273,8 @@ function EvaluateTickets() {
                   />
                 }
                 style={{ borderRadius: "32px" }}
-              />
+              /> */}
+              <AntDRangePicker onChange={onChange} />
             </div>
             <div className="flex space-x-0 flex-wrap gap-3 pl-3">
               <UnifiedDropdown
@@ -279,7 +293,7 @@ function EvaluateTickets() {
             </div>
             <div className="flex space-x-0 flex-wrap gap-3 pl-3">
               <UnifiedDropdown
-                placeholder="Select Client for this form"
+                placeholder="Select QAS for this form"
                 name="QAS"
                 data={qasNames}
                 isLoading={isLoadingQas}

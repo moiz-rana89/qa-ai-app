@@ -24,6 +24,12 @@ const evalute = createReducer(INITIAL_STATE, {
       gradedJsonWithTags: action.data,
     };
   },
+  [types.IS_SUBMITTING_TICKET](state, action) {
+    return {
+      ...state,
+      isLoadingSubmitTicket: action.data,
+    };
+  },
 });
 
 export default evalute;
