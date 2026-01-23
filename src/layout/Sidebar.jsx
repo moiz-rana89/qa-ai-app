@@ -1,72 +1,118 @@
-import React, { useState } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { useLocation, useNavigate } from "react-router-dom";
-import logo from "../assets/tp-logo.jpg";
-import { useEffect } from "react";
 import { useDispatch } from "react-redux";
+import logo from "../assets/tp-logo.jpg";
 import { logout } from "../reduxStore/action/auth";
+import { filterMenuByRole } from "../utils/roleHelpers";
 
 const menuList = [
   {
     title: "Attendance Management",
     icon: "ri:team-line",
     route: "workforce-team-attendance",
+    roles: [
+      "dev",
+      "csm",
+      "cstm",
+      "tl",
+      "om",
+      "som",
+      "aom",
+      "admin",
+      "itl",
+      "dd",
+      "dm",
+      "dtl",
+    ],
     submenu: [
       {
         title: "Remote Team Management",
         route: "workforce-remote-team-attendance",
+        roles: ["dev", "om", "som", "aom", "admin", "tl", "dtl"],
       },
       {
         title: "Remote Team Reporting",
         route: "workforce-remote-team-attendance-report",
+        roles: ["dev", "csm", "om", "som", "aom", "admin", "tl", "dtl"],
       },
       {
         title: "Internal Team Management",
         route: "workforce-internal-team-attendance",
+        roles: ["dev", "om", "som", "aom", "admin", "itl", "dm", "dd"],
       },
       {
         title: "Internal Team Reporting",
         route: "workforce-internal-team-attendance-report",
+        roles: ["dev", "om", "som", "aom", "admin", "itl", "dm", "dd"],
       },
     ],
   },
   {
     title: "WFA Attendance Management",
     icon: "ri:team-line",
-    route: "",
+    route: "workforce-team-attendance",
+    roles: ["dev", "wfa"],
     submenu: [
-      { title: "Remote Team", route: "wfa-remote-team-attendance" },
-      { title: "Internal Team", route: "wfa-internal-team-attendance" },
-      { title: "Attendance Reporting", route: "wfa-attendance-reporting" },
+      {
+        title: "Remote Team",
+        route: "wfa-remote-team-attendance",
+        roles: ["dev", "wfa"],
+      },
+      {
+        title: "Internal Team",
+        route: "wfa-internal-team-attendance",
+        roles: ["dev", "wfa"],
+      },
+      {
+        title: "Attendance Reporting",
+        route: "wfa-attendance-reporting",
+        roles: ["dev", "wfa"],
+      },
     ],
   },
   {
     title: "Ticket Monitoring Form",
     icon: "mage:file-2",
-    route: "",
+    route: "ticket-monitoring-form",
+    roles: ["dev", "tl", "om", "admin", "csm", "cstm", "som", "aom", "dtl"],
   },
   {
     title: "Performance Coaching Form",
     icon: "mage:file-2",
-    route: "",
+    route: "performance-monitoring-form",
+    roles: ["om", "som", "aom", "admin", "dev", "csm", "cstm", "tl", "dtl"],
   },
   {
     title: "Other Coaching Types",
     icon: "mage:file-2",
-    route: "",
+    route: "other-coaching-types",
+    roles: ["om", "som", "aom", "admin", "dev", "csm", "cstm", "tl", "dtl"],
   },
   {
     title: "Client Specific Forms",
     icon: "mage:file-2",
-    route: "",
+    route: "custom-monitoring-form",
+    roles: ["admin", "dev", "dtl", "om", "aom"],
   },
   {
     title: "Quality Assurance",
     icon: "icon-park-outline:success",
     route: "quality-assurance",
+    roles: ["admin", "dev", "dtl", "om", "aom"],
     submenu: [
-      { title: "Evaluate Tickets", route: "evaluate-tickets" },
-      { title: "Forms Management", route: "forms-management" },
+      {
+        title: "Evaluate Tickets",
+        route: "evaluate-tickets",
+        roles: ["admin", "dev", "dtl", "om", "aom"],
+      },
+      {
+        title: "Forms Management",
+        route: "forms-management",
+        roles: ["admin", "dev", "dtl", "om", "aom"],
+      },
     ],
   },
 ];
@@ -74,12 +120,29 @@ const menuList = [
 export default function Sidebar() {
   const [openMenu, setOpenMenu] = useState(null);
   const [isPopover, setIsPopover] = useState(false);
+  const [filteredMenu, setFilteredMenu] = useState([]);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  const userData = JSON.parse(localStorage.getItem("user_details"));
+  const user = JSON.parse(localStorage.getItem("user_details") || "{}");
+  const role = user?.role;
+
+  useEffect(() => {
+    if (role) {
+      const filtered = filterMenuByRole(menuList, role);
+      setFilteredMenu(filtered);
+    }
+  }, [role]);
+
+  useEffect(() => {
+    filteredMenu.forEach((item, index) => {
+      if (item?.submenu?.some((sub) => `/${sub.route}` === pathname)) {
+        setOpenMenu(index);
+      }
+    });
+  }, [pathname, filteredMenu]);
 
   const toggleSubmenu = (index, hasSubmenu, route) => {
     if (hasSubmenu) {
@@ -88,22 +151,24 @@ export default function Sidebar() {
       navigate(route);
     }
   };
-  useEffect(() => {
-    menuList.forEach((item, index) => {
-      if (item.submenu?.some((sub) => `/${sub.route}` === pathname)) {
-        setOpenMenu(index); // auto open submenu parent
-      }
-    });
-  }, [pathname]);
+
+  const handleLogout = () => {
+    dispatch(logout(navigate));
+  };
+
   return (
     <div className="h-screen w-full bg-[#FFFFFF] border-r border-[#ECF2F9] relative">
-      <img src={logo} className="w-[131px] mx-[10px] pt-4" />
+      <img
+        src={logo || "/placeholder.svg"}
+        className="w-[131px] mx-[10px] pt-4"
+        alt="Logo"
+      />
 
       <div className="w-full border border-[#EBF3F4] mt-5"></div>
 
       {/* MENU */}
       <div className="mt-5 flex flex-col items-start">
-        {menuList.map((item, index) => {
+        {filteredMenu.map((item, index) => {
           const isActive = pathname === `/${item.route}`;
           const hasSubmenu = item.submenu && item.submenu.length > 0;
           const isOpen = openMenu === index;
@@ -132,7 +197,6 @@ export default function Sidebar() {
                 )}
               </div>
 
-              {/* SUBMENU */}
               {hasSubmenu && isOpen && (
                 <div className="ml-12 mt-1 flex flex-col">
                   {item.submenu.map((sub, i) => {
@@ -163,8 +227,8 @@ export default function Sidebar() {
       {/* FOOTER */}
       {isPopover && (
         <div
-          className="flex items-center absolute bottom-20 left-0 w-full p-6 bg-white bg-white border-t border-[#EBF3F4] cursor-pointer"
-          onClick={() => dispatch(logout(navigate))}
+          className="flex items-center absolute bottom-20 left-0 w-full p-6 bg-white border-t border-[#EBF3F4] cursor-pointer"
+          onClick={handleLogout}
         >
           <Icon
             icon="tabler:logout-2"
@@ -176,15 +240,15 @@ export default function Sidebar() {
           </span>
         </div>
       )}
-      {/* shadow-[0_-2px_8px_rgba(0,0,0,0.08)] rounded-t-2xl */}
+
       <div className="absolute bottom-0 left-0 w-full p-4 bg-white border-t border-[#EBF3F4]">
         <div className="flex items-center gap-[20px] w-full">
           <div className="w-[57px] h-[57px] rounded-full bg-[#394E5E] text-white flex items-center justify-center text-md">
-            {userData?.name?.charAt(0)}
+            {user?.name?.charAt(0)}
           </div>
 
           <span className="text-[#394E5E] font-semibold text-[16px] font-Poppins">
-            {userData?.name}
+            {user?.name}
           </span>
 
           <div
@@ -200,13 +264,6 @@ export default function Sidebar() {
           </div>
         </div>
       </div>
-      {/* <div class="fixed bottom-2 right-2 p-2 bg-black text-white text-xs rounded">
-        <span class="sm:hidden md:hidden lg:hidden xl:hidden">xs</span>
-        <span class="hidden sm:inline md:hidden lg:hidden xl:hidden">sm</span>
-        <span class="hidden md:inline lg:hidden xl:hidden">md</span>
-        <span class="hidden lg:inline xl:hidden">lg</span>
-        <span class="hidden xl:inline">xl</span>
-      </div> */}
     </div>
   );
 }

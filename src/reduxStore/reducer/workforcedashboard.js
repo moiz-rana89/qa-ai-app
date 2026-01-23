@@ -66,6 +66,55 @@ const workforceReducer = createReducer(INITIAL_STATE, {
       memberFilterData: action.data,
     };
   },
+
+  [types.FETCH_OPSTL_FILTER_DATA](state, action) {
+    return {
+      ...state,
+      opsTLFilterData: action.data,
+    };
+  },
+  [types.FETCH_OM_FILTER_DATA](state, action) {
+    return {
+      ...state,
+      omFilterData: action.data,
+    };
+  },
+  [types.FETCH_AOM_FILTER_DATA](state, action) {
+    return {
+      ...state,
+      aomFilterData: action.data,
+    };
+  },
+  [types.FETCH_CLIENTS_FILTER_DATA](state, action) {
+    return {
+      ...state,
+      clientsList: action.data,
+    };
+  },
+  [types.FETCH_TEAM_FILTER_DATA](state, action) {
+    return {
+      ...state,
+      teamList: action.data,
+    };
+  },
+  [types.FETCH_CSM_DATA](state, action) {
+    return {
+      ...state,
+      csmList: action.data,
+    };
+  },
+  [types.FETCH_AGENT_DATA](state, action) {
+    return {
+      ...state,
+      agentList: action.data,
+    };
+  },
+  [types.FETCH_OM_DATA](state, action) {
+    return {
+      ...state,
+      omList: action.data,
+    };
+  },
 });
 
 export default workforceReducer;

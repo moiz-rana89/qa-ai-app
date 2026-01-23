@@ -1,0 +1,448 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { Button, Drawer, Select, Input, DatePicker } from "antd"; // Assuming antd is available
+import toast from "react-hot-toast";
+
+import { CustomButton } from "../../../components/Buttons/CustomButton";
+import UnifiedDropdown from "../../../components/Dropdown/UnifiedDropdown";
+import {
+  ATT_REASONS_STATUS,
+  handleReasonRules,
+} from "../../../utils/constants";
+import { useDispatch } from "react-redux";
+import {
+  addAutomationReport,
+  updateAttendnceReport,
+} from "../../../reduxStore/action/workforcedashboard";
+import UploadFile from "../../../components/UploadFile/index";
+import {
+  isJsonString,
+  isWithin15,
+  isWithin90,
+} from "../../../utils/helperFunctions";
+import { Icon } from "@iconify/react";
+import Skeleton from "../../../components/Skeleton";
+
+const { Option } = Select;
+const { TextArea } = Input;
+
+export default function EditRemoteTeam({
+  open,
+  setOpen,
+  selectedReport,
+  role,
+  userName,
+  filterParams,
+  fetchData,
+}) {
+  const [loading, setLoading] = useState(false);
+
+  const [reason, setReason] = useState("");
+  const [isResolved, setIsResolved] = useState(false);
+  const [notes, setNotes] = useState("");
+  const [isNotes, setIsnotes] = useState(false);
+
+  const [allowGreenCard, setAllowGreenCard] = useState(false);
+  const [authCheck, setAuthCheck] = useState(false);
+
+  const [fileInfo, setFileInfo] = useState(null);
+  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState("");
+
+  const [reasonAttachment, setReasonAttachment] = useState(null);
+
+  const dispatch = useDispatch();
+  const onClose = () => {
+    setOpen(false);
+  };
+
+  useEffect(() => {
+    if (open) {
+      setIsResolved(false);
+      setNotes(selectedReport?.notes);
+      if (selectedReport?.attachments) {
+        // setFileInfo({ name: "Attachment", url: selectedReport?.attachments });
+        if (isJsonString(selectedReport?.attachments)) {
+          setFileInfo(JSON.parse(selectedReport?.attachments));
+        } else {
+          setFileInfo([
+            { name: "Attachment", url: selectedReport?.attachments },
+          ]);
+        }
+      } else {
+        setFileInfo();
+      }
+      if (selectedReport?.attendance_reason != null) {
+        setReason([
+          ATT_REASONS_STATUS?.find(
+            (item) => item.reason == selectedReport?.attendance_reason
+          ),
+        ]);
+      } else {
+        setReason([]);
+      }
+      if (selectedReport?.green_card != null) {
+        setAllowGreenCard(selectedReport?.green_card);
+      } else {
+        setAllowGreenCard(false);
+      }
+      setIsnotes(false);
+    }
+  }, [selectedReport, open]);
+
+  const handleResponse = (success) => {
+    if (success) {
+      toast.success("Updated Successfuly");
+      onClose();
+      // dispatch(getAttendanceRecords(filterParams));
+      fetchData(filterParams);
+    } else {
+      toast.error(`Error occured, Please try again`);
+    }
+    setLoading(false);
+    setIsnotes(false);
+  };
+  const handleSave = () => {
+    if (reason?.length == 0 || !notes) {
+      toast.error("Please select reason and add notes");
+      setIsnotes(true);
+    } else if (notes?.length < 70) {
+      toast.error("Notes must be 70 characters long");
+      setIsnotes(true);
+    } else if (!isResolved) {
+      toast.error("You must check 'Mark as Resolved' before proceeding.");
+    } else if (!fileInfo?.length > 0) {
+      toast.error("You must Upload Attachment before proceeding.");
+    } else if (
+      handleReasonRules(reason[0]?.reason) &&
+      (!endDate?.ds || !fileInfo?.length > 0)
+    ) {
+      toast.error(
+        "You must provide End Date and Upload Attachment before proceeding."
+      );
+    } else if (
+      handleReasonRules(reason[0]?.reason) &&
+      reason[0]?.reason == "Schedule plotted for Billing Purposes" &&
+      !startDate?.ds
+    ) {
+      toast.error("You must provide Start Date");
+    } else if (
+      handleReasonRules(reason[0]?.reason) &&
+      reason[0]?.reason == "Schedule plotted for Billing Purposes" &&
+      !isWithin15(endDate?.ds, startDate?.ds)
+    ) {
+      toast.error("End date must be within 15 days.");
+    } else if (
+      handleReasonRules(reason[0]?.reason) &&
+      !isWithin90(endDate?.ds)
+    ) {
+      toast.error("End date must be within 90 days.");
+    } else if (!authCheck) {
+      toast.error(
+        "Please confirm that you have reviewed the infraction and provided the required notes or documentation."
+      );
+    } else {
+      setLoading(true);
+      let params = {
+        id: selectedReport?.id,
+        attendance_reason: reason[0]?.reason,
+        notes: notes,
+        reason_type: reason[0]?.validity,
+        green_card: reason[0]?.validity === "INVALID" ? allowGreenCard : false,
+        role: role,
+        attachments: fileInfo?.length > 0 ? JSON.stringify(fileInfo) : null,
+        end_date: endDate?.ds,
+        start_date: startDate?.ds,
+      };
+      if (role === "wfa") {
+        params = {
+          ...params,
+          status_resolved: isResolved,
+          updated_by_wfa: userName,
+        };
+      } else {
+        params = {
+          ...params,
+          status_resolved_tl: isResolved,
+          updated_by_tl: userName,
+        };
+      }
+      const userDetails = JSON.parse(
+        localStorage.getItem("user_details") || "{}"
+      );
+      const paramsAutomation = {
+        user_id: selectedReport?.user_id,
+        reason: reason[0]?.reason,
+        end_date: endDate?.ds,
+        team_lead_note: notes,
+        attachment_url: fileInfo?.length > 0 ? JSON.stringify(fileInfo) : null,
+        updated_by: userDetails?.name,
+        start_date: startDate?.ds,
+      };
+      if (handleReasonRules(reason[0]?.reason)) {
+        dispatch(addAutomationReport(paramsAutomation, toast));
+      }
+      dispatch(updateAttendnceReport(params, handleResponse));
+    }
+  };
+  return (
+    <Drawer
+      title={
+        <div className="flex items-center justify-between w-full">
+          <span className="text-[#163143] font-poppins text-[20px] not-italic font-semibold leading-[24px] tracking-[0.2px]">
+            Edit Attendance Report Alert
+          </span>
+          <div>
+            <Icon
+              icon="codex:cross"
+              className="h-8 w-8 text-[#163143]"
+              onClick={onClose}
+            />
+          </div>
+        </div>
+      }
+      footer={
+        <label className="flex my-[10px]">
+          <input
+            type="checkbox"
+            class="custom-checkbox mt-[2px]"
+            checked={authCheck}
+            onChange={(e) => {
+              setAuthCheck(e.target.checked);
+            }}
+          ></input>
+          <span className="text-[#163143] font-poppins text-[14px] not-italic font-[400px] leading-[20px] ml-2">
+            I certify that I have reviewed the infraction, selected the
+            appropriate resolution, and provided required notes or
+            documentation.<span className="text-red-500 ml-1">*</span>
+          </span>
+        </label>
+      }
+      placement="right"
+      onClose={onClose}
+      open={open}
+      width={600}
+      closable={false}
+      // shadow-[-4px_0px_20px_-10px_rgba(0,0,0,0.25)]
+      motion={{
+        motionName: {
+          appear: "custom-slide-in",
+          enter: "custom-slide-in",
+          leave: "custom-fade-out",
+        },
+        motionAppear: true,
+        motionEnter: true,
+        motionLeave: true,
+      }}
+      className="[&_.ant-drawer-header]:px-6 [&_.ant-drawer-header]:py-4 [&_.ant-drawer-header]:border-b [&_.ant-drawer-body]:p-0 [&_.ant-drawer-body]:space-y-6 [&_.ant-drawer-footer]:px-6 [&_.ant-drawer-footer]:py-4 [&_.ant-drawer-footer]:border-t"
+    >
+      {loading ? (
+        <div className="flex  flex-col justify-between   bg-white  rounded shadow-lg  h-[100%] w-[100%] max-w-[800px] ">
+          <div className=" w-full h-[90vh] relative flex items-center justify-center ">
+            <div className=" absolute  text-4xl text-slate-400">Updating</div>
+            <Skeleton className=" w-full h-full " />
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {/* Mark as Resolved Checkbox */}
+          <div className="flex items-center border-b border-[#D7E6E7] w-[100%] pl-[24px]">
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                className="custom-checkbox"
+                checked={isResolved}
+                onChange={(e) => setIsResolved(e.target.checked)}
+              ></input>
+              <span className="text-[#163143] text-center font-poppins text-[16px] not-italic font-normal leading-[20px] ml-2">
+                Mark as Resolved
+              </span>
+            </label>
+            {/* </Checkbox> */}
+            <div className="flex justify-end gap-2 w-[60%] ml-auto">
+              <div className="py-5  px-8 flex justify-end gap-5 items-center">
+                <CustomButton
+                  text={"Cancel"}
+                  textColor={"black"}
+                  bg={"white"}
+                  borderColor={"#00000040"}
+                  width={100}
+                  onclick={() => onClose()}
+                />
+
+                <CustomButton
+                  text={"Save"}
+                  textColor={"white"}
+                  bg={"#69C920"}
+                  borderColor={undefined}
+                  width={100}
+                  onclick={() => handleSave()}
+                />
+              </div>
+            </div>
+          </div>
+          {/* Resolution Reason */}
+          <div className="space-y-2 px-6 flex">
+            <label className="flex items-center">
+              <span className="text-[#163143] font-poppins text-[14px] not-italic font-semibold leading-[20.5px]">
+                Green Cards Received:
+              </span>
+              <div
+                className={`ml-[5px] text-center capitalize flex items-center justify-center rounded-full  px-4 py-1 ${"bg-[#E4FAED]"}`}
+              >
+                <span className="mb-[2px]">
+                  {selectedReport?.green_card_count
+                    ? selectedReport?.green_card_count
+                    : "N/A"}
+                </span>
+              </div>
+            </label>
+
+            <label className="flex items-center ml-auto mb-[6px]">
+              <span className="text-[#163143] text-center font-poppins text-[14px] not-italic font-[400px] leading-[20px] mr-2">
+                Allow Green Card
+              </span>
+              <input
+                type="checkbox"
+                class="custom-checkbox"
+                checked={allowGreenCard}
+                onChange={(e) => {
+                  if (selectedReport?.green_card_count >= 2) {
+                    toast.error(
+                      "Green card limit reached. This agent has already received two or more green cards in the last 30 days"
+                    );
+                    return;
+                  }
+                  setAllowGreenCard(e.target.checked);
+                }}
+              ></input>
+            </label>
+          </div>
+          <div className="px-6">
+            <label
+              htmlFor="resolution-reason"
+              className="text-[#163143] font-poppins text-[16px] not-italic font-semibold leading-[20.5px]"
+            >
+              Resolution Reason<span className="text-red-500 ml-1">*</span>
+            </label>
+
+            <UnifiedDropdown
+              name="Select Reason"
+              className="border-[#d9d9d9] w-full h-[45px] bg-[#FBFBFB] mt-[10px]"
+              data={ATT_REASONS_STATUS}
+              // isLoading={isloading}
+              selectedList={reason}
+              setselectedList={(e) => {
+                setReason(e);
+                if (e[0]?.validity === "VALID") {
+                  setAllowGreenCard(false);
+                }
+                // setReasonAttachment();
+                setFileInfo();
+                setEndDate();
+                setStartDate();
+              }}
+              fullwidthDropdown={true}
+              displayKey={"reason"}
+              valueKey={"reason"}
+              searchKeys={["reason"]}
+            />
+
+            <div className="pt-1">
+              <label
+                htmlFor="resolution-reason"
+                className="text-[#7F8A92] font-poppins text-[14px]"
+              >
+                Reason Description:
+              </label>
+            </div>
+            <div>
+              <label
+                htmlFor="resolution-reason"
+                className="text-[#7F8A92] font-poppins text-[14px]"
+              >
+                {reason?.[0]?.description}
+              </label>
+            </div>
+          </div>
+
+          {handleReasonRules(reason[0]?.reason) &&
+            reason[0]?.reason == "Schedule plotted for Billing Purposes" && (
+              <div className="space-y-2 px-6">
+                <label
+                  htmlFor="resolution-reason"
+                  className="text-[#163143] font-poppins text-[16px] not-italic font-semibold leading-[20.5px]"
+                >
+                  Start Date<span className="text-red-500 ml-1">*</span>
+                </label>
+                <DatePicker
+                  className="!mt-[10px] w-full h-[45px] bg-[#FBFBFB] !border-[#EFEFEF] !bg-[#FBFBFB] !rounded-[32px] focus:shadow-none focus:!border-[#EFEFEF] hover:!border-[#EFEFEF]"
+                  placeholder="Select Start Date"
+                  onChange={(d, ds) => setStartDate({ d: d, ds: ds })}
+                  value={startDate?.d}
+                  allowClear={false}
+                />
+              </div>
+            )}
+          {handleReasonRules(reason[0]?.reason) && (
+            <div className="space-y-2 px-6">
+              <label
+                htmlFor="resolution-reason"
+                className="text-[#163143] font-poppins text-[16px] not-italic font-semibold leading-[20.5px]"
+              >
+                End Date<span className="text-red-500 ml-1">*</span>
+              </label>
+              <DatePicker
+                className="!mt-[10px] w-full h-[45px] bg-[#FBFBFB] !border-[#EFEFEF] !bg-[#FBFBFB] !rounded-[32px] focus:shadow-none focus:!border-[#EFEFEF] hover:!border-[#EFEFEF]"
+                placeholder="Select End Date"
+                onChange={(d, ds) => setEndDate({ d: d, ds: ds })}
+                value={endDate?.d}
+                allowClear={false}
+              />
+            </div>
+          )}
+
+          {/* Notes */}
+          <div className="space-y-2 px-6">
+            <label
+              htmlFor="notes"
+              className="text-[#163143] font-poppins text-[16px] not-italic font-semibold leading-[20.5px]"
+            >
+              Notes<span className="text-red-500 ml-1">*</span>
+            </label>
+            <TextArea
+              className="!mt-[10px] !border-[#EFEFEF] !bg-[#FBFBFB] !rounded-[16px] focus:!shadow-none focus:!border-[#EFEFEF] hover:!border-[#EFEFEF]"
+              id="notes"
+              placeholder="Add notes here..."
+              autoSize={{ minRows: 5, maxRows: 10 }}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+            />
+            <span
+              style={{
+                color:
+                  notes?.length > 70
+                    ? "#16314380"
+                    : isNotes
+                    ? "red"
+                    : "#16314380",
+              }}
+            >
+              The minimum character limit is {notes?.length ? notes?.length : 0}
+              /70
+            </span>
+          </div>
+          <div className="space-y-2 px-6">
+            <UploadFile
+              // required={handleReasonRules(reason[0]?.reason)}
+              required={true}
+              fileInfo={fileInfo}
+              setFileInfo={setFileInfo}
+            />
+          </div>
+        </div>
+      )}
+    </Drawer>
+  );
+}

@@ -165,3 +165,86 @@ body {
 .range-picker.expanded .ant-picker-range-separator {
   display: inline-flex;
 }
+
+.ant-drawer-mask {
+  /* backdrop-filter: blur(8px);
+  background-color: transparent !important;
+  transition: backdrop-filter 0.3s ease; */
+
+  backdrop-filter: blur(2px);
+  background-color: rgba(22, 49, 67, 0.1) !important;
+  /* transition: backdrop-filter 0.3s ease; */
+}
+
+/* custom animation */
+.custom-slide-in {
+  animation: slideIn 0.3s ease-in-out forwards;
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Fade out animation */
+.custom-fade-out {
+  animation: fadeOut 0.15s ease-in-out forwards;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(0); /* stays in place */
+  }
+}
+
+.custom-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: #fff;
+  border: 1.33px solid #163143;
+  padding: 6px;
+  border-radius: 4px;
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+  vertical-align: middle;
+  width: 16px;
+  height: 16px;
+  transition: all 0.2s ease;
+}
+
+.custom-checkbox:checked {
+  background-color: #69c920;
+  border-color: #69c920;
+}
+
+.custom-checkbox:checked::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.custom-checkbox:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.ant-drawer-body {
+  padding: 0px !important;
+}

@@ -73,13 +73,13 @@ export function formateToLA(isoString) {
 
   return date.toLocaleString("en-US", {
     year: "numeric",
-    month: "short", // Sep
-    day: "2-digit", // 17
+    month: "short",
+    day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
     hour12: true,
-    timeZone: "America/Los_Angeles", // ✅ Los Angeles time
+    timeZone: "America/Los_Angeles",
   });
 }
 
@@ -102,3 +102,24 @@ export const roundTo = (value, decimals = 2) => {
   const factor = Math.pow(10, decimals);
   return Math.round((value + Number.EPSILON) * factor) / factor;
 };
+
+export const isWithin15 = (endDate, startDate) => {
+  const end = new Date(endDate);
+  const start = new Date(startDate);
+
+  // start date must be earlier than end date
+  if (start >= end) return false;
+
+  const diffInDays = (end - start) / (1000 * 60 * 60 * 24);
+
+  return diffInDays <= 15;
+};
+
+export function isJsonString(str) {
+  try {
+    JSON.parse(str);
+  } catch (e) {
+    return false; // Not a valid JSON string
+  }
+  return true; // Valid JSON string
+}

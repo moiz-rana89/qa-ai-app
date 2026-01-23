@@ -22,7 +22,11 @@ const rangePresets = [
   },
 ];
 
-export default function AntDRangePicker({ onChange }) {
+export default function AntDRangePicker({
+  onChange,
+  startPlaceholder,
+  endPlaceholder,
+}) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
 
@@ -39,7 +43,10 @@ export default function AntDRangePicker({ onChange }) {
       onOpenChange={setOpen}
       presets={rangePresets}
       format="YYYY-MM-DD"
-      placeholder={["Select Due Date", ""]}
+      placeholder={[
+        startPlaceholder ? startPlaceholder : "Select Due Date",
+        endPlaceholder ? endPlaceholder : "",
+      ]}
       separator=" - "
       className={`range-picker ${hasEndDate ? "expanded" : "collapsed"}`}
       prefix={

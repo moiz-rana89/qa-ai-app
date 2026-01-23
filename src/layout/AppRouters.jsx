@@ -1,6 +1,9 @@
+"use client";
+
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 import LoginPage from "../pages/LoginPage";
 import EvaluateTickets from "../pages/EvaluateTickets";
@@ -10,6 +13,35 @@ import MainLayout from "./MainLayout";
 import FullWidthLayout from "./FullWidthLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import { setIsAuthAction } from "../reduxStore/action/auth";
+import RemoteTeamManagement from "../pages/WorkForceTeamDashboard/RemoteTeamManagement";
+import UnauthorizedPage from "./UnauthorizedPage";
+import RemoteTeamReporting from "../pages/WorkForceTeamDashboard/RemoteTeamReporting";
+import InternalTeamManagement from "../pages/WorkForceTeamDashboard/InternalTeamManagement";
+import InternalTeamReporting from "../pages/WorkForceTeamDashboard/InternalTeamReporting";
+import WFARemoteTeam from "../pages/WFAAttendanceManagement/WFARemoteTeam";
+import WFAInternalTeam from "../pages/WFAAttendanceManagement/WFAInternalTeam";
+import WFAAttendanceReporting from "../pages/WFAAttendanceManagement/WFAAttendanceReporting";
+
+const ROUTE_ROLES = {
+  "evaluate-tickets": ["admin", "dev", "dtl", "om", "aom"],
+  "forms-management": ["admin", "dev", "dtl", "om", "aom"],
+  "shadowing-form": ["admin", "dev"],
+  "workforce-remote-team-attendance": [
+    "dev",
+    "csm",
+    "cstm",
+    "tl",
+    "om",
+    "som",
+    "aom",
+    "admin",
+    "itl",
+    "dd",
+    "dm",
+    "dtl",
+  ],
+  "evalute-form": ["admin", "dev", "dtl", "om", "aom"],
+};
 
 export default function AppRouter() {
   const dispatch = useDispatch();
@@ -29,6 +61,7 @@ export default function AppRouter() {
 
   return (
     <BrowserRouter>
+      <Toaster />
       <Routes>
         {/* Public */}
         <Route path="/login" element={<LoginPage />} />
@@ -41,9 +74,130 @@ export default function AppRouter() {
             </ProtectedRoute>
           }
         >
-          <Route path="/evaluate-tickets" element={<EvaluateTickets />} />
-          <Route path="/forms-management" element={<FormsManagement />} />
-          <Route path="/shadowing-form" element={<div />} />
+          <Route
+            path="/evaluate-tickets"
+            element={
+              <ProtectedRoute
+                requiredRoles={ROUTE_ROLES["evaluate-tickets"]}
+                routeRoles={ROUTE_ROLES}
+              >
+                <EvaluateTickets />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/forms-management"
+            element={
+              <ProtectedRoute
+                requiredRoles={ROUTE_ROLES["forms-management"]}
+                routeRoles={ROUTE_ROLES}
+              >
+                <FormsManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/shadowing-form"
+            element={
+              <ProtectedRoute
+                requiredRoles={ROUTE_ROLES["shadowing-form"]}
+                routeRoles={ROUTE_ROLES}
+              >
+                <div />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/workforce-remote-team-attendance"
+            element={
+              <ProtectedRoute
+                requiredRoles={ROUTE_ROLES["workforce-remote-team-attendance"]}
+                routeRoles={ROUTE_ROLES}
+              >
+                <RemoteTeamManagement />
+                {/* <></> */}
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/workforce-remote-team-attendance-report"
+            element={
+              <ProtectedRoute
+                requiredRoles={
+                  ROUTE_ROLES["workforce-remote-team-attendance-report"]
+                }
+                routeRoles={ROUTE_ROLES}
+              >
+                <RemoteTeamReporting />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/workforce-internal-team-attendance"
+            element={
+              <ProtectedRoute
+                requiredRoles={
+                  ROUTE_ROLES["workforce-internal-team-attendance"]
+                }
+                routeRoles={ROUTE_ROLES}
+              >
+                <InternalTeamManagement />
+                <></>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/workforce-internal-team-attendance-report"
+            element={
+              <ProtectedRoute
+                requiredRoles={
+                  ROUTE_ROLES["workforce-internal-team-attendance-report"]
+                }
+                routeRoles={ROUTE_ROLES}
+              >
+                <InternalTeamReporting />
+                <></>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/wfa-remote-team-attendance"
+            element={
+              <ProtectedRoute
+                requiredRoles={ROUTE_ROLES["wfa-remote-team-attendance"]}
+                routeRoles={ROUTE_ROLES}
+              >
+                <WFARemoteTeam />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/wfa-internal-team-attendance"
+            element={
+              <ProtectedRoute
+                requiredRoles={ROUTE_ROLES["wfa-internal-team-attendance"]}
+                routeRoles={ROUTE_ROLES}
+              >
+                <WFAInternalTeam />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/wfa-attendance-reporting"
+            element={
+              <ProtectedRoute
+                requiredRoles={ROUTE_ROLES["wfa-attendance-reporting"]}
+                routeRoles={ROUTE_ROLES}
+              >
+                <WFAAttendanceReporting />
+              </ProtectedRoute>
+            }
+          />
         </Route>
 
         {/* WITHOUT SIDEBAR */}
@@ -54,7 +208,17 @@ export default function AppRouter() {
             </ProtectedRoute>
           }
         >
-          <Route path="/evalute-form" element={<EvaluteForm />} />
+          <Route
+            path="/evalute-form"
+            element={
+              <ProtectedRoute
+                requiredRoles={ROUTE_ROLES["evalute-form"]}
+                routeRoles={ROUTE_ROLES}
+              >
+                <EvaluteForm />
+              </ProtectedRoute>
+            }
+          />
         </Route>
 
         <Route path="*" element={<Navigate to="/forms-management" replace />} />

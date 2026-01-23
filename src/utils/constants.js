@@ -1,3 +1,55 @@
+export const ATT_REASONS = [
+  "Approved Extended Lunch",
+  "Bereavement Leave",
+  "Client Changed Schedule - New Schedule",
+  "Client Changed Schedule - Temporary",
+  "Client Device Issue",
+  "Client on Holiday",
+  "Currently Onboarding - New Client",
+  "Flexible Schedule",
+  "Floating Schedule",
+  "Hours not met - Completed Shift",
+  "Hubstaff Issue",
+  "Hubstaff Issue: Incorrect Weekly Hours",
+  "Hubstaff Issue: Locked Timesheet",
+  "Hubstaff Issue: Stopped Working",
+  "Hubstaff Issue: Software Update",
+  "Idle Time: Low Ticket Volume",
+  "Idle Time: Minimal",
+  "Incorrect Minimum Hours Plotted",
+  "LOA",
+  "Offboarded",
+  "Outdated HS Schedule",
+  "PTO",
+  "Resigned",
+  "VTO",
+  "Paternity Leave",
+  "Maternity Leave",
+  "Minimal: Agent Device Update",
+  "Health Issue/Sick Leave - HR Validated",
+  "Exempted",
+  "Power & ISP Interruption",
+  "Agent Device Issue",
+  "Emergency",
+  "Forgot to turn on Hubstaff",
+  "Health Issue/Sick Leave",
+  "Idle Time: Excessive",
+  "ISP Interruption",
+  "NCNS",
+  "No Reason Provided",
+  "Overlunch/Overbreak",
+  "Pending Agent Confirmation",
+  "Personal Reasons",
+  "Unresponded",
+  "Power Interruption",
+  "Woke Up Late",
+  "Others",
+  "Agent in live training",
+  "On Time", // not        valid
+  "No Schedule", // not    valid
+  "Rest Day", // not       valid
+];
+
 export const ATT_REASONS_STATUS = [
   { reason: "Approved Extended Lunch", validity: "VALID" },
   { reason: "Bereavement Leave", validity: "VALID" },
@@ -24,12 +76,18 @@ export const ATT_REASONS_STATUS = [
   { reason: "Resigned", validity: "VALID" },
   { reason: "VTO", validity: "VALID" },
   { reason: "Paternity Leave", validity: "VALID" },
-  { reason: "Maternity Leave", validity: "VALID" },
+  {
+    reason: "Maternity Leave",
+    validity: "VALID",
+    description:
+      "Absence approved due to pregnancy, childbirth, or postnatal recovery, in accordance with company policy and local labor laws.",
+  },
   { reason: "Minimal: Agent Device Update", validity: "VALID" },
   { reason: "Health Issue/Sick Leave - HR Validated", validity: "VALID" },
   { reason: "Exempted", validity: "VALID" },
   { reason: "Agent in live training", validity: "VALID" },
   { reason: "Unpaid Time Off", validity: "VALID" },
+  { reason: "Schedule plotted for Billing Purposes", validity: "VALID" },
   { reason: "Power & ISP Interruption", validity: "INVALID" },
   { reason: "Agent Device Issue", validity: "INVALID" },
   { reason: "Emergency", validity: "INVALID" },
@@ -57,58 +115,7 @@ export const handleReasonRules = (reasonValue) => {
     // reasonValue == "PTO" ||
     reasonValue == "LOA" ||
     reasonValue == "Maternity Leave" ||
-    reasonValue == "Paternity Leave"
+    reasonValue == "Paternity Leave" ||
+    reasonValue == "Schedule plotted for Billing Purposes"
   );
-};
-export const formSchema = {
-  title: "Customer Service Evaluation",
-
-  sections: [
-    {
-      id: "communication",
-      title: "Communication",
-      questions: [
-        {
-          id: "comm_1",
-          label: "How well did the agent greet the customer?",
-          sublabel: "Tone, empathy, politeness",
-          isOptional: false,
-          type: "rating",
-          options: [
-            { label: "0", value: "0" },
-            { label: "1", value: "1" },
-            { label: "2", value: "2" },
-          ],
-        },
-        {
-          id: "comm_2",
-          label: "Was the communication clear?",
-          type: "rating",
-          isOptional: true,
-          options: [
-            { label: "0", value: "0" },
-            { label: "1", value: "1" },
-            { label: "2", value: "2" },
-          ],
-        },
-      ],
-    },
-
-    {
-      id: "knowledge",
-      title: "Product Knowledge",
-      questions: [
-        {
-          id: "kn_1",
-          label: "Did the agent demonstrate product knowledge?",
-          type: "rating",
-          options: [
-            { label: "0", value: "0" },
-            { label: "1", value: "1" },
-            { label: "2", value: "2" },
-          ],
-        },
-      ],
-    },
-  ],
 };

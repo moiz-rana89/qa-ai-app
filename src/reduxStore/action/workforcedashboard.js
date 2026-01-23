@@ -67,53 +67,54 @@ function setMemberFilterData(data) {
   };
 }
 
-// export const getAttendanceRecords = (params = {}) => {
-//   return (dispatch) => {
-//     dispatch(setLoaderAction(true));
-
-//     const queryParams = {};
-
-//     const addParam = (key, value) => {
-//       if (value !== undefined && value !== null && value !== "") {
-//         // For arrays, ensure it's not an empty array
-//         if (Array.isArray(value) && value.length === 0) {
-//           return;
-//         }
-//         queryParams[key] = value;
-//       }
-//     };
-
-//     addParam("client_name", params.client_name);
-//     addParam("agent_name", params.agent_name);
-//     addParam("team_lead_id", params.team_lead_id);
-//     addParam("csm_id", params.csm_id);
-//     addParam("senior_csm_id", params.senior_csm_id);
-//     addParam("operations_manager_id", params.operations_manager_id);
-//     addParam("start_date", params.start_date);
-//     addParam("end_date", params.end_date);
-//     addParam("sort_order", params.sort_order);
-//     addParam("sort_by", params.sort_by);
-
-//     if (params.page !== undefined) {
-//       queryParams.page = Math.max(1, params.page);
-//     }
-//     if (params.size !== undefined) {
-//       queryParams.size = Math.min(100, Math.max(1, params.size));
-//     }
-
-//     addParam("csv", params.csv);
-
-//     Api.get(`/workforce/reports/attendance-management`, queryParams)
-//       .then((resp) => {
-//         dispatch(setLoaderAction(false));
-//         dispatch(setAttendanceRecords(resp));
-//       })
-//       .catch((err) => {
-//         dispatch(setLoaderAction(false));
-//         console.error("Error fetching attendance records:", err);
-//       });
-//   };
-// };
+function setAOMFiltersList(data) {
+  return {
+    type: types.FETCH_AOM_FILTER_DATA,
+    data,
+  };
+}
+function setOMFiltersList(data) {
+  return {
+    type: types.FETCH_OM_FILTER_DATA,
+    data,
+  };
+}
+function setOPSTLFiltersList(data) {
+  return {
+    type: types.FETCH_OPSTL_FILTER_DATA,
+    data,
+  };
+}
+function setClientsFiltersList(data) {
+  return {
+    type: types.FETCH_CLIENTS_FILTER_DATA,
+    data,
+  };
+}
+function setTeamFiltersList(data) {
+  return {
+    type: types.FETCH_TEAM_FILTER_DATA,
+    data,
+  };
+}
+function setCSMFiltersList(data) {
+  return {
+    type: types.FETCH_CSM_DATA,
+    data,
+  };
+}
+function setAgentFiltersList(data) {
+  return {
+    type: types.FETCH_AGENT_DATA,
+    data,
+  };
+}
+function setOMFiltersListRemote(data) {
+  return {
+    type: types.FETCH_OM_DATA,
+    data,
+  };
+}
 
 export const getAttendanceRecords = (params = {}, internal) => {
   return (dispatch) => {
@@ -146,6 +147,9 @@ export const getAttendanceRecords = (params = {}, internal) => {
       "associate_operations_manager_id",
       params.associate_operations_manager_id
     );
+    addParam("om_id", params.om_id);
+    addParam("aom_id", params.aom_id);
+    addParam("ops_team_lead_id", params.ops_team_lead_id);
     addParam("senior_operations_manager", params.senior_operations_manager);
     addParam("size", params.pageSize);
     if (params.page !== undefined) {
@@ -225,6 +229,11 @@ export const getAttendanceRecordsWFA = (params = {}, internal) => {
       params.associate_operations_manager_id
     );
     addParam("senior_operations_manager", params.senior_operations_manager);
+
+    addParam("om_id", params.om_id);
+    addParam("aom_id", params.aom_id);
+    addParam("ops_team_lead_id", params.ops_team_lead_id);
+
     addParam("size", params.pageSize);
     if (params.page !== undefined) {
       queryParams.page = Math.max(1, params.page);
@@ -308,6 +317,10 @@ export const getAttendanceReports = (params = {}, internal) => {
       params.associate_operations_manager_id
     );
     addParam("senior_operations_manager", params.senior_operations_manager);
+    addParam("om_id", params.om_id);
+    addParam("aom_id", params.aom_id);
+    addParam("ops_team_lead_id", params.ops_team_lead_id);
+
     addParam("size", params.pageSize);
     if (params.page !== undefined) {
       queryParams.page = Math.max(1, params.page);
@@ -374,6 +387,7 @@ export const getAttendanceReportsTL = (params = {}, internal) => {
     addParam("agent_name", params.agent_name);
     addParam("team_lead_id", params.team_lead_id);
     addParam("csm_id", params.csm_id);
+    addParam("csm", params.csm);
     addParam("senior_csm_id", params.senior_csm_id);
     addParam("operations_manager_id", params.operations_manager_id);
     addParam("startdate", params.startdate);
@@ -389,6 +403,11 @@ export const getAttendanceReportsTL = (params = {}, internal) => {
       "associate_operations_manager_id",
       params.associate_operations_manager_id
     );
+
+    addParam("om_id", params.om_id);
+    addParam("aom_id", params.aom_id);
+    addParam("ops_team_lead_id", params.ops_team_lead_id);
+
     addParam("senior_operations_manager", params.senior_operations_manager);
     addParam("size", params.pageSize);
     if (params.page !== undefined) {
@@ -448,6 +467,40 @@ export const updateAttendnceReport = (params, handleResponse) => {
       .catch((err) => {
         dispatch(setLoaderAction(false));
         handleResponse(false);
+        console.log("resp from api is error", err);
+      });
+  };
+};
+
+export const addAutomationReport = (params, toast) => {
+  return (dispatch) => {
+    // dispatch(setLoaderAction(true));
+    Api.post(`/workforce/reports/automation`, params)
+      .then((resp) => {
+        // dispatch(setLoaderAction(false));
+
+        toast.success("Automation added Successfuly");
+      })
+      .catch((err) => {
+        dispatch(setLoaderAction(false));
+        toast.error(`Error occured, Please try adding automation again`);
+        console.log("resp from api is error", err);
+      });
+  };
+};
+
+export const addAdvanceAutomationNotice = (params, response) => {
+  return (dispatch) => {
+    // dispatch(setLoaderAction(true));
+    Api.post(`/workforce/reports/automation`, params)
+      .then((resp) => {
+        // dispatch(setLoaderAction(false));
+
+        response(true);
+      })
+      .catch((err) => {
+        response(false);
+        dispatch(setLoaderAction(false));
         console.log("resp from api is error", err);
       });
   };
@@ -602,6 +655,126 @@ export const getMemberFilterData = (setIsLoading) => {
     Api.get(`/workforce/reports/get_internal_team_member_filter`)
       .then((resp) => {
         dispatch(setMemberFilterData(resp?.data?.data));
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        console.log("resp from api is error", err);
+      });
+  };
+};
+
+export const getOMFiltersList = (setIsLoading) => {
+  return (dispatch) => {
+    setIsLoading(true);
+    Api.get(`/workforce/reports/get-operations-manager-filter`)
+      .then((resp) => {
+        dispatch(setOMFiltersList(resp?.data?.data));
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        console.log("resp from api is error", err);
+      });
+  };
+};
+
+export const getAOMFiltersList = (setIsLoading) => {
+  return (dispatch) => {
+    setIsLoading(true);
+    Api.get(`/workforce/reports/get-associate-operations-manager-filter`)
+      .then((resp) => {
+        dispatch(setAOMFiltersList(resp?.data?.data));
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        console.log("resp from api is error", err);
+      });
+  };
+};
+
+export const getOPSTLFiltersList = (setIsLoading) => {
+  return (dispatch) => {
+    setIsLoading(true);
+    Api.get(`/workforce/reports/get-ops-team-lead-filter`)
+      .then((resp) => {
+        dispatch(setOPSTLFiltersList(resp?.data?.data));
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        console.log("resp from api is error", err);
+      });
+  };
+};
+
+export const getClientsFilterList = (setIsLoading) => {
+  return (dispatch) => {
+    setIsLoading(true);
+    Api.get(`/reports/get_client_names`)
+      .then((resp) => {
+        dispatch(setClientsFiltersList(resp?.data?.results));
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        console.log("resp from api is error", err);
+      });
+  };
+};
+
+export const getTeamListFilterData = (setIsLoading) => {
+  return (dispatch) => {
+    setIsLoading(true);
+    Api.get(`/reports/get_teamlead_names`)
+      .then((resp) => {
+        dispatch(setTeamFiltersList(resp?.data?.results));
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        console.log("resp from api is error", err);
+      });
+  };
+};
+
+export const getCSMFilterData = (setIsLoading) => {
+  return (dispatch) => {
+    setIsLoading(true);
+    Api.get(`/reports/get_csm_names`)
+      .then((resp) => {
+        dispatch(setCSMFiltersList(resp?.data?.results));
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        console.log("resp from api is error", err);
+      });
+  };
+};
+
+export const getAgentFilterData = (setIsLoading) => {
+  return (dispatch) => {
+    setIsLoading(true);
+    Api.get(`/get-team-members-filter`)
+      .then((resp) => {
+        dispatch(setAgentFiltersList(resp?.data?.data));
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        console.log("resp from api is error", err);
+      });
+  };
+};
+
+export const getOMFilterData = (setIsLoading) => {
+  return (dispatch) => {
+    setIsLoading(true);
+    Api.get(`/reports/get_om_names`)
+      .then((resp) => {
+        dispatch(setOMFiltersListRemote(resp?.data?.results));
         setIsLoading(false);
       })
       .catch((err) => {

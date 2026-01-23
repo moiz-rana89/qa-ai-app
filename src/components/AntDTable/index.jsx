@@ -22,6 +22,7 @@ const AntDTable = ({
   dropdownOptions = [],
   rowKey,
   sorting,
+  onEdit = null,
 }) => {
   // --- Add sorting to columns dynamically ---
   // const enhancedColumns = columns.map((col, index) => ({
@@ -93,7 +94,7 @@ const AntDTable = ({
     fixed: fixedColumns ? "left" : false,
     width: 20,
     render: (_, record) =>
-      dropdownOptions.length > 0 && (
+      dropdownOptions.length > 0 ? (
         <Dropdown
           overlay={
             <Menu>
@@ -113,6 +114,15 @@ const AntDTable = ({
             onClick={(e) => e.stopPropagation()}
           />
         </Dropdown>
+      ) : (
+        onEdit && (
+          <div
+            className="w-[40px] flex justify-center"
+            onClick={() => onEdit(record)}
+          >
+            <Icon icon="lucide:edit" color="#69C920" fontSize={20} />
+          </div>
+        )
       ),
   };
 
@@ -147,7 +157,7 @@ const AntDTable = ({
   };
 
   return (
-    <div className="generic-table-wrapper">
+    <div className="">
       <Table
         rowKey={(record) => record[`${rowKey}`] || record.key}
         columns={finalColumns}
