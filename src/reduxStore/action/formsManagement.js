@@ -85,6 +85,24 @@ export function setSelectedFormToEvaluate(data) {
     data,
   };
 }
+export function setClientsNameDownload(data) {
+  return {
+    type: types.FETCH_CLIENT_NAME_FOR_DOWNLOAD,
+    data,
+  };
+}
+export function setAgentsNameDownload(data) {
+  return {
+    type: types.FETCH_AGENT_NAME_FOR_DOWNLOAD,
+    data,
+  };
+}
+export function setEventsTypeDownload(data) {
+  return {
+    type: types.FETCH_EVENT_TYPES_FOR_DOWNLOAD,
+    data,
+  };
+}
 export const createForms = (formsBody, AntDNotification) => {
   return (dispatch) => {
     dispatch(setLoaderAction(true));
@@ -193,6 +211,7 @@ export const createCategory = (formsBody, handle) => {
         handle(resp.data);
       })
       .catch((error) => {
+        handle(error?.status);
         dispatch(setLoaderAction(false));
       });
   };
@@ -206,6 +225,7 @@ export const updateCategory = (id, formsBody, handle) => {
         handle(resp.data);
       })
       .catch((error) => {
+        handle(error?.status);
         dispatch(setLoaderQuestionAction(false));
       });
   };
@@ -219,6 +239,7 @@ export const createQuestion = (formsBody, handle) => {
         handle(resp.data);
       })
       .catch((error) => {
+        handle(error?.status);
         dispatch(setLoaderQuestionAction(false));
       });
   };
@@ -371,6 +392,98 @@ export const getFormNamesFilter = (setLoader) => {
       });
     } catch (error) {
       setLoader(false);
+    }
+  };
+};
+
+export const getClientsNameForDownload = (setLoader) => {
+  return (dispatch) => {
+    try {
+      setLoader(true);
+      Api.get("/openai/client-names").then((resp) => {
+        dispatch(setClientsNameDownload(resp.data));
+        setLoader(false);
+      });
+    } catch (error) {
+      setLoader(false);
+    }
+  };
+};
+
+export const getAgentsNameForDownload = (setLoader, user) => {
+  return (dispatch) => {
+    try {
+      setLoader(true);
+      Api.get(`/openai/agent-names?updated_by_tl=${user}`).then((resp) => {
+        dispatch(setAgentsNameDownload(resp.data));
+        setLoader(false);
+      });
+    } catch (error) {
+      setLoader(false);
+    }
+  };
+};
+export const getEventTypesForDownload = (setLoader) => {
+  return (dispatch) => {
+    try {
+      setLoader(true);
+      Api.get("/openai/event-types").then((resp) => {
+        dispatch(setEventsTypeDownload(resp.data));
+        setLoader(false);
+      });
+    } catch (error) {
+      setLoader(false);
+    }
+  };
+};
+
+export const getDownloadReport = (setLoader, toast, params = {}) => {
+  return (dispatch) => {
+    try {
+      setLoader(true);
+      const queryParams = {};
+
+      const addParam = (key, value) => {
+        if (value !== undefined && value !== null && value !== "") {
+          if (Array.isArray(value) && value.length === 0) {
+            return;
+          }
+          queryParams[key] = value;
+        }
+      };
+
+      addParam("client_name", params.client_name);
+      addParam("agent_name", params.agent_name);
+      addParam("end_date", params.date[1]);
+      addParam("start_date", params.date[0]);
+      addParam("raw", params.selectedReportFormat == "raw" ? true : false);
+      addParam("form_name", params.selectedReportCat);
+      addParam("event_type", params.event_type);
+      addParam("updated_by_tl", params.updated_by_tl);
+
+      Api.get("/openai/forms-download", queryParams)
+        .then((resp) => {
+          const blob = new Blob([resp.data], { type: "text/csv" });
+
+          const link = document.createElement("a");
+
+          link.href = URL.createObjectURL(blob);
+
+          link.download = `forms_reports.csv`;
+
+          link.click();
+
+          URL.revokeObjectURL(link.href);
+          setLoader(false);
+          toast.success("File Downloaded Successfuly");
+        })
+        .catch((error) => {
+          setLoader(false);
+          toast.error("No data found for selected filters");
+        });
+    } catch (error) {
+      setLoader(false);
+      toast.error("No data found for selected filters");
     }
   };
 };

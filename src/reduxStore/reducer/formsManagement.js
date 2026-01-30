@@ -91,6 +91,25 @@ const formsManagementReducer = createReducer(INITIAL_STATE, {
       selectedFormToEvaluate: action.data,
     };
   },
+
+  [types.FETCH_CLIENT_NAME_FOR_DOWNLOAD](state, action) {
+    return {
+      ...state,
+      clientNamesForDownload: action.data,
+    };
+  },
+  [types.FETCH_AGENT_NAME_FOR_DOWNLOAD](state, action) {
+    return {
+      ...state,
+      agentsNamesForDownload: action.data,
+    };
+  },
+  [types.FETCH_EVENT_TYPES_FOR_DOWNLOAD](state, action) {
+    return {
+      ...state,
+      eventTypesForDownload: action.data,
+    };
+  },
 });
 
 export default formsManagementReducer;

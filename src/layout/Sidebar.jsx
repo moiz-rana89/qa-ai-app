@@ -98,6 +98,12 @@ const menuList = [
     roles: ["admin", "dev", "dtl", "om", "aom"],
   },
   {
+    title: "Download Report",
+    icon: "hugeicons:download-03",
+    route: "download-report",
+    roles: ["tl", "admin", "dev"],
+  },
+  {
     title: "Quality Assurance",
     icon: "icon-park-outline:success",
     route: "quality-assurance",

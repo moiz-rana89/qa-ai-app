@@ -257,7 +257,12 @@ export default function CategoryWithQuestion() {
       allowNotes: question.allowNotes || false,
       questionType: question.questionType || "text",
     });
-    setGradingCriteria(question?.questions_criteria?.criteria);
+
+    setGradingCriteria(
+      question?.questions_criteria?.criteria
+        ? question?.questions_criteria?.criteria
+        : question?.grading_criteria
+    );
     setSelectOption(question?.select_options);
     setDrawerType("editQuestion");
     setDrawerOpen(true);
@@ -271,6 +276,16 @@ export default function CategoryWithQuestion() {
   };
 
   const handleCategorySuccess = (category) => {
+    if (category == 409) {
+      AntDNotification({
+        status: "error",
+        title: "Error adding category",
+        description:
+          "This category already exists. Please enter a different one.",
+        duration: 5,
+      });
+      return;
+    }
     if (category) {
       const newCategory = {
         id:
@@ -300,6 +315,16 @@ export default function CategoryWithQuestion() {
   };
 
   const handleQuestionSuccess = (question) => {
+    if (question == 409) {
+      AntDNotification({
+        status: "error",
+        title: "Error adding question",
+        description:
+          "This question already exists. Please enter a different one.",
+        duration: 5,
+      });
+      return;
+    }
     if (question) {
       const updatedCategories = categories.map((cat) => {
         if (cat.id === selectedCategoryId) {
@@ -312,9 +337,7 @@ export default function CategoryWithQuestion() {
             questionType: formData.questionType,
             select_options:
               formData.questionType == "multiselect" ? selectOption : [],
-            grading_criteria: {
-              criteria: [{ score: "0", remarks: "No greeting was given." }],
-            },
+            grading_criteria: gradingCriteria,
           };
 
           return {
@@ -345,6 +368,16 @@ export default function CategoryWithQuestion() {
     setDrawerOpen(false);
   };
   const handleCategoryUpdateSuccess = (response) => {
+    if (response == 409) {
+      AntDNotification({
+        status: "error",
+        title: "Error adding question",
+        description:
+          "This question already exists. Please enter a different one.",
+        duration: 5,
+      });
+      return;
+    }
     if (response) {
       const updatedCategories = categories.map((cat) =>
         cat.id === selectedCategoryId
@@ -393,7 +426,7 @@ export default function CategoryWithQuestion() {
           max_points: formData.questionPoints,
           optional: formData.isOptional,
           comments_notes: formData.allowNotes,
-          question_type: formData.questionType,
+          question_type: formData.questionType ? formData.questionType : "text",
           form_id: activeForms?.form_id,
           category_id: selectedCategoryId,
           select_options:
@@ -589,7 +622,7 @@ export default function CategoryWithQuestion() {
     if (drawerType === "addCategory" || drawerType === "editCategory") {
       return (
         <div className="">
-          <div className="flex items-center ml-auto gap-[15px] border-b border-[#0505050F] pb-[25px]">
+          <div className="flex items-center ml-auto mt-5 mx-5 pb-5 gap-[15px] border-b border-[#0505050F]">
             <button
               onClick={closeQuestionDrawer}
               className={`w-[130px] min-h-[32px] ml-auto text-[14px] font-sm rounded-full border border-[#D7E6E7] bg-[#FFFFFF] hover:bg-[#FFFFFF] text-[#163143]`}
@@ -619,7 +652,7 @@ export default function CategoryWithQuestion() {
               {isAddingQuestion ? "Processing..." : "Save"}
             </button>
           </div>
-          <div className="mt-5">
+          <div className="mt-5 mx-5">
             <label className="block text-[14px] font-semibold mb-3">
               Category Name
               <span className="text-red-500">*</span>
@@ -636,7 +669,7 @@ export default function CategoryWithQuestion() {
     } else if (drawerType === "addQuestion" || drawerType === "editQuestion") {
       return (
         <div className="">
-          <div className="flex items-center ml-auto gap-[15px] border-b border-[#0505050F] pb-[25px]">
+          <div className="flex items-center ml-auto mt-5 mx-5 pb-5 gap-[15px] border-b border-[#0505050F]">
             <button
               onClick={closeQuestionDrawer}
               className={`w-[130px] min-h-[32px] ml-auto text-[14px] font-sm rounded-full border border-[#D7E6E7] bg-[#FFFFFF] hover:bg-[#FFFFFF] text-[#163143]`}
@@ -668,7 +701,7 @@ export default function CategoryWithQuestion() {
               </button>
             )}
           </div>
-          <div className="mt-[10px] space-y-6 text-[#163143] font-[400]">
+          <div className="mt-5 mx-5 mb-5 space-y-6 text-[#163143] font-[400]">
             <div className="">
               <label className="block text-[14px] font-semibold mb-3">
                 Mark as Optional?

@@ -21,6 +21,10 @@ import InternalTeamReporting from "../pages/WorkForceTeamDashboard/InternalTeamR
 import WFARemoteTeam from "../pages/WFAAttendanceManagement/WFARemoteTeam";
 import WFAInternalTeam from "../pages/WFAAttendanceManagement/WFAInternalTeam";
 import WFAAttendanceReporting from "../pages/WFAAttendanceManagement/WFAAttendanceReporting";
+import { DownloadReport } from "../pages/DownloadReport";
+import { TicketMonitoringForm } from "../pages/TicketMonitoringForm";
+import { PerformanceMonitoringForm } from "../pages/PerformanceMonitoringForm";
+import { CustomMonitoringForm } from "../pages/CustomMonitoringForm";
 
 const ROUTE_ROLES = {
   "evaluate-tickets": ["admin", "dev", "dtl", "om", "aom"],
@@ -41,6 +45,30 @@ const ROUTE_ROLES = {
     "dtl",
   ],
   "evalute-form": ["admin", "dev", "dtl", "om", "aom"],
+  "download-report": ["admin", "dev", "tl"],
+  "ticket-monitoring-form": [
+    "dev",
+    "tl",
+    "om",
+    "admin",
+    "csm",
+    "cstm",
+    "som",
+    "aom",
+    "dtl",
+  ],
+  "performance-monitoring-form": [
+    "om",
+    "som",
+    "aom",
+    "admin",
+    "dev",
+    "csm",
+    "cstm",
+    "tl",
+    "dtl",
+  ],
+  "custom-monitoring-form": ["admin", "dev", "dtl", "om", "aom"],
 };
 
 export default function AppRouter() {
@@ -198,6 +226,53 @@ export default function AppRouter() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/download-report"
+            element={
+              <ProtectedRoute
+                requiredRoles={ROUTE_ROLES["download-report"]}
+                routeRoles={ROUTE_ROLES}
+              >
+                <DownloadReport />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* <Route
+            path="/ticket-monitoring-form"
+            element={
+              <ProtectedRoute
+                requiredRoles={ROUTE_ROLES["ticket-monitoring-form"]}
+                routeRoles={ROUTE_ROLES}
+              >
+                <TicketMonitoringForm />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/performance-monitoring-form"
+            element={
+              <ProtectedRoute
+                requiredRoles={ROUTE_ROLES["performance-monitoring-form"]}
+                routeRoles={ROUTE_ROLES}
+              >
+                <PerformanceMonitoringForm />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/custom-monitoring-form"
+            element={
+              <ProtectedRoute
+                requiredRoles={ROUTE_ROLES["custom-monitoring-form"]}
+                routeRoles={ROUTE_ROLES}
+              >
+                <CustomMonitoringForm />
+              </ProtectedRoute>
+            }
+          /> */}
         </Route>
 
         {/* WITHOUT SIDEBAR */}

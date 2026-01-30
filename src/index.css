@@ -94,6 +94,24 @@ body {
   color: #163143 !important; /* arrow icon color */
 }
 
+.custom-select-forms .ant-select-selector {
+  @apply px-6 py-2 bg-[#FFFFFF] border border-[#D7E6E7] rounded-full placeholder-gray-400 transition-all duration-200;
+  font-family: poppins !important;
+  padding: 13px 53px 13px 14px !important;
+  border-color: #69c920 !important;
+}
+
+/* Hover border */
+.custom-select-forms:hover .ant-select-selector {
+  border-color: #69c920 !important;
+}
+
+.custom-select-forms-error .ant-select-selector {
+  @apply px-6 py-2 bg-[#FFFFFF] border border-[#D7E6E7] rounded-full placeholder-gray-400 transition-all duration-200;
+  font-family: poppins !important;
+  padding: 13px 53px 13px 14px !important;
+  border-color: #ff5546 !important;
+}
 /* Ant Design Tab Customization */
 .qa-form-tabs .ant-tabs-nav {
   /* background-color: #e8f5e9; */

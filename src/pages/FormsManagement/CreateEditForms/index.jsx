@@ -32,7 +32,9 @@ export const CreateEditForms = ({ setCreateNew }) => {
           : "Form saved and published successfully",
         duration: 5,
       });
+      dispatch(setActiveForms(null));
       setCreateNew(false);
+      dispatch(getAllForms({ page: 1, size: 10 }, null));
     } else {
       AntDNotification({
         status: "error",

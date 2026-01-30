@@ -37,7 +37,7 @@ const dotsStyle = {
 /* =========================
    Component
 ========================= */
-const UploadFile = ({ fileInfo = [], setFileInfo, required }) => {
+const UploadFile = ({ fileInfo = [], setFileInfo, required, reqNotes }) => {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef(null);
 
@@ -107,13 +107,17 @@ const UploadFile = ({ fileInfo = [], setFileInfo, required }) => {
       <p className="text-[#163143] font-poppins text-[16px] font-semibold">
         Upload Files {required && <span className="text-red-500">*</span>}
       </p>
-      <div className="text-[#7F8A92] font-poppins text-[14px]">
-        <div>Required Files:</div>
-        <div className="ml-[5px]">
-          • Employer-approved maternity leave approval (if applicable) Medical
-          certificate
+      {required && (
+        <div className="text-[#7F8A92] font-poppins text-[14px]">
+          <div>Required Proof:</div>
+          <div className="ml-[5px] whitespace-pre-wrap">
+            {/* • Employer-approved maternity leave approval (if applicable) Medical
+          certificate */}
+            {reqNotes}
+          </div>
         </div>
-      </div>
+      )}
+
       <input
         ref={fileInputRef}
         type="file"

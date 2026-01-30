@@ -25,6 +25,7 @@ import {
 } from "../../../utils/helperFunctions";
 import { Icon } from "@iconify/react";
 import Skeleton from "../../../components/Skeleton";
+import { NotesInput } from "../../../components/NotesInput";
 
 const { TextArea } = Input;
 
@@ -136,7 +137,7 @@ export default function EditWFAAttendance({
     // }
     else if (!isResolved) {
       toast.error("Please check Mark as Resolved checkbox");
-    } else if (!fileInfo?.length > 0) {
+    } else if (!fileInfo?.length > 0 && reason[0]?.isFileReq) {
       toast.error("You must Upload Attachment before proceeding.");
     } else if (!authCheck) {
       toast.error(
@@ -284,12 +285,6 @@ export default function EditWFAAttendance({
         <div className="space-y-6">
           {/* Mark as Resolved Checkbox */}
           <div className="flex items-center border-b border-[#D7E6E7] w-[100%] pl-6">
-            {/* <Checkbox
-            checked={isResolved}
-            onChange={(e) => setIsResolved(e.target.checked)}
-            style={{ width: "40%" }}
-            className="custom-checkbox-green"
-          > */}
             <label className="flex  items-center">
               <input
                 type="checkbox"
@@ -400,7 +395,7 @@ export default function EditWFAAttendance({
             <div>
               <label
                 htmlFor="resolution-reason"
-                className="text-[#7F8A92] font-poppins text-[14px]"
+                className="whitespace-pre-wrap text-[#7F8A92] font-poppins text-[14px]"
               >
                 {reason?.[0]?.description}
               </label>
@@ -482,22 +477,6 @@ export default function EditWFAAttendance({
               </label>
             </div>
           )}
-
-          {/* <div className="space-y-2 px-6">
-            <label
-              htmlFor="deduction-points"
-              className="text-[#163143] font-poppins text-[16px] not-italic font-semibold leading-[20.5px]"
-            >
-              Deduction Points<span className="text-red-500 ml-1">*</span>
-            </label>
-
-            <input
-              value={deductionPoints}
-              onChange={(e) => setDeductionPoints(e.target.value)}
-              placeholder="Enter Deduction Point"
-              className=" w-full  rounded-full bg-[#FAFAFA] px-4 border outline-none text-sm h-[50px]"
-            />
-          </div> */}
           {/* Notes */}
           {notesTL && (
             <div className="space-y-2 px-6">
@@ -526,27 +505,13 @@ export default function EditWFAAttendance({
             >
               Notes By WFA
             </label>
-            <TextArea
-              className="!mt-[10px] !border-[#EFEFEF] !bg-[#FBFBFB] !rounded-[16px] focus:!shadow-none focus:!border-[#EFEFEF] hover:!border-[#EFEFEF]"
+            <NotesInput
               id="notes"
               placeholder="Add notes here..."
-              autoSize={{ minRows: 5, maxRows: 10 }}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
+              borderColor={notes?.length < 70 ? "#FF5546" : "#D7E6E7"}
+              notes={notes}
+              onChange={(e) => setNotes(e)}
             />
-            {/* <span
-              style={{
-                color:
-                  notes?.length > 70
-                    ? "#16314380"
-                    : isNotes
-                    ? "red"
-                    : "#16314380",
-              }}
-            >
-              The minimum character limit is {notes?.length ? notes?.length : 0}
-              /70
-            </span> */}
           </div>
           <div className="space-y-2 px-6">
             <UploadFile
@@ -554,7 +519,8 @@ export default function EditWFAAttendance({
               //   CurrntActiveTab == "Remote Team" &&
               //   handleReasonRules(reason[0]?.reason)
               // }
-              required={true}
+              reqNotes={reason?.[0]?.fileReqMessage}
+              required={reason?.[0]?.isFileReq}
               fileInfo={fileInfo}
               setFileInfo={setFileInfo}
             />

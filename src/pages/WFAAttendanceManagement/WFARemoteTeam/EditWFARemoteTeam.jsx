@@ -35,6 +35,7 @@ import {
 import Skeleton from "../../../components/Skeleton";
 import UploadFile from "../../../components/UploadFile";
 import { Icon } from "@iconify/react";
+import { NotesInput } from "../../../components/NotesInput";
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -152,7 +153,7 @@ export default function EditWFARemoteTeam({
     //   toast.error("Notes must be 70 characters long");
     //   setIsnotes(true);
     // }
-    else if (!fileInfo?.length > 0) {
+    else if (!fileInfo?.length > 0 && reason[0]?.isFileReq) {
       toast.error("You must Upload Attachment before proceeding.");
     } else if (
       handleReasonRules(reason[0]?.reason) &&
@@ -400,7 +401,7 @@ export default function EditWFARemoteTeam({
             <div>
               <label
                 htmlFor="resolution-reason"
-                className="text-[#7F8A92] font-poppins text-[14px]"
+                className="whitespace-pre-wrap text-[#7F8A92] font-poppins text-[14px]"
               >
                 {reason?.[0]?.description}
               </label>
@@ -494,32 +495,20 @@ export default function EditWFARemoteTeam({
             >
               Notes By WFA
             </label>
-            <TextArea
-              className="!mt-[10px] !border-[#EFEFEF] !bg-[#FBFBFB] !rounded-[16px] focus:!shadow-none focus:!border-[#EFEFEF] hover:!border-[#EFEFEF]"
+
+            <NotesInput
               id="notes"
               placeholder="Add notes here..."
-              autoSize={{ minRows: 5, maxRows: 10 }}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
+              borderColor={notes?.length < 70 ? "#FF5546" : "#D7E6E7"}
+              notes={notes}
+              onChange={(e) => setNotes(e)}
             />
-            {/* <span
-              style={{
-                color:
-                  notes?.length > 70
-                    ? "#16314380"
-                    : isNotes
-                    ? "red"
-                    : "#16314380",
-              }}
-            >
-              The minimum character limit is {notes?.length ? notes?.length : 0}
-              /70
-            </span> */}
           </div>
           <div className="space-y-2 px-6">
             <UploadFile
               // required={handleReasonRules(reason[0]?.reason)}
-              required={true}
+              reqNotes={reason?.[0]?.fileReqMessage}
+              required={reason?.[0]?.isFileReq}
               fileInfo={fileInfo}
               setFileInfo={setFileInfo}
             />

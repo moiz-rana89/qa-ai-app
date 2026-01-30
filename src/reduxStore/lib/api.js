@@ -152,6 +152,9 @@ class Api {
             localStorage.removeItem("user_details");
             window.location.href = "/login";
           }
+          if (resp?.status == 409) {
+            throw { ...errorData, status: resp?.status };
+          }
           throw error;
         }
       })

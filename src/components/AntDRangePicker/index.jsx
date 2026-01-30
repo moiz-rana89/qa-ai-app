@@ -26,6 +26,7 @@ export default function AntDRangePicker({
   onChange,
   startPlaceholder,
   endPlaceholder,
+  className,
 }) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
@@ -48,7 +49,9 @@ export default function AntDRangePicker({
         endPlaceholder ? endPlaceholder : "",
       ]}
       separator=" - "
-      className={`range-picker ${hasEndDate ? "expanded" : "collapsed"}`}
+      className={`${className} range-picker ${
+        hasEndDate ? "expanded" : "collapsed"
+      }`}
       prefix={
         <Icon
           icon="majesticons:calendar"

@@ -275,8 +275,8 @@ function AllForms({ setCreateNew, getData }) {
         onSubmit={() => {}}
         submitText={"Update Question"}
       >
-        <div className="">
-          <div className="flex items-center ml-auto gap-[15px] border-b border-[#0505050F] pb-[25px]">
+        <div className="mt-5 mx-5 pb-5">
+          <div className="flex items-center ml-auto mt-5 mx-5 pb-5 gap-[15px] border-b border-[#0505050F] pb-[25px]">
             <button
               onClick={() => {
                 setDrawerOpen(false);
