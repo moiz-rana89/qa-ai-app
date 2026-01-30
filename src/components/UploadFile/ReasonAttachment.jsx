@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Upload, message, Progress } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 
+const baseURL = import.meta.env.VITE_API_URL;
+
 // Custom Upload Icon as React component
 const UploadIcon = () => (
   <svg
@@ -23,7 +25,7 @@ const ReasonAttachment = ({ fileInfo, setFileInfo }) => {
   const [progress, setProgress] = useState(0);
 
   const token = localStorage.getItem("auth_token");
-  const uploadUrl = `${process.env.REACT_APP_BASE_URL}/workforce/reports/upload`;
+  const uploadUrl = `${baseURL}/workforce/reports/upload`;
 
   const props = {
     name: "file",

@@ -15,6 +15,8 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { InformationSection } from "./InformationSection";
 
+const baseURL = import.meta.env.VITE_API_URL;
+
 export function CustomMonitoringForm() {
   const [formData, setFormData] = useState({
     ticketTypes: [],
@@ -171,8 +173,8 @@ export function CustomMonitoringForm() {
         };
       }
       // console.log("submissionData", submissionData);
-      const baseUrl = `${process.env.REACT_APP_BASE_URL}/openai/client_specific_forms`;
-      const response = await axios.post(baseUrl, submissionData);
+      const endPointUrl = `${baseURL}/openai/client_specific_forms`;
+      const response = await axios.post(endPointUrl, submissionData);
       toast.success("Form submitted successfully!");
       let messageTimer = setTimeout(() => {
         window.location.reload();

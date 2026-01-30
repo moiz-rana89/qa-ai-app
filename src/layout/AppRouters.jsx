@@ -25,6 +25,7 @@ import { DownloadReport } from "../pages/DownloadReport";
 import { TicketMonitoringForm } from "../pages/TicketMonitoringForm";
 import { PerformanceMonitoringForm } from "../pages/PerformanceMonitoringForm";
 import { CustomMonitoringForm } from "../pages/CustomMonitoringForm";
+import { OtherCoachingTypes } from "../pages/OtherCoachingTypes";
 
 const ROUTE_ROLES = {
   "evaluate-tickets": ["admin", "dev", "dtl", "om", "aom"],
@@ -69,6 +70,17 @@ const ROUTE_ROLES = {
     "dtl",
   ],
   "custom-monitoring-form": ["admin", "dev", "dtl", "om", "aom"],
+  "other-coaching-types": [
+    "om",
+    "som",
+    "aom",
+    "admin",
+    "dev",
+    "csm",
+    "cstm",
+    "tl",
+    "dtl",
+  ],
 };
 
 export default function AppRouter() {
@@ -238,7 +250,7 @@ export default function AppRouter() {
             }
           />
 
-          {/* <Route
+          <Route
             path="/ticket-monitoring-form"
             element={
               <ProtectedRoute
@@ -272,7 +284,18 @@ export default function AppRouter() {
                 <CustomMonitoringForm />
               </ProtectedRoute>
             }
-          /> */}
+          />
+          <Route
+            path="/other-coaching-types"
+            element={
+              <ProtectedRoute
+                requiredRoles={ROUTE_ROLES["other-coaching-types"]}
+                routeRoles={ROUTE_ROLES}
+              >
+                <OtherCoachingTypes />
+              </ProtectedRoute>
+            }
+          />
         </Route>
 
         {/* WITHOUT SIDEBAR */}

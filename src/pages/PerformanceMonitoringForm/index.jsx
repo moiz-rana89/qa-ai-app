@@ -16,6 +16,8 @@ import {
 import axios from "axios";
 import toast from "react-hot-toast";
 
+const baseURL = import.meta.env.VITE_API_URL;
+
 export function PerformanceMonitoringForm() {
   const [formData, setFormData] = useState({
     ticketTypes: [],
@@ -159,8 +161,8 @@ export function PerformanceMonitoringForm() {
           updated_by_tl: userDetails?.name,
         };
       }
-      const baseUrl = `${process.env.REACT_APP_BASE_URL}/openai/performance-coaching-form`;
-      const response = await axios.post(baseUrl, submissionData);
+      const endPointUrl = `${baseURL}/openai/performance-coaching-form`;
+      const response = await axios.post(endPointUrl, submissionData);
       toast.success("Form submitted successfully!");
       let messageTimer = setTimeout(() => {
         window.location.reload();

@@ -16,6 +16,8 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
+const baseURL = import.meta.env.VITE_API_URL;
+
 export function TicketMonitoringForm() {
   const [formData, setFormData] = useState({
     ticketTypes: [],
@@ -149,8 +151,8 @@ export function TicketMonitoringForm() {
           updated_by_tl: userDetails?.name,
         };
       }
-      const baseUrl = `${process.env.REACT_APP_BASE_URL}/openai/ticket_monitoring_form`;
-      const response = await axios.post(baseUrl, submissionData);
+      const endPointUrl = `${baseURL}/openai/ticket_monitoring_form`;
+      const response = await axios.post(endPointUrl, submissionData);
       toast.success("Form submitted successfully!");
       let messageTimer = setTimeout(() => {
         window.location.reload();
