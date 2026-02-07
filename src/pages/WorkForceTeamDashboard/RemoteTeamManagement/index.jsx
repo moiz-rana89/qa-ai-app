@@ -1,12 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-// import { Filter } from "lucide-react";
 
-// import { useFetchClientFilterData } from "../../../hooks/useFetchClientFilterData.tsx";
-// import { useFetchTeamLeaderFilterData } from "../../../hooks/useFetchTeamLeaderFilter.tsx";
-// import { useFetchCSMFilterData } from "../../../hooks/useFetchCSMFilter.tsx";
-// import useFetchRTMFilterData from "../../../hooks/useFetchRTMFilter.tsx";
-// import { useFetchOMFilterData } from "../../../hooks/useFetchOMFilteraData.tsx";
-// import EditRemoteTeam from "./EditRemoteTeam";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getAgentFilterData,
@@ -14,6 +7,7 @@ import {
   getAttendanceRecords,
   getClientsFilterList,
   getCSMFilterData,
+  getDisputedAttendanceRecords,
   getOMFilterData,
   getOPSTLFiltersList,
   getTeamListFilterData,
@@ -24,6 +18,7 @@ import AntDTable from "../../../components/AntDTable";
 import Skeleton from "../../../components/Skeleton";
 import EditRemoteTeam from "./EditRemoteTeam";
 import DownloadCSVButton from "../../../components/Buttons/DownloadCSVButton";
+import { Tabs, Tab } from "../../../components/Tabs/Tabs";
 
 export default function RemoteTeamManagement() {
   const isMounted = useRef(false);
@@ -55,6 +50,9 @@ export default function RemoteTeamManagement() {
   const [isLoadingCsm, setIsLoadingCsm] = useState(false);
   const [isLoadingAgent, setIsLoadingAgent] = useState(false);
   const [isLoadingOm, setIsLoadingOm] = useState(false);
+
+  const [CurrntActiveTab, setCurrntActiveTab] = useState("Unresolved");
+
   const userDetails = JSON.parse(localStorage.getItem("user_details") || "{}");
 
   const {
@@ -68,10 +66,21 @@ export default function RemoteTeamManagement() {
     csmList,
     agentList,
     omList,
+    attendanceDisputedRecords,
   } = useSelector((store) => store.workforcedashboard);
 
   const fetchData = (params) => {
-    dispatch(getAttendanceRecords(params));
+    if (CurrntActiveTab == "Disputed by WFA") {
+      dispatch(
+        getDisputedAttendanceRecords({
+          ...params,
+          role: userDetails?.role,
+          tl_name: userDetails?.name,
+        })
+      );
+    } else {
+      dispatch(getAttendanceRecords(params));
+    }
   };
 
   useEffect(() => {
@@ -157,6 +166,21 @@ export default function RemoteTeamManagement() {
       fetchData(params);
     }
   }, [currentpage, currentpageSize]);
+  useEffect(() => {
+    if (!isMounted.current) {
+      isMounted.current = true; // Set to true after the first render
+      return; // Skip the effect for the first render
+    }
+    const params = {
+      ...filterParams,
+      sort_order: "desc",
+      sort_by: null,
+      page: 1,
+      pageSize: 10,
+    };
+    fetchData(params);
+    setcurrentpage(1);
+  }, [CurrntActiveTab]);
 
   const handleEditClick = (selected) => {
     setIsOpen(true);
@@ -174,7 +198,7 @@ export default function RemoteTeamManagement() {
   return (
     <div className="w-full h-full flex flex-col">
       <div className="pt-7 flex items-center pl-8">
-        <span className="text-2xl font-semibold">Attendance management</span>
+        <span className="text-2xl font-semibold">Attendance Management</span>
       </div>
       <EditRemoteTeam
         open={isOpen}
@@ -184,6 +208,7 @@ export default function RemoteTeamManagement() {
         userName={userDetails?.name}
         filterParams={filterParams}
         fetchData={fetchData}
+        activeTab={CurrntActiveTab}
       />
       <div className="flex items-center pb-3 gap-1 pt-5 pl-8">
         <div className="flex w-[75vw]">
@@ -294,39 +319,94 @@ export default function RemoteTeamManagement() {
         </div>
       </div>
       <div className="w-full  overflow-y-scroll pb-[50px] pt-2 space-y-9 scrollbar-hide pl-8">
-        <div className="flex items-center w-[100%] mb-[20px]">
-          <span className="text-xl font-semibold">
-            {"Attendance Reporting Alerts"}
-          </span>
-          <div className="ml-auto mr-[15px]">
-            <DownloadCSVButton onClick={handleCSVDownload} />
-          </div>
+        <div className="w-[75vw] pb-[50px] pt-2 space-y-9 ml-8  ">
+          <Tabs setCurrntActiveTab={setCurrntActiveTab}>
+            <Tab data-label={"Unresolved"} labelData={""}>
+              <div className="w-full overflow-y-scroll pb-[50px] pt-2 space-y-9 scrollbar-hide">
+                <div className="flex items-center w-[100%] mb-[20px]">
+                  <span className="text-xl font-semibold">
+                    {"Attendance Reporting Alerts"}
+                  </span>
+                  <div className="ml-auto mr-[15px]">
+                    <DownloadCSVButton onClick={handleCSVDownload} />
+                  </div>
+                </div>
+                {isLoading ? (
+                  <Skeleton className="w-full h-[75vh]" />
+                ) : (
+                  <AntDTable
+                    columns={ColumnDataRemoteTeam}
+                    data={attendanceRecords?.data}
+                    bordered={true}
+                    total={attendanceRecords?.pagination?.totalRecords}
+                    current={attendanceRecords?.pagination?.currentPage}
+                    pageSize={attendanceRecords?.pagination?.pageSize}
+                    rowKey={"id"}
+                    onPageChange={setcurrentpage}
+                    onPageSizeChange={setcurrentpageSize}
+                    onEdit={handleEditClick}
+                    onSortChange={(columnKey, order) => {
+                      setSorting({ sort_by: columnKey, sort_order: order });
+                      setsortBy(columnKey);
+                      setsortOrder(
+                        order == "ascend"
+                          ? "asc"
+                          : order == "descend"
+                          ? "desc"
+                          : null
+                      );
+                    }}
+                    sorting={sorting}
+                    pagination={true}
+                  />
+                )}
+              </div>
+            </Tab>
+
+            <Tab data-label={"Disputed by WFA"} labelData={""}>
+              <div className="w-full  overflow-y-scroll pb-[50px] pt-2 space-y-9 scrollbar-hide">
+                <div className="flex items-center w-[100%] mb-[20px]">
+                  <span className="text-xl font-semibold">
+                    {"Attendance Alerts"}
+                  </span>
+                  <div className="ml-auto mr-[15px]">
+                    <DownloadCSVButton onClick={handleCSVDownload} />
+                  </div>
+                </div>
+                {isLoading ? (
+                  <Skeleton className="w-full h-[75vh]" />
+                ) : (
+                  <AntDTable
+                    columns={ColumnDataRemoteTeam}
+                    data={attendanceDisputedRecords?.data}
+                    bordered={true}
+                    total={attendanceDisputedRecords?.pagination?.totalRecords}
+                    current={attendanceDisputedRecords?.pagination?.currentPage}
+                    pageSize={attendanceDisputedRecords?.pagination?.pageSize}
+                    rowKey={"id"}
+                    onEdit={handleEditClick}
+                    onPageChange={setcurrentpage}
+                    onPageSizeChange={setcurrentpageSize}
+                    onSortChange={(columnKey, order) => {
+                      setSorting({ sort_by: columnKey, sort_order: order });
+                      setsortBy(columnKey);
+                      setsortOrder(
+                        order == "ascend"
+                          ? "asc"
+                          : order == "descend"
+                          ? "desc"
+                          : null
+                      );
+                    }}
+                    sorting={sorting}
+                    pagination={true}
+                  />
+                )}
+              </div>
+            </Tab>
+          </Tabs>
         </div>
-        {isLoading ? (
-          <Skeleton className="w-full h-[75vh]" />
-        ) : (
-          <AntDTable
-            columns={ColumnDataRemoteTeam}
-            data={attendanceRecords?.data}
-            bordered={true}
-            total={attendanceRecords?.pagination?.totalRecords}
-            current={attendanceRecords?.pagination?.currentPage}
-            pageSize={attendanceRecords?.pagination?.pageSize}
-            rowKey={"id"}
-            onPageChange={setcurrentpage}
-            onPageSizeChange={setcurrentpageSize}
-            onEdit={handleEditClick}
-            onSortChange={(columnKey, order) => {
-              setSorting({ sort_by: columnKey, sort_order: order });
-              setsortBy(columnKey);
-              setsortOrder(
-                order == "ascend" ? "asc" : order == "descend" ? "desc" : null
-              );
-            }}
-            sorting={sorting}
-            pagination={true}
-          />
-        )}
+
         {/* <WorkforceAttendanceTable
           handleEditClick={handleEditClick}
           data={attendanceRecords}

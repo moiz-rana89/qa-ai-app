@@ -1,4 +1,5 @@
 "use client";
+// updated_notes_tl
 
 import { useEffect, useState } from "react";
 import { Button, Drawer, Select, Input, DatePicker } from "antd"; // Assuming antd is available
@@ -13,6 +14,7 @@ import {
 import { useDispatch } from "react-redux";
 import {
   addAutomationReport,
+  resolveAttendanceDispute,
   updateAttendnceReport,
 } from "../../../reduxStore/action/workforcedashboard";
 import UploadFile from "../../../components/UploadFile/index";
@@ -36,6 +38,7 @@ export default function EditRemoteTeam({
   userName,
   filterParams,
   fetchData,
+  activeTab,
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -53,6 +56,8 @@ export default function EditRemoteTeam({
 
   const [reasonAttachment, setReasonAttachment] = useState(null);
 
+  const userDetails = JSON.parse(localStorage.getItem("user_details") || "{}");
+
   const dispatch = useDispatch();
   const onClose = () => {
     setOpen(false);
@@ -60,10 +65,24 @@ export default function EditRemoteTeam({
 
   useEffect(() => {
     if (open) {
+      selectedReport?.end_date
+        ? setEndDate({
+            d: moment(selectedReport?.end_date),
+            ds: moment(selectedReport?.end_date).format("YYYY-MM-DD"),
+          })
+        : setEndDate("");
+      selectedReport?.start_date
+        ? setStartDate({
+            d: moment(selectedReport?.start_date),
+            ds: moment(selectedReport?.start_date).format("YYYY-MM-DD"),
+          })
+        : setStartDate("");
       setIsResolved(false);
       setNotes(selectedReport?.notes);
+      // setNotesTL(selectedReport?.notes);
+      // setIsDisputed(false);
+      setAuthCheck(false);
       if (selectedReport?.attachments) {
-        // setFileInfo({ name: "Attachment", url: selectedReport?.attachments });
         if (isJsonString(selectedReport?.attachments)) {
           setFileInfo(JSON.parse(selectedReport?.attachments));
         } else {
@@ -104,6 +123,24 @@ export default function EditRemoteTeam({
     setLoading(false);
     setIsnotes(false);
   };
+
+  const handleResponseDisputeResolved = (success) => {
+    if (success) {
+      toast.success("Dispute resolved Successfuly");
+      onClose();
+      // dispatch(getAttendanceRecords(filterParams));
+      fetchData({
+        ...filterParams,
+        role: userDetails?.role,
+        tl_name: userDetails?.name,
+      });
+    } else {
+      toast.error(`Error occured, Please try resolving Dispute again`);
+    }
+    setLoading(false);
+    setIsnotes(false);
+  };
+
   const handleSave = () => {
     if (reason?.length == 0 || !notes) {
       toast.error("Please select reason and add notes");
@@ -145,6 +182,35 @@ export default function EditRemoteTeam({
       );
     } else {
       setLoading(true);
+      const paramsAutomation = {
+        user_id: selectedReport?.user_id,
+        reason: reason[0]?.reason,
+        end_date: endDate?.ds,
+        team_lead_note: notes,
+        attachment_url: fileInfo?.length > 0 ? JSON.stringify(fileInfo) : null,
+        updated_by: userDetails?.name,
+        start_date: startDate?.ds,
+      };
+      if (handleReasonRules(reason[0]?.reason)) {
+        dispatch(addAutomationReport(paramsAutomation, toast));
+      }
+
+      const paramsDisputeResolve = {
+        id: selectedReport?.id,
+        updated_reason_tl: reason[0]?.reason,
+        updated_notes_tl: notes,
+        file_urls:
+          fileInfo?.length > 0 ? fileInfo?.map((item) => item.url) : [],
+      };
+      if (activeTab == "Disputed by WFA") {
+        dispatch(
+          resolveAttendanceDispute(
+            paramsDisputeResolve,
+            handleResponseDisputeResolved
+          )
+        );
+        return;
+      }
       let params = {
         id: selectedReport?.id,
         attendance_reason: reason[0]?.reason,
@@ -168,21 +234,6 @@ export default function EditRemoteTeam({
           status_resolved_tl: isResolved,
           updated_by_tl: userName,
         };
-      }
-      const userDetails = JSON.parse(
-        localStorage.getItem("user_details") || "{}"
-      );
-      const paramsAutomation = {
-        user_id: selectedReport?.user_id,
-        reason: reason[0]?.reason,
-        end_date: endDate?.ds,
-        team_lead_note: notes,
-        attachment_url: fileInfo?.length > 0 ? JSON.stringify(fileInfo) : null,
-        updated_by: userDetails?.name,
-        start_date: startDate?.ds,
-      };
-      if (handleReasonRules(reason[0]?.reason)) {
-        dispatch(addAutomationReport(paramsAutomation, toast));
       }
       dispatch(updateAttendnceReport(params, handleResponse));
     }
@@ -420,6 +471,25 @@ export default function EditRemoteTeam({
               onChange={(e) => setNotes(e)}
             />
           </div>
+          {activeTab === "Disputed by WFA" && (
+            <div className="space-y-2 px-6">
+              <label
+                htmlFor="notes"
+                className="text-[#163143] font-poppins text-[16px] not-italic font-semibold leading-[20.5px]"
+              >
+                Notes By WFA
+              </label>
+
+              <TextArea
+                className="!mt-[10px] !border-[#EFEFEF] !bg-[#FFF7D8] !rounded-[16px] focus:!shadow-none focus:!border-[#EFEFEF] hover:!border-[#EFEFEF]"
+                id="notesbytl"
+                placeholder="Add notes here..."
+                autoSize={{ minRows: 5, maxRows: 10 }}
+                value={selectedReport?.notes_wfa}
+                readOnly={true}
+              />
+            </div>
+          )}
           <div className="space-y-2 px-6">
             <UploadFile
               // required={handleReasonRules(reason[0]?.reason)}

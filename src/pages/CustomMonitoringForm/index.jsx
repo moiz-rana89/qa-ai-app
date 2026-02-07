@@ -14,6 +14,7 @@ import {
 import axios from "axios";
 import toast from "react-hot-toast";
 import { InformationSection } from "./InformationSection";
+import { pstDate } from "../../utils/helperFunctions";
 
 const baseURL = import.meta.env.VITE_API_URL;
 
@@ -137,7 +138,7 @@ export function CustomMonitoringForm() {
       );
       let submissionData = {
         event_type: selectedFormType,
-        submitted_at: Date.now(),
+        submitted_at: pstDate(),
         agent_name: formData.agentName,
         client_name: formData.clientVersion,
         hubstaff_client_id: formData.clientId,

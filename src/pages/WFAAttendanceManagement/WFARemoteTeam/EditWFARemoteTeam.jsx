@@ -22,6 +22,7 @@ import {
 import { useDispatch } from "react-redux";
 import {
   addAutomationReport,
+  disputeAttendnceReportbyWFA,
   getAttendanceRecords,
   getAttendanceReportsTL,
   updateAttendnceReport,
@@ -49,11 +50,14 @@ export default function EditWFARemoteTeam({
   userName,
   fetchData,
   currentpage,
+  activeTab,
 }) {
   const [loading, setLoading] = useState(false);
 
   const [reason, setReason] = useState("");
   const [isResolved, setIsResolved] = useState(false);
+  const [isDisputed, setIsDisputed] = useState(false);
+
   const [notes, setNotes] = useState("");
   const [notesTL, setNotesTL] = useState(" ");
 
@@ -75,17 +79,6 @@ export default function EditWFARemoteTeam({
 
   useEffect(() => {
     if (open) {
-      // setIsResolved(
-      //   selectedReport?.status_resolved
-      //     ? selectedReport?.status_resolved
-      //     : selectedReport?.status_resolved_tl
-      //     ? selectedReport?.status_resolved_tl
-      //     : false
-      // );
-      // console.log("selectedReport", {
-      //   d: moment(selectedReport?.end_date),
-      //   ds: moment(selectedReport?.end_date).format("YYYY-MM-DD"),
-      // });
       selectedReport?.end_date
         ? setEndDate({
             d: moment(selectedReport?.end_date),
@@ -101,9 +94,9 @@ export default function EditWFARemoteTeam({
       setIsResolved(false);
       setNotes(selectedReport?.notes_wfa);
       setNotesTL(selectedReport?.notes);
+      setIsDisputed(false);
+      setAuthCheck(false);
       if (selectedReport?.attachments) {
-        // setFileInfo({ name: "Attachment", url: selectedReport?.attachments });
-        // setFileInfo(JSON.parse(selectedReport?.attachments));
         if (isJsonString(selectedReport?.attachments)) {
           setFileInfo(JSON.parse(selectedReport?.attachments));
         } else {
@@ -136,7 +129,6 @@ export default function EditWFARemoteTeam({
     if (success) {
       toast.success("Updated Successfuly");
       onClose();
-      // dispatch(getAttendanceReportsTL(filterParams));
       fetchData({ ...filterParams, page: currentpage });
     } else {
       toast.error(`Error occured, Please try again`);
@@ -144,16 +136,19 @@ export default function EditWFARemoteTeam({
     setLoading(false);
     setIsnotes(false);
   };
+  const handleResponseDispute = (success) => {
+    if (success) {
+      toast.success("Dispute added Successfuly");
+    } else {
+      toast.error(`Error occured while adding dispute, Please try again`);
+    }
+    setLoading(false);
+  };
   const handleSave = () => {
     if (reason?.length == 0) {
       toast.error("Please select reason");
       setIsnotes(true);
-    }
-    // else if (notes?.length < 70) {
-    //   toast.error("Notes must be 70 characters long");
-    //   setIsnotes(true);
-    // }
-    else if (!fileInfo?.length > 0 && reason[0]?.isFileReq) {
+    } else if (!fileInfo?.length > 0 && reason[0]?.isFileReq) {
       toast.error("You must Upload Attachment before proceeding.");
     } else if (
       handleReasonRules(reason[0]?.reason) &&
@@ -182,6 +177,10 @@ export default function EditWFARemoteTeam({
     } else if (!authCheck) {
       toast.error(
         "Please confirm that you have reviewed the infraction and provided the required notes or documentation."
+      );
+    } else if (isDisputed && !isResolved) {
+      toast.error(
+        "Please Mark this as resolved if you want to add this in dispute"
       );
     } else {
       setLoading(true);
@@ -223,6 +222,16 @@ export default function EditWFARemoteTeam({
       };
       if (handleReasonRules(reason[0]?.reason) && !selectedReport?.end_date) {
         dispatch(addAutomationReport(paramsAutomation, toast));
+      }
+      const paramsDispute = {
+        id: selectedReport?.id,
+        table_type: "remote",
+        notes_wfa: notes,
+      };
+      if (isDisputed && activeTab == "Resolved by TL") {
+        dispatch(
+          disputeAttendnceReportbyWFA(paramsDispute, handleResponseDispute)
+        );
       }
       dispatch(updateAttendnceReport(params, handleResponse));
     }
@@ -290,17 +299,6 @@ export default function EditWFARemoteTeam({
         <div className="space-y-6">
           {/* Mark as Resolved Checkbox */}
           <div className="flex items-center border-b border-[#D7E6E7] w-[100%] pl-6">
-            <label className="flex  items-center">
-              <input
-                type="checkbox"
-                class="custom-checkbox"
-                checked={isResolved}
-                onChange={(e) => setIsResolved(e.target.checked)}
-              ></input>
-              <span className="text-[#163143] text-center font-poppins text-[16px] not-italic font-normal leading-[20px] ml-2">
-                Mark as Resolved
-              </span>
-            </label>
             {/* </Checkbox> */}
             <div className="flex justify-end gap-2 w-[60%] ml-auto">
               <div className="py-5  px-8 flex justify-end gap-5 items-center">
@@ -325,7 +323,35 @@ export default function EditWFARemoteTeam({
             </div>
           </div>
           {/* Resolution Reason */}
-
+          <div className="pl-6">
+            <div className="text-[#163143] text-[14px] font-semibold">
+              Mark As:
+            </div>
+            <label className="flex items-center ml-1 mt-3">
+              <input
+                type="checkbox"
+                class="custom-checkbox"
+                checked={isResolved}
+                onChange={(e) => setIsResolved(e.target.checked)}
+              ></input>
+              <span className="text-[#163143] text-center font-poppins text-[16px] not-italic font-normal leading-[20px] ml-2">
+                Mark as Resolved
+              </span>
+            </label>
+            {activeTab == "Resolved by TL" && (
+              <label className="flex items-center ml-1 mt-3">
+                <input
+                  type="checkbox"
+                  class="custom-checkbox"
+                  checked={isDisputed}
+                  onChange={(e) => setIsDisputed(e.target.checked)}
+                ></input>
+                <span className="text-[#163143] text-center font-poppins text-[16px] not-italic font-normal leading-[20px] ml-2">
+                  Mark as Disputed
+                </span>
+              </label>
+            )}
+          </div>
           <div className="space-y-2 px-6 flex">
             <label className="flex items-center">
               <span className="text-[#163143] font-poppins text-[14px] not-italic font-semibold leading-[20.5px]">
@@ -495,14 +521,24 @@ export default function EditWFARemoteTeam({
             >
               Notes By WFA
             </label>
-
-            <NotesInput
-              id="notes"
-              placeholder="Add notes here..."
-              borderColor={notes?.length < 70 ? "#FF5546" : "#D7E6E7"}
-              notes={notes}
-              onChange={(e) => setNotes(e)}
-            />
+            {activeTab === "Disputed by WFA" ? (
+              <TextArea
+                className="!mt-[10px] !border-[#EFEFEF] !bg-[#FFF7D8] !rounded-[16px] focus:!shadow-none focus:!border-[#EFEFEF] hover:!border-[#EFEFEF]"
+                id="notesbytl"
+                placeholder="Add notes here..."
+                autoSize={{ minRows: 5, maxRows: 10 }}
+                value={notesTL}
+                readOnly={true}
+              />
+            ) : (
+              <NotesInput
+                id="notes"
+                placeholder="Add notes here..."
+                borderColor={notes?.length < 70 ? "#FF5546" : "#D7E6E7"}
+                notes={notes}
+                onChange={(e) => setNotes(e)}
+              />
+            )}
           </div>
           <div className="space-y-2 px-6">
             <UploadFile

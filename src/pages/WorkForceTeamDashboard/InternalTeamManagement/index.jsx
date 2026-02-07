@@ -11,6 +11,7 @@ import {
   getDepartmentDirectorList,
   getDepartmentList,
   getDepartmentManagerList,
+  getDisputedAttendanceRecords,
   getMemberFilterData,
   getOMFiltersList,
   getOPSTLFiltersList,
@@ -21,6 +22,7 @@ import { ColumnDataInternalTeam } from "../../../utils/tablesColumns";
 import DownloadCSVButton from "../../../components/Buttons/DownloadCSVButton";
 import Skeleton from "../../../components/Skeleton";
 import AntDTable from "../../../components/AntDTable";
+import { Tab, Tabs } from "../../../components/Tabs/Tabs";
 
 export default function InternalTeamManagement() {
   const isMounted = useRef(false);
@@ -52,6 +54,7 @@ export default function InternalTeamManagement() {
   const [isLoadingAOM, setIsLoadingAOM] = useState(false);
   const [isLoadingOPSTL, setIsLoadingOPSTL] = useState(false);
   const [isLoadingDepartment, setIsLoadingDepartment] = useState(false);
+  const [CurrntActiveTab, setCurrntActiveTab] = useState("Unresolved");
 
   const userDetails = JSON.parse(localStorage.getItem("user_details") || "{}");
 
@@ -68,11 +71,22 @@ export default function InternalTeamManagement() {
     opsTLFilterData,
     omFilterData,
     aomFilterData,
+    attendanceDisputedRecords,
   } = useSelector((store) => store.workforcedashboard);
   const [isLoadingAgent, setisLoadingAgent] = useState();
 
   const fetchData = (params) => {
-    dispatch(getAttendanceRecords(params, true));
+    if (CurrntActiveTab == "Disputed by WFA") {
+      dispatch(
+        getDisputedAttendanceRecords({
+          ...params,
+          role: userDetails?.role,
+          tl_name: userDetails?.name,
+        })
+      );
+    } else {
+      dispatch(getAttendanceRecords(params, true));
+    }
   };
 
   useEffect(() => {
@@ -179,6 +193,22 @@ export default function InternalTeamManagement() {
     }
   }, [currentpage, currentpageSize]);
 
+  useEffect(() => {
+    if (!isMounted.current) {
+      isMounted.current = true; // Set to true after the first render
+      return; // Skip the effect for the first render
+    }
+    const params = {
+      ...filterParams,
+      sort_order: "desc",
+      sort_by: null,
+      page: 1,
+      pageSize: 10,
+    };
+    fetchData(params);
+    setcurrentpage(1);
+  }, [CurrntActiveTab]);
+
   const handleEditClick = (selected) => {
     setIsOpen(true);
     setSelectedReport(selected);
@@ -195,7 +225,7 @@ export default function InternalTeamManagement() {
   return (
     <div className="w-full h-full flex flex-col">
       <div className="pt-7 flex items-center pl-8">
-        <span className="text-2xl font-semibold">Attendance management</span>
+        <span className="text-2xl font-semibold">Attendance Management</span>
       </div>
       <EditWorkforceTem
         open={isOpen}
@@ -205,6 +235,7 @@ export default function InternalTeamManagement() {
         userName={userDetails?.name}
         filterParams={filterParams}
         fetchData={fetchData}
+        activeTab={CurrntActiveTab}
       />
       <div className="flex items-center pb-3 gap-1 pt-5 pl-8">
         <div className="flex w-[75vw]">
@@ -324,39 +355,93 @@ export default function InternalTeamManagement() {
         </div>
       </div>
       <div className="w-full  overflow-y-scroll pb-[50px] pt-2 space-y-9 scrollbar-hide pl-8">
-        <div className="flex items-center w-[100%] mb-[20px]">
-          <span className="text-xl font-semibold">
-            {"Attendance Reporting Alerts"}
-          </span>
-          <div className="ml-auto mr-[15px]">
-            <DownloadCSVButton onClick={handleCSVDownload} />
-          </div>
+        <div className="w-[75vw] pb-[50px] pt-2 space-y-9 ml-8  ">
+          <Tabs setCurrntActiveTab={setCurrntActiveTab}>
+            <Tab data-label={"Unresolved"} labelData={""}>
+              <div className="w-full overflow-y-scroll pb-[50px] pt-2 space-y-9 scrollbar-hide">
+                <div className="flex items-center w-[100%] mb-[20px]">
+                  <span className="text-xl font-semibold">
+                    {"Attendance Reporting Alerts"}
+                  </span>
+                  <div className="ml-auto mr-[15px]">
+                    <DownloadCSVButton onClick={handleCSVDownload} />
+                  </div>
+                </div>
+                {isLoading ? (
+                  <Skeleton className="w-full h-[75vh]" />
+                ) : (
+                  <AntDTable
+                    columns={ColumnDataInternalTeam}
+                    data={attendanceRecords?.data}
+                    bordered={true}
+                    total={attendanceRecords?.pagination?.totalRecords}
+                    current={attendanceRecords?.pagination?.currentPage}
+                    pageSize={attendanceRecords?.pagination?.pageSize}
+                    rowKey={"id"}
+                    onPageChange={setcurrentpage}
+                    onPageSizeChange={setcurrentpageSize}
+                    onEdit={handleEditClick}
+                    onSortChange={(columnKey, order) => {
+                      setSorting({ sort_by: columnKey, sort_order: order });
+                      setsortBy(columnKey);
+                      setsortOrder(
+                        order == "ascend"
+                          ? "asc"
+                          : order == "descend"
+                          ? "desc"
+                          : null
+                      );
+                    }}
+                    sorting={sorting}
+                    pagination={true}
+                  />
+                )}
+              </div>
+            </Tab>
+
+            <Tab data-label={"Disputed by WFA"} labelData={""}>
+              <div className="w-full  overflow-y-scroll pb-[50px] pt-2 space-y-9 scrollbar-hide">
+                <div className="flex items-center w-[100%] mb-[20px]">
+                  <span className="text-xl font-semibold">
+                    {"Attendance Reporting Alerts"}
+                  </span>
+                  <div className="ml-auto mr-[15px]">
+                    <DownloadCSVButton onClick={handleCSVDownload} />
+                  </div>
+                </div>
+                {isLoading ? (
+                  <Skeleton className="w-full h-[75vh]" />
+                ) : (
+                  <AntDTable
+                    columns={ColumnDataInternalTeam}
+                    data={attendanceDisputedRecords?.data}
+                    bordered={true}
+                    total={attendanceDisputedRecords?.pagination?.totalRecords}
+                    current={attendanceDisputedRecords?.pagination?.currentPage}
+                    pageSize={attendanceDisputedRecords?.pagination?.pageSize}
+                    rowKey={"id"}
+                    onPageChange={setcurrentpage}
+                    onPageSizeChange={setcurrentpageSize}
+                    onEdit={handleEditClick}
+                    onSortChange={(columnKey, order) => {
+                      setSorting({ sort_by: columnKey, sort_order: order });
+                      setsortBy(columnKey);
+                      setsortOrder(
+                        order == "ascend"
+                          ? "asc"
+                          : order == "descend"
+                          ? "desc"
+                          : null
+                      );
+                    }}
+                    sorting={sorting}
+                    pagination={true}
+                  />
+                )}
+              </div>
+            </Tab>
+          </Tabs>
         </div>
-        {isLoading ? (
-          <Skeleton className="w-full h-[75vh]" />
-        ) : (
-          <AntDTable
-            columns={ColumnDataInternalTeam}
-            data={attendanceRecords?.data}
-            bordered={true}
-            total={attendanceRecords?.pagination?.totalRecords}
-            current={attendanceRecords?.pagination?.currentPage}
-            pageSize={attendanceRecords?.pagination?.pageSize}
-            rowKey={"id"}
-            onPageChange={setcurrentpage}
-            onPageSizeChange={setcurrentpageSize}
-            onEdit={handleEditClick}
-            onSortChange={(columnKey, order) => {
-              setSorting({ sort_by: columnKey, sort_order: order });
-              setsortBy(columnKey);
-              setsortOrder(
-                order == "ascend" ? "asc" : order == "descend" ? "desc" : null
-              );
-            }}
-            sorting={sorting}
-            pagination={true}
-          />
-        )}
       </div>
       {/* <div className="w-full  overflow-y-scroll pb-[50px] pt-2 space-y-9 scrollbar-hide pl-8">
         <WorkforceAttendanceTable

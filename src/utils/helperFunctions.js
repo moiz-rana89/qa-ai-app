@@ -123,3 +123,24 @@ export function isJsonString(str) {
   }
   return true; // Valid JSON string
 }
+
+export function pstDate() {
+  return new Date(
+    new Date().toLocaleString("en-US", { timeZone: "America/Los_Angeles" })
+  ).toISOString();
+}
+
+export function formatDateTimePlainEnglish(dateGiven) {
+  const date = new Date(dateGiven);
+
+  return date.toLocaleString("en-US", {
+    timeZone: "UTC",
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  });
+}

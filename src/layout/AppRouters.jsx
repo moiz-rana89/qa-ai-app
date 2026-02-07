@@ -26,11 +26,14 @@ import { TicketMonitoringForm } from "../pages/TicketMonitoringForm";
 import { PerformanceMonitoringForm } from "../pages/PerformanceMonitoringForm";
 import { CustomMonitoringForm } from "../pages/CustomMonitoringForm";
 import { OtherCoachingTypes } from "../pages/OtherCoachingTypes";
+import AdvanceNoticeSubmission from "../pages/AdvanceNoticeSubmission";
+import { DownloadClientFormReport } from "../pages/DownloadClientFormReport";
 
 const ROUTE_ROLES = {
-  "evaluate-tickets": ["admin", "dev", "dtl", "om", "aom"],
-  "forms-management": ["admin", "dev", "dtl", "om", "aom"],
-  "shadowing-form": ["admin", "dev"],
+  "evaluate-tickets": ["admin", "dev", "qas", "tl"],
+  "forms-management": ["admin", "dev", "qas", "tl"],
+  "shadowing-form": ["admin", "dev", "qas", "tl"],
+  "evalute-form": ["admin", "dev", "tl"],
   "workforce-remote-team-attendance": [
     "dev",
     "csm",
@@ -45,8 +48,8 @@ const ROUTE_ROLES = {
     "dm",
     "dtl",
   ],
-  "evalute-form": ["admin", "dev", "dtl", "om", "aom"],
-  "download-report": ["admin", "dev", "tl"],
+  "download-report": ["admin", "dev", "tl", "aom"],
+  "download-client-specific-report": ["admin", "dev", "dtl", "aom", "om"],
   "ticket-monitoring-form": [
     "dev",
     "tl",
@@ -81,6 +84,7 @@ const ROUTE_ROLES = {
     "tl",
     "dtl",
   ],
+  "advance-notice": ["admin", "dev", "tl"],
 };
 
 export default function AppRouter() {
@@ -249,6 +253,17 @@ export default function AppRouter() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/download-client-specific-report"
+            element={
+              <ProtectedRoute
+                requiredRoles={ROUTE_ROLES["download-client-specific-report"]}
+                routeRoles={ROUTE_ROLES}
+              >
+                <DownloadClientFormReport />
+              </ProtectedRoute>
+            }
+          />
 
           <Route
             path="/ticket-monitoring-form"
@@ -293,6 +308,17 @@ export default function AppRouter() {
                 routeRoles={ROUTE_ROLES}
               >
                 <OtherCoachingTypes />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/advance-notice"
+            element={
+              <ProtectedRoute
+                requiredRoles={ROUTE_ROLES["advance-notice"]}
+                routeRoles={ROUTE_ROLES}
+              >
+                <AdvanceNoticeSubmission />
               </ProtectedRoute>
             }
           />

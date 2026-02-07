@@ -26,8 +26,8 @@ const Tabs = ({ children, setCurrntActiveTab }) => {
             className={`${
               activeTab === child.props["data-label"]
                 ? " bg-[#D0F7D8] rounded-t-md  font-semibold"
-                : child.props["data-label"] == "Pending Manual Review"
-                ? " bg-[#FFF7D8] font-medium"
+                : child.props["data-label"] == "Disputed by WFA"
+                ? "bg-[#FFE7E7] font-medium"
                 : "font-medium"
             } flex space-x-4 p-4 text-main-text`}
             onClick={(e) => handleClick(e, child.props["data-label"])}

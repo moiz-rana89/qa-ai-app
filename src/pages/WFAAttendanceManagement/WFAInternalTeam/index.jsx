@@ -11,6 +11,7 @@ import {
   getDepartmentDirectorList,
   getDepartmentList,
   getDepartmentManagerList,
+  getDisputedAttendanceRecords,
   getMemberFilterData,
   getOMFiltersList,
   getOPSTLFiltersList,
@@ -71,6 +72,7 @@ export default function WFAInternalTeam() {
     opsTLFilterData,
     omFilterData,
     aomFilterData,
+    attendanceDisputedRecords,
   } = useSelector((store) => store.workforcedashboard);
 
   const [isLoadingAgent, setisLoadingAgent] = useState();
@@ -80,6 +82,13 @@ export default function WFAInternalTeam() {
       dispatch(getAttendanceRecordsWFA(params, true));
     } else if (CurrntActiveTab == "Resolved by TL") {
       dispatch(getAttendanceReportsTL(params, true));
+    } else if ("Dispute Resolved by TL") {
+      dispatch(
+        getDisputedAttendanceRecords({
+          ...params,
+          role: userDetails?.role,
+        })
+      );
     }
   };
 
@@ -211,6 +220,7 @@ export default function WFAInternalTeam() {
         userName={userDetails?.name}
         currentpage={currentpage}
         fetchData={fetchData}
+        activeTab={CurrntActiveTab}
       />
       <div className="flex items-center pb-3 gap-1 pt-5 pl-8">
         <div className="flex w-[75vw]">
@@ -398,6 +408,48 @@ export default function WFAInternalTeam() {
                     pageSize={attendanceRecords?.pagination?.pageSize}
                     rowKey={"id"}
                     onEdit={handleEditClick}
+                    onPageChange={setcurrentpage}
+                    onPageSizeChange={setPageSize}
+                    onSortChange={(columnKey, order) => {
+                      setSorting({ sort_by: columnKey, sort_order: order });
+                      setsortBy(columnKey);
+                      setsortOrder(
+                        order == "ascend"
+                          ? "asc"
+                          : order == "descend"
+                          ? "desc"
+                          : null
+                      );
+                    }}
+                    sorting={sorting}
+                    pagination={true}
+                  />
+                )}
+              </div>
+            </Tab>
+
+            <Tab data-label={"Dispute Resolved by TL"} labelData={""}>
+              <div className="w-full  overflow-y-scroll pb-[50px] pt-2 space-y-9 scrollbar-hide">
+                <div className="flex items-center w-[100%] mb-[20px]">
+                  <span className="text-xl font-semibold">
+                    {"Attendance Alerts"}
+                  </span>
+                  <div className="ml-auto mr-[15px]">
+                    <DownloadCSVButton onClick={handleCSVDownload} />
+                  </div>
+                </div>
+                {isLoading ? (
+                  <Skeleton className="w-full h-[75vh]" />
+                ) : (
+                  <AntDTable
+                    columns={ColumnDataInternalTeam}
+                    data={attendanceDisputedRecords?.data}
+                    bordered={true}
+                    total={attendanceDisputedRecords?.pagination?.totalRecords}
+                    current={attendanceDisputedRecords?.pagination?.currentPage}
+                    pageSize={attendanceDisputedRecords?.pagination?.pageSize}
+                    rowKey={"id"}
+                    // onEdit={handleEditClick}
                     onPageChange={setcurrentpage}
                     onPageSizeChange={setPageSize}
                     onSortChange={(columnKey, order) => {

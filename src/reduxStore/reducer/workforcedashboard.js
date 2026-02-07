@@ -115,6 +115,12 @@ const workforceReducer = createReducer(INITIAL_STATE, {
       omList: action.data,
     };
   },
+  [types.FETCH_DISPUTED_ATTENDANCE_MANAGEMENT](state, action) {
+    return {
+      ...state,
+      attendanceDisputedRecords: action.data,
+    };
+  },
 });
 
 export default workforceReducer;

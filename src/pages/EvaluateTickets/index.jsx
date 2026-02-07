@@ -21,12 +21,14 @@ import {
   setSelectedFormToEvaluate,
 } from "../../reduxStore/action/formsManagement";
 import {
-  formatDateTimeEnglish,
+  formatDateTimePlainEnglish,
   RemoveFromSelect,
   roundTo,
 } from "../../utils/helperFunctions";
 
 function EvaluateTickets() {
+  const userDetails = JSON.parse(localStorage.getItem("user_details"));
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [pagination, setPagination] = useState({ page: 1, size: 10 });
@@ -34,9 +36,13 @@ function EvaluateTickets() {
   const [selectedRow, setselectedRow] = useState([]);
   const [sorting, setSorting] = useState({ sort_by: null, sort_order: null });
   const [selectedClients, setSelectedClients] = useState([]);
-  const [selectedQas, setSelectedQas] = useState([]);
+  const [selectedQas, setSelectedQas] = useState(
+    userDetails?.role == "qas" ? [{ owner: userDetails?.owner_id }] : []
+  );
   const [selectedAgents, setSelectedAgents] = useState([]);
-  const [selectedTL, setSelectedTL] = useState([]);
+  const [selectedTL, setSelectedTL] = useState(
+    userDetails?.role != "qas" ? [{ teamlead_id: userDetails?.owner_id }] : []
+  );
   const [isLoadingAgent, setIsLoadingAgent] = useState(false);
   const [isLoadingTL, setIsLoadingTL] = useState(false);
 
@@ -63,6 +69,9 @@ function EvaluateTickets() {
   }, []);
   useEffect(() => {
     // if (type) {
+    // let selectedQasLocal = [...selectedQas];
+    // let selectedTLLocal = [...selectedTL];
+
     getData(pagination, sorting, {
       client_id: selectedClients.map((item) => item.client_id),
       assigned_to_qas: selectedQas?.map((item) => item.owner),
@@ -87,7 +96,9 @@ function EvaluateTickets() {
       width: 250,
       fixed: "left",
       render: (_, { evaluation_date }) => (
-        <div>{evaluation_date && formatDateTimeEnglish(evaluation_date)}</div>
+        <div>
+          {evaluation_date && formatDateTimePlainEnglish(evaluation_date)}
+        </div>
       ),
     },
     {
@@ -112,7 +123,7 @@ function EvaluateTickets() {
       key: "due_date",
       width: 120,
       render: (_, { due_date }) => (
-        <div>{due_date && formatDateTimeEnglish(due_date)}</div>
+        <div>{due_date && formatDateTimePlainEnglish(due_date)}</div>
       ),
     },
     {
@@ -174,7 +185,7 @@ function EvaluateTickets() {
     //   key: "evaluation_date",
     //   width: 250,
     //   render: (_, { evaluation_date }) => (
-    //     <div>{evaluation_date && formatDateTimeEnglish(evaluation_date)}</div>
+    //     <div>{evaluation_date && formatDateTimePlainEnglish(evaluation_date)}</div>
     //   ),
     // },
     {
@@ -184,7 +195,8 @@ function EvaluateTickets() {
       width: 250,
       render: (_, { evaluated_by_tl_date }) => (
         <div>
-          {evaluated_by_tl_date && formatDateTimeEnglish(evaluated_by_tl_date)}
+          {evaluated_by_tl_date &&
+            formatDateTimePlainEnglish(evaluated_by_tl_date)}
         </div>
       ),
     },
@@ -196,7 +208,7 @@ function EvaluateTickets() {
       render: (_, { evaluated_by_qas_date }) => (
         <div>
           {evaluated_by_qas_date &&
-            formatDateTimeEnglish(evaluated_by_qas_date)}
+            formatDateTimePlainEnglish(evaluated_by_qas_date)}
         </div>
       ),
     },
@@ -206,7 +218,7 @@ function EvaluateTickets() {
       key: "created_at",
       width: 250,
       render: (_, { created_at }) => (
-        <div>{created_at && formatDateTimeEnglish(created_at)}</div>
+        <div>{created_at && formatDateTimePlainEnglish(created_at)}</div>
       ),
     },
     {
@@ -215,7 +227,7 @@ function EvaluateTickets() {
       key: "updated_at",
       width: 250,
       render: (_, { updated_at }) => (
-        <div>{updated_at && formatDateTimeEnglish(updated_at)}</div>
+        <div>{updated_at && formatDateTimePlainEnglish(updated_at)}</div>
       ),
     },
   ];
@@ -291,21 +303,23 @@ function EvaluateTickets() {
                 className="h-[44px] w-[100%] border-[#d9d9d9] bg-white"
               />
             </div>
-            <div className="flex space-x-0 flex-wrap gap-3 pl-3">
-              <UnifiedDropdown
-                placeholder="Select QAS for this form"
-                name="QAS"
-                data={qasNames}
-                isLoading={isLoadingQas}
-                selectedList={selectedQas}
-                setselectedList={setSelectedQas}
-                multiSelect={true}
-                displayKey="name"
-                valueKey="owner"
-                searchKeys={["name"]}
-                className="h-[44px] w-[100%] border-[#d9d9d9] bg-white"
-              />
-            </div>
+            {userDetails?.role == "qas" ? null : (
+              <div className="flex space-x-0 flex-wrap gap-3 pl-3">
+                <UnifiedDropdown
+                  placeholder="Select QAS for this form"
+                  name="QAS"
+                  data={qasNames}
+                  isLoading={isLoadingQas}
+                  selectedList={selectedQas}
+                  setselectedList={setSelectedQas}
+                  multiSelect={true}
+                  displayKey="name"
+                  valueKey="owner"
+                  searchKeys={["name"]}
+                  className="h-[44px] w-[100%] border-[#d9d9d9] bg-white"
+                />
+              </div>
+            )}
 
             <div className="flex space-x-0 flex-wrap gap-3 pl-3">
               <UnifiedDropdown
@@ -322,21 +336,23 @@ function EvaluateTickets() {
                 className="h-[44px] w-[100%] border-[#d9d9d9] bg-white"
               />
             </div>
-            <div className="flex space-x-0 flex-wrap gap-3 pl-3">
-              <UnifiedDropdown
-                placeholder="Select Team Leads for this form"
-                name="Team Leads"
-                data={teamLeadNames}
-                isLoading={isLoadingTL}
-                selectedList={selectedTL}
-                setselectedList={setSelectedTL}
-                multiSelect={true}
-                displayKey="teamleads"
-                valueKey="teamlead_id"
-                searchKeys={["teamleads"]}
-                className="h-[44px] w-[100%] border-[#d9d9d9] bg-white"
-              />
-            </div>
+            {userDetails?.role != "qas" ? null : (
+              <div className="flex space-x-0 flex-wrap gap-3 pl-3">
+                <UnifiedDropdown
+                  placeholder="Select Team Leads for this form"
+                  name="Team Leads"
+                  data={teamLeadNames}
+                  isLoading={isLoadingTL}
+                  selectedList={selectedTL}
+                  setselectedList={setSelectedTL}
+                  multiSelect={true}
+                  displayKey="teamleads"
+                  valueKey="teamlead_id"
+                  searchKeys={["teamleads"]}
+                  className="h-[44px] w-[100%] border-[#d9d9d9] bg-white"
+                />
+              </div>
+            )}
           </div>
         </div>
         <div className="flex items-center">

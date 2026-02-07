@@ -116,6 +116,13 @@ function setOMFiltersListRemote(data) {
   };
 }
 
+function setAttendanceDisputedRecords(data) {
+  return {
+    type: types.FETCH_DISPUTED_ATTENDANCE_MANAGEMENT,
+    data,
+  };
+}
+
 export const getAttendanceRecords = (params = {}, internal) => {
   return (dispatch) => {
     dispatch(setLoaderAction(true));
@@ -779,6 +786,117 @@ export const getOMFilterData = (setIsLoading) => {
       })
       .catch((err) => {
         setIsLoading(false);
+        console.log("resp from api is error", err);
+      });
+  };
+};
+
+export const disputeAttendnceReportbyWFA = (params, handleResponse) => {
+  return (dispatch) => {
+    // dispatch(setLoaderAction(true));
+    Api.post(
+      `/workforce/reports/attendance/dispute?table_type=${params?.table_type}&id=${params?.id}&notes_wfa=${params?.notes_wfa}`
+    )
+      .then((resp) => {
+        // dispatch(setLoaderAction(false));
+
+        handleResponse(true);
+      })
+      .catch((err) => {
+        dispatch(setLoaderAction(false));
+        handleResponse(false);
+        console.log("resp from api is error", err);
+      });
+  };
+};
+
+export const getDisputedAttendanceRecords = (params = {}) => {
+  return (dispatch) => {
+    dispatch(setLoaderAction(true));
+
+    const queryParams = {};
+
+    const addParam = (key, value) => {
+      if (value !== undefined && value !== null && value !== "") {
+        if (Array.isArray(value) && value.length === 0) {
+          return;
+        }
+        queryParams[key] = value;
+      }
+    };
+
+    addParam("client_name", params.client_name);
+    addParam("department", params.department);
+    addParam("agent_name", params.agent_name);
+    addParam("team_lead_id", params.team_lead_id);
+    addParam("csm_id", params.csm_id);
+    addParam("csm", params.csm);
+    addParam("senior_csm_id", params.senior_csm_id);
+    addParam("operations_manager_id", params.operations_manager_id);
+    addParam("startdate", params.startdate);
+    addParam("enddate", params.enddate);
+    addParam("sort_order", params.sort_order);
+    addParam("sort_by", params.sort_by);
+    addParam(
+      "associate_operations_manager_id",
+      params.associate_operations_manager_id
+    );
+    addParam("om_id", params.om_id);
+    addParam("aom_id", params.aom_id);
+    addParam("ops_team_lead_id", params.ops_team_lead_id);
+    addParam("senior_operations_manager", params.senior_operations_manager);
+    addParam("size", params.pageSize);
+    addParam("role", params.role);
+    addParam("tl_name", params.tl_name);
+    if (params.page !== undefined) {
+      queryParams.page = Math.max(1, params.page);
+    }
+    if (params.size !== undefined) {
+      queryParams.size = Math.min(100, Math.max(1, params.size));
+    }
+
+    addParam("csv", params.csv);
+
+    Api.get(`/workforce/reports/attendance/dispute`, queryParams)
+      .then(({ data, contentType }) => {
+        dispatch(setLoaderAction(false));
+
+        if (contentType.includes("text/csv")) {
+          const url = window.URL.createObjectURL(
+            new Blob([data], { type: contentType })
+          );
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute(
+            "download",
+            `attendance_report_${new Date().toISOString().slice(0, 10)}.csv`
+          );
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+          console.log("CSV file downloaded.");
+        } else {
+          dispatch(setAttendanceDisputedRecords(data));
+        }
+      })
+      .catch((err) => {
+        dispatch(setAttendanceDisputedRecords([]));
+        dispatch(setLoaderAction(false));
+        console.error("Error fetching attendance records:", err);
+      });
+  };
+};
+
+export const resolveAttendanceDispute = (params, handleResponse) => {
+  return (dispatch) => {
+    Api.patch(`/workforce/reports/attendance/dispute/${params?.id}`, params)
+      .then((resp) => {
+        handleResponse(true);
+      })
+      .catch((err) => {
+        handleResponse(false);
+        dispatch(setLoaderAction(false));
         console.log("resp from api is error", err);
       });
   };

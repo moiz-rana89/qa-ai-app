@@ -487,3 +487,67 @@ export const getDownloadReport = (setLoader, toast, params = {}) => {
     }
   };
 };
+
+export const getClientsNameForCSFDownload = (setLoader, tlName) => {
+  return (dispatch) => {
+    try {
+      setLoader(true);
+      Api.get(`/openai/client-form-client-names?updated_by_tl=${tlName}`).then(
+        (resp) => {
+          dispatch(setClientsNameDownload(resp.data));
+          setLoader(false);
+        }
+      );
+    } catch (error) {
+      setLoader(false);
+    }
+  };
+};
+
+export const getDownloadCSFReport = (setLoader, toast, params = {}) => {
+  return (dispatch) => {
+    try {
+      setLoader(true);
+      const queryParams = {};
+
+      const addParam = (key, value) => {
+        if (value !== undefined && value !== null && value !== "") {
+          if (Array.isArray(value) && value.length === 0) {
+            return;
+          }
+          queryParams[key] = value;
+        }
+      };
+
+      addParam("client_name", params.client_name);
+      addParam("end_date", params.date[1]);
+      addParam("start_date", params.date[0]);
+      addParam("raw", params.selectedReportFormat == "raw" ? true : false);
+      addParam("updated_by_tl", params.updated_by_tl);
+
+      Api.get("/openai/client-form-download", queryParams)
+        .then((resp) => {
+          const blob = new Blob([resp.data], { type: "text/csv" });
+
+          const link = document.createElement("a");
+
+          link.href = URL.createObjectURL(blob);
+
+          link.download = `forms_reports.csv`;
+
+          link.click();
+
+          URL.revokeObjectURL(link.href);
+          setLoader(false);
+          toast.success("File Downloaded Successfuly");
+        })
+        .catch((error) => {
+          setLoader(false);
+          toast.error("No data found for selected filters");
+        });
+    } catch (error) {
+      setLoader(false);
+      toast.error("No data found for selected filters");
+    }
+  };
+};
