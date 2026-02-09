@@ -37,11 +37,19 @@ function EvaluateTickets() {
   const [sorting, setSorting] = useState({ sort_by: null, sort_order: null });
   const [selectedClients, setSelectedClients] = useState([]);
   const [selectedQas, setSelectedQas] = useState(
-    userDetails?.role == "qas" ? [{ owner: userDetails?.owner_id }] : []
+    userDetails?.role == "admin" || userDetails?.role == "dev"
+      ? []
+      : userDetails?.role == "qas"
+      ? [{ owner: userDetails?.owner_id }]
+      : []
   );
   const [selectedAgents, setSelectedAgents] = useState([]);
   const [selectedTL, setSelectedTL] = useState(
-    userDetails?.role != "qas" ? [{ teamlead_id: userDetails?.owner_id }] : []
+    userDetails?.role == "admin" || userDetails?.role == "dev"
+      ? []
+      : userDetails?.role != "qas"
+      ? [{ teamlead_id: userDetails?.owner_id }]
+      : []
   );
   const [isLoadingAgent, setIsLoadingAgent] = useState(false);
   const [isLoadingTL, setIsLoadingTL] = useState(false);
