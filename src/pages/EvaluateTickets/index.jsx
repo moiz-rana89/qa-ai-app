@@ -361,6 +361,23 @@ function EvaluateTickets() {
                 />
               </div>
             )}
+            {(userDetails?.role == "admin" || userDetails?.role == "dev") && (
+              <div className="flex space-x-0 flex-wrap gap-3 pl-3">
+                <UnifiedDropdown
+                  placeholder="Select Team Leads for this form"
+                  name="Team Leads"
+                  data={teamLeadNames}
+                  isLoading={isLoadingTL}
+                  selectedList={selectedTL}
+                  setselectedList={setSelectedTL}
+                  multiSelect={true}
+                  displayKey="teamleads"
+                  valueKey="teamlead_id"
+                  searchKeys={["teamleads"]}
+                  className="h-[44px] w-[100%] border-[#d9d9d9] bg-white"
+                />
+              </div>
+            )}
           </div>
         </div>
         <div className="flex items-center">
