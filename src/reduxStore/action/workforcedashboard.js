@@ -830,23 +830,20 @@ export const getDisputedAttendanceRecords = (params = {}) => {
     addParam("agent_name", params.agent_name);
     addParam("team_lead_id", params.team_lead_id);
     addParam("csm_id", params.csm_id);
-    addParam("csm", params.csm);
+    addParam("department_director_id", params.csm);
     addParam("senior_csm_id", params.senior_csm_id);
-    addParam("operations_manager_id", params.operations_manager_id);
+    addParam("operations_manager_id", params.om_id);
     addParam("startdate", params.startdate);
     addParam("enddate", params.enddate);
     addParam("sort_order", params.sort_order);
     addParam("sort_by", params.sort_by);
-    addParam(
-      "associate_operations_manager_id",
-      params.associate_operations_manager_id
-    );
-    addParam("om_id", params.om_id);
-    addParam("aom_id", params.aom_id);
+    addParam("associate_operations_manager_id", params.aom_id);
+
     addParam("ops_team_lead_id", params.ops_team_lead_id);
     addParam("senior_operations_manager", params.senior_operations_manager);
     addParam("size", params.pageSize);
     addParam("role", params.role);
+    // addParam("role", "wfa");
     addParam("tl_name", params.tl_name);
     if (params.page !== undefined) {
       queryParams.page = Math.max(1, params.page);
