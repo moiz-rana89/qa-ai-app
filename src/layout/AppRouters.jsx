@@ -30,8 +30,8 @@ import AdvanceNoticeSubmission from "../pages/AdvanceNoticeSubmission";
 import { DownloadClientFormReport } from "../pages/DownloadClientFormReport";
 
 const ROUTE_ROLES = {
-  "evaluate-tickets": ["admin", "dev", "qas", "tl"],
-  "forms-management": ["admin", "dev", "qas", "tl"],
+  "evaluate-tickets": ["admin", "dev", "qas", "tl", "dtl"],
+  "forms-management": ["admin", "dev"],
   "shadowing-form": ["admin", "dev", "qas", "tl"],
   "evalute-form": ["admin", "dev", "tl"],
   "workforce-remote-team-attendance": [
