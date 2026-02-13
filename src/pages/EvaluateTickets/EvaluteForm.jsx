@@ -28,6 +28,9 @@ export const EvaluteForm = () => {
   const { gradedJsonWithTags, isLoading, isLoadingSubmitTicket } = useSelector(
     (store) => store.evalute
   );
+
+  const userDetails = useSelector((state) => state.auth.user);
+
   // Add gradedJsonWithTags to the formState
 
   const [items, setItems] = useState(selectedFormToEvaluate || []);
@@ -137,7 +140,7 @@ export const EvaluteForm = () => {
   const handleTicketSubmit = (id) => {
     // console.log("currentIndex", currentItem?.ticket_id, currentItem?.client_id);
     // removeById(id);
-    const userDetails = JSON.parse(localStorage.getItem("user_details"));
+
     const role =
       userDetails?.role == "tl" ? "tl_graded_json" : "qas_graded_json";
     dispatch(

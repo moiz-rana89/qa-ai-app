@@ -59,7 +59,7 @@ export default function WFAInternalTeam() {
   const [isLoadingAOM, setIsLoadingAOM] = useState(false);
   const [isLoadingOPSTL, setIsLoadingOPSTL] = useState(false);
 
-  const userDetails = JSON.parse(localStorage.getItem("user_details") || "{}");
+  const userDetails = useSelector((state) => state.auth.user);
 
   const {
     attendanceRecords,

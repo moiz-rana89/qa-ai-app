@@ -102,7 +102,8 @@ export default function WFAAttendanceReporting() {
     setAomDropDownFilters();
     setOpsDropDownFilters();
   };
-  const userDetails = JSON.parse(localStorage.getItem("user_details") || "{}");
+
+  const userDetails = useSelector((state) => state.auth.user);
 
   const {
     attendanceRecords,

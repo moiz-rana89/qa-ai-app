@@ -19,7 +19,7 @@ import {
   ATT_REASONS_STATUS,
   handleReasonRules,
 } from "../../../utils/constants";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   addAutomationReport,
   disputeAttendnceReportbyWFA,
@@ -70,7 +70,7 @@ export default function EditWFARemoteTeam({
   const [endDate, setEndDate] = useState("");
   const [startDate, setStartDate] = useState("");
 
-  const [reasonAttachment, setReasonAttachment] = useState(null);
+  const userDetails = useSelector((state) => state.auth.user);
 
   const dispatch = useDispatch();
   const onClose = () => {
@@ -208,9 +208,6 @@ export default function EditWFARemoteTeam({
           updated_by_tl: userName,
         };
       }
-      const userDetails = JSON.parse(
-        localStorage.getItem("user_details") || "{}"
-      );
       const paramsAutomation = {
         user_id: selectedReport?.user_id,
         reason: reason[0]?.reason,

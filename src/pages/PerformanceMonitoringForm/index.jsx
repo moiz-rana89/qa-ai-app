@@ -16,6 +16,7 @@ import {
 import axios from "axios";
 import toast from "react-hot-toast";
 import { pstDate } from "../../utils/helperFunctions";
+import { useSelector } from "react-redux";
 
 const baseURL = import.meta.env.VITE_API_URL;
 
@@ -43,6 +44,7 @@ export function PerformanceMonitoringForm() {
   const [sectionQuestions, setQuestions] = useState([]);
   const [genericQuestions, setGenericQuestions] = useState({});
   const [missingQuestions, setMissingQuestions] = useState({});
+  const userDetails = useSelector((state) => state.auth.user);
 
   function findMissingSections(schema, answers) {
     let missingSections = [];
@@ -129,9 +131,6 @@ export function PerformanceMonitoringForm() {
         return;
       }
 
-      const userDetails = JSON.parse(
-        localStorage.getItem("user_details") || "{}"
-      );
       let submissionData = {
         event_type: selectedFormType,
         submitted_at: pstDate(),

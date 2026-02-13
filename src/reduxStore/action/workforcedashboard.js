@@ -721,6 +721,7 @@ export const getClientsFilterList = (setIsLoading) => {
     setIsLoading(true);
     Api.get(`/reports/get_client_names`)
       .then((resp) => {
+        console.log("respresprespresp", resp);
         dispatch(setClientsFiltersList(resp?.data?.results));
         setIsLoading(false);
       })

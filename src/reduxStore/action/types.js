@@ -1,5 +1,6 @@
 export const IS_LOADING_AUTH = "IS_LOADING_AUTH";
 export const IS_AUTHENTICATED = "IS_AUTHENTICATED";
+export const LOGOUT = "LOGOUT";
 
 export const IS_LOADING = "IS_LOADING";
 export const IS_LOADING_CLIENTS = "IS_LOADING_CLIENTS";

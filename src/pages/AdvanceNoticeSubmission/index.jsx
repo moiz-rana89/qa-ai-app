@@ -28,6 +28,9 @@ export default function AdvanceNoticeSubmission({ setOpen }) {
   const [allowGreenCard, setAllowGreenCard] = useState(false);
   const [fileInfo, setFileInfo] = useState(null);
   const [agentFilters, setAgentFilters] = useState();
+
+  const userDetails = useSelector((state) => state.auth.user);
+
   const excludedReasons = [
     "Flexible Schedule",
     "PTO",
@@ -70,9 +73,7 @@ export default function AdvanceNoticeSubmission({ setOpen }) {
       toast.error("Please Select Agent");
     } else {
       setLoading(true);
-      const userDetails = JSON.parse(
-        localStorage.getItem("user_details") || "{}"
-      );
+
       const paramsAutomation = {
         user_id: agentFilters[0]?.user_id,
         reason: reason[0]?.reason,

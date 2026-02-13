@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import logo from "../assets/tp-logo.jpg";
-import { logout } from "../reduxStore/action/auth";
+import { logout, logoutAction } from "../reduxStore/action/auth";
 import { filterMenuByRole } from "../utils/roleHelpers";
 
 const menuList = [
@@ -118,17 +118,17 @@ const menuList = [
     title: "Quality Assurance",
     icon: "icon-park-outline:success",
     route: "quality-assurance",
-    roles: ["admin", "dev", "qas", "tl"],
+    roles: ["admin", "dev", "qas", "tl", "dtl"],
     submenu: [
       {
         title: "Evaluate Tickets",
         route: "evaluate-tickets",
-        roles: ["admin", "dev", "qas", "tl"],
+        roles: ["admin", "dev", "qas", "tl", "dtl"],
       },
       {
         title: "Forms Management",
         route: "forms-management",
-        roles: ["admin", "dev", "qas", "tl"],
+        roles: ["admin", "dev"],
       },
     ],
   },
@@ -143,9 +143,11 @@ export default function Sidebar() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  const user = JSON.parse(localStorage.getItem("user_details") || "{}");
-  const role = user?.role;
+  // const user = JSON.parse(localStorage.getItem("user_details") || "{}");
+  // const role = user?.role;
 
+  const user = useSelector((state) => state.auth.user);
+  const role = user?.role;
   useEffect(() => {
     if (role) {
       const filtered = filterMenuByRole(menuList, role);
@@ -169,8 +171,18 @@ export default function Sidebar() {
     }
   };
 
-  const handleLogout = () => {
-    dispatch(logout(navigate));
+  // const handleLogout = () => {
+  //   dispatch(logout(navigate));
+  // };
+
+  const handleLogout = async () => {
+    await fetch(`${import.meta.env.VITE_API_URL}/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+
+    dispatch(logoutAction());
+    // navigate("/login");
   };
 
   return (

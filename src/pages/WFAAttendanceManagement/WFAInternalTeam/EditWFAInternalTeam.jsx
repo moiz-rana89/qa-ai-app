@@ -167,9 +167,6 @@ export default function EditWFAInternalTeam({
           updated_by_tl: userName,
         };
       }
-      const userDetails = JSON.parse(
-        localStorage.getItem("user_details") || "{}"
-      );
       const paramsDispute = {
         id: selectedReport?.id,
         table_type: "internal",

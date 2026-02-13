@@ -13,6 +13,9 @@ export function setIsAuthAction(data) {
     data,
   };
 }
+export const logoutAction = () => ({
+  type: types.LOGOUT,
+});
 export const login = async (email, password) => {
   return async (dispatch) => {
     try {

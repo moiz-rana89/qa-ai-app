@@ -11,7 +11,7 @@ import {
   ATT_REASONS_STATUS,
   handleReasonRules,
 } from "../../../utils/constants";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   addAutomationReport,
   updateAttendnceInternalReport,
@@ -55,7 +55,7 @@ export default function EditWFAAttendance({
   const [startDate, setStartDate] = useState("");
   const [authCheck, setAuthCheck] = useState(false);
 
-  const [reasonAttachment, setReasonAttachment] = useState(null);
+  const userDetails = useSelector((state) => state.auth.user);
 
   const dispatch = useDispatch();
   const onClose = () => {
@@ -169,9 +169,6 @@ export default function EditWFAAttendance({
           updated_by_tl: userName,
         };
       }
-      const userDetails = JSON.parse(
-        localStorage.getItem("user_details") || "{}"
-      );
 
       if (CurrntActiveTab == "Remote Team") {
         if (

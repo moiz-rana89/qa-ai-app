@@ -27,8 +27,6 @@ import {
 } from "../../utils/helperFunctions";
 
 function EvaluateTickets() {
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [pagination, setPagination] = useState({ page: 1, size: 10 });
@@ -36,6 +34,8 @@ function EvaluateTickets() {
   const [selectedRow, setselectedRow] = useState([]);
   const [sorting, setSorting] = useState({ sort_by: null, sort_order: null });
   const [selectedClients, setSelectedClients] = useState([]);
+  const userDetails = useSelector((state) => state.auth.user);
+
   const [selectedQas, setSelectedQas] = useState(
     userDetails?.role == "admin" || userDetails?.role == "dev"
       ? []

@@ -19,7 +19,7 @@ import {
   ATT_REASONS_STATUS,
   handleReasonRules,
 } from "../../../utils/constants";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   addAutomationReport,
   getAttendanceRecords,
@@ -60,7 +60,9 @@ export default function EditRemoteTeam({
 
   const [endDate, setEndDate] = useState("");
   const [reasonAttachment, setReasonAttachment] = useState(null);
-  const userDetails = JSON.parse(localStorage.getItem("user_details") || "{}");
+
+  const userDetails = useSelector((state) => state.auth.user);
+
   const dispatch = useDispatch();
   const onClose = () => {
     setOpen(false);

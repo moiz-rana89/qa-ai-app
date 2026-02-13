@@ -67,7 +67,7 @@ export default function RemoteTeamReporting() {
     omList,
   } = useSelector((store) => store.workforcedashboard);
 
-  const userDetails = JSON.parse(localStorage.getItem("user_details") || "{}");
+  const userDetails = useSelector((state) => state.auth.user);
 
   const fetchData = (params) => {
     dispatch(getAttendanceReports(params));

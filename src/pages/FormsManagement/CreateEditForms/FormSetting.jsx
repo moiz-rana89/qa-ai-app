@@ -90,7 +90,6 @@ export const FormSetting = () => {
   };
 
   const handleFormCreate = () => {
-    const userDetails = JSON.parse(localStorage.getItem("user_details"));
     const params = {
       ...formData,
       clients: selectedClients?.map((item) => {

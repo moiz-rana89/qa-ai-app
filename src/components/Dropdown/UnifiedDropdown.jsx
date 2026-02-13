@@ -9,7 +9,7 @@ import Skeleton from "../Skeleton";
 export default function UnifiedDropdown({
   name,
   className = "",
-  data = [],
+  data,
   isLoading = false,
   selectedList = [],
   setselectedList,
@@ -45,14 +45,21 @@ export default function UnifiedDropdown({
     return humanizeKey(item);
   };
 
+  // const getItemValue = (item) => {
+  //   if (isObjectItem(item)) {
+  //     if (valueKey && item[valueKey]) {
+  //       return String(item[valueKey]);
+  //     }
+  //     return item.value || item.id || item.key || item.label || String(item);
+  //   }
+  //   return item;
+  // };
+
   const getItemValue = (item) => {
-    if (isObjectItem(item)) {
-      if (valueKey && item[valueKey]) {
-        return String(item[valueKey]);
-      }
-      return item.value || item.id || item.key || item.label || String(item);
+    if (typeof item === "object" && item !== null) {
+      return String(item.value ?? item.id ?? item.key ?? item.label ?? item);
     }
-    return item;
+    return String(item ?? "");
   };
 
   const getSearchText = (item) => {
@@ -81,16 +88,19 @@ export default function UnifiedDropdown({
     return item1 === item2;
   };
 
+  // useEffect(() => {
+  //   if (data) {
+  //     setOriginalData(data);
+  //     setFilteredData(data);
+  //   }
+  // }, [data, isLoading]);
+
   useEffect(() => {
     if (data) {
       setOriginalData(data);
       setFilteredData(data);
     }
-  }, [data, isLoading]);
-
-  // useEffect(() => {
-  //   setselectedList([]);
-  // }, [location]);
+  }, [isLoading, data]); // only depend on 'data', ignore isLoading
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -111,17 +121,32 @@ export default function UnifiedDropdown({
     }
   }, [openDropDown, selectedList]);
 
+  // useEffect(() => {
+  //   const query = searchQuery.toLowerCase();
+  //   if (!query) {
+  //     setFilteredData(originalData);
+  //   } else {
+  //     const filtered = originalData.filter((item) =>
+  //       getSearchText(item).includes(query)
+  //     );
+  //     setFilteredData(filtered);
+  //   }
+  // }, [searchQuery, originalData, displayKey, searchKeys]);
+
   useEffect(() => {
-    const query = searchQuery.toLowerCase();
+    if (!Array.isArray(originalData)) return;
+
+    const query = searchQuery.trim().toLowerCase();
+
     if (!query) {
       setFilteredData(originalData);
-    } else {
-      const filtered = originalData.filter((item) =>
-        getSearchText(item).includes(query)
-      );
-      setFilteredData(filtered);
+      return;
     }
-  }, [searchQuery, originalData, displayKey, searchKeys]);
+
+    setFilteredData(
+      originalData.filter((item) => getSearchText(item).includes(query))
+    );
+  }, [searchQuery, originalData]);
 
   const handleSelect = (item) => {
     if (multiSelect) {
@@ -154,17 +179,37 @@ export default function UnifiedDropdown({
     setSearchQuery("");
   };
 
-  const handleToggleDropdown = () => {
-    setOpenDropDown(!openDropDown);
-  };
+  // const handleToggleDropdown = () => {
+  //   setOpenDropDown(!openDropDown);
+  // };
 
+  const handleToggleDropdown = () => {
+    if (isLoading) return;
+    setOpenDropDown((prev) => !prev);
+  };
   const isItemSelected = (item) => {
     return selectedList?.some((selected) => itemsEqual(selected, item));
   };
 
   if (isLoading) {
-    return <Skeleton className={`${className}`} rounded="rounded-full" />;
+    return (
+      <Skeleton
+        width="100px"
+        className={`${className}`}
+        rounded="rounded-full"
+      />
+    );
   }
+
+  // if (!isLoading && (!data || data.length === 0)) {
+  //   return (
+  //     <div
+  //       className={`border ${className} h-9 rounded-full px-4 flex items-center text-slate-400`}
+  //     >
+  //       {name}
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="relative" ref={dropdownRef}>

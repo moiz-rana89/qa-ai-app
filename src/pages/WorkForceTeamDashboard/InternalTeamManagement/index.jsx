@@ -56,7 +56,7 @@ export default function InternalTeamManagement() {
   const [isLoadingDepartment, setIsLoadingDepartment] = useState(false);
   const [CurrntActiveTab, setCurrntActiveTab] = useState("Unresolved");
 
-  const userDetails = JSON.parse(localStorage.getItem("user_details") || "{}");
+  const userDetails = useSelector((state) => state.auth.user);
 
   const {
     attendanceRecords,

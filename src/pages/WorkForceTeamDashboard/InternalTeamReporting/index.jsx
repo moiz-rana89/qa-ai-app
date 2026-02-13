@@ -70,7 +70,7 @@ export default function InternalTeamReporting() {
 
   const [isLoadingAgent, setisLoadingAgent] = useState();
 
-  const userDetails = JSON.parse(localStorage.getItem("user_details") || "{}");
+  const userDetails = useSelector((state) => state.auth.user);
 
   const fetchData = (params) => {
     dispatch(getAttendanceReports(params, true));
