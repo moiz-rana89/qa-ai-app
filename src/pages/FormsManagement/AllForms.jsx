@@ -198,13 +198,13 @@ function AllForms({ setCreateNew, getData }) {
       width: 150,
       disableSort: true,
     },
-    {
-      title: "Headcount",
-      dataIndex: "qas_id",
-      key: "qas_id",
-      width: 100,
-      disableSort: true,
-    },
+    // {
+    //   title: "Headcount",
+    //   dataIndex: "qas_id",
+    //   key: "qas_id",
+    //   width: 100,
+    //   disableSort: true,
+    // },
   ];
 
   const dropdownOptions = [

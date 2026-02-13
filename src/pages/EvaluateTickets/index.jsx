@@ -109,22 +109,22 @@ function EvaluateTickets() {
         </div>
       ),
     },
-    {
-      title: "QAS Name",
-      dataIndex: "assigned_to_qas",
-      key: "assigned_to_qas",
-      width: 120,
-      disableSort: true,
-      render: (_, { assigned_to_qas }) => <div>{assigned_to_qas}</div>,
-    },
-    {
-      title: "TL Name",
-      dataIndex: "assigned_to_tl",
-      key: "assigned_to_tl",
-      width: 120,
-      disableSort: true,
-      render: (_, { assigned_to_tl }) => <div>{assigned_to_tl}</div>,
-    },
+    // {
+    //   title: "QAS Name",
+    //   dataIndex: "assigned_to_qas",
+    //   key: "assigned_to_qas",
+    //   width: 120,
+    //   disableSort: true,
+    //   render: (_, { assigned_to_qas }) => <div>{assigned_to_qas}</div>,
+    // },
+    // {
+    //   title: "TL Name",
+    //   dataIndex: "assigned_to_tl",
+    //   key: "assigned_to_tl",
+    //   width: 120,
+    //   disableSort: true,
+    //   render: (_, { assigned_to_tl }) => <div>{assigned_to_tl}</div>,
+    // },
     {
       title: "Due Date",
       dataIndex: "due_date",
@@ -134,27 +134,27 @@ function EvaluateTickets() {
         <div>{due_date && formatDateTimePlainEnglish(due_date)}</div>
       ),
     },
-    {
-      title: "Agent ID",
-      dataIndex: "agent_id",
-      key: "agent_id",
-      width: 150,
-      disableSort: true,
-    },
-    {
-      title: "Client ID",
-      dataIndex: "client_id",
-      key: "client_id",
-      width: 150,
-      disableSort: true,
-    },
-    {
-      title: "Form ID",
-      dataIndex: "form_id",
-      key: "form_id",
-      width: 150,
-      disableSort: true,
-    },
+    // {
+    //   title: "Agent ID",
+    //   dataIndex: "agent_id",
+    //   key: "agent_id",
+    //   width: 150,
+    //   disableSort: true,
+    // },
+    // {
+    //   title: "Client ID",
+    //   dataIndex: "client_id",
+    //   key: "client_id",
+    //   width: 150,
+    //   disableSort: true,
+    // },
+    // {
+    //   title: "Form ID",
+    //   dataIndex: "form_id",
+    //   key: "form_id",
+    //   width: 150,
+    //   disableSort: true,
+    // },
     {
       title: "Ticket ID",
       dataIndex: "ticket_id",
@@ -220,24 +220,24 @@ function EvaluateTickets() {
         </div>
       ),
     },
-    {
-      title: "Created At",
-      dataIndex: "created_at",
-      key: "created_at",
-      width: 250,
-      render: (_, { created_at }) => (
-        <div>{created_at && formatDateTimePlainEnglish(created_at)}</div>
-      ),
-    },
-    {
-      title: "Updated At",
-      dataIndex: "updated_at",
-      key: "updated_at",
-      width: 250,
-      render: (_, { updated_at }) => (
-        <div>{updated_at && formatDateTimePlainEnglish(updated_at)}</div>
-      ),
-    },
+    // {
+    //   title: "Created At",
+    //   dataIndex: "created_at",
+    //   key: "created_at",
+    //   width: 250,
+    //   render: (_, { created_at }) => (
+    //     <div>{created_at && formatDateTimePlainEnglish(created_at)}</div>
+    //   ),
+    // },
+    // {
+    //   title: "Updated At",
+    //   dataIndex: "updated_at",
+    //   key: "updated_at",
+    //   width: 250,
+    //   render: (_, { updated_at }) => (
+    //     <div>{updated_at && formatDateTimePlainEnglish(updated_at)}</div>
+    //   ),
+    // },
   ];
 
   const handleEvalute = () => {
