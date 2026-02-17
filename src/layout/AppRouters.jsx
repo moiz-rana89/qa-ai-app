@@ -33,7 +33,7 @@ const ROUTE_ROLES = {
   "evaluate-tickets": ["admin", "dev", "qas", "tl", "dtl"],
   "forms-management": ["admin", "dev"],
   "shadowing-form": ["admin", "dev", "qas", "tl"],
-  "evalute-form": ["admin", "dev", "tl"],
+  "evalute-form": ["admin", "dev", "tl", "dtl", "qas"],
   "workforce-remote-team-attendance": [
     "dev",
     "csm",
