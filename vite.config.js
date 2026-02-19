@@ -8,4 +8,7 @@ export default defineConfig({
   build: {
     sourcemap: false,
   },
+  preview: {
+    allowedHosts: ["secops.qaai.talentpopapp.com"],
+  },
 });

@@ -15,6 +15,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { InformationSection } from "./InformationSection";
 import { pstDate } from "../../utils/helperFunctions";
+import { useSelector } from "react-redux";
 
 const baseURL = import.meta.env.VITE_API_URL;
 
@@ -46,6 +47,9 @@ export function CustomMonitoringForm() {
   const [selectedFormType, setSelectedFormType] = useState(
     formData.ticketTypes?.[0] || ""
   );
+
+  const userDetails = useSelector((state) => state.auth.user);
+
   function findMissingSections(schema, answers) {
     let missingSections = [];
 
@@ -133,9 +137,7 @@ export function CustomMonitoringForm() {
         );
         return;
       }
-      const userDetails = JSON.parse(
-        localStorage.getItem("user_details") || "{}"
-      );
+     
       let submissionData = {
         event_type: selectedFormType,
         submitted_at: pstDate(),
