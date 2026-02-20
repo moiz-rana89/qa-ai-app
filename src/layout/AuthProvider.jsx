@@ -16,7 +16,7 @@ export default function AuthProvider({ children }) {
     if (!resp.ok && !(window.location.pathname == "/login")) {
       window.location.href = "/login";
       throw new Error("Session expired");
-    } else {
+    } else if (resp.ok && !(window.location.pathname == "/login")) {
       window.location.reload();
     }
   };
