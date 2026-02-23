@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { message } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
+import { refreshTokenAuth } from "../../reduxStore/action/auth";
 
 /* =========================
    Upload Icon
@@ -41,7 +42,6 @@ const UploadFile = ({ fileInfo = [], setFileInfo, required, reqNotes }) => {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef(null);
 
-  const token = localStorage.getItem("auth_token");
   const uploadUrl = `${import.meta.env.VITE_API_URL}/workforce/reports/upload`;
 
   /* Inject keyframes SAFELY */
@@ -57,7 +57,48 @@ const UploadFile = ({ fileInfo = [], setFileInfo, required, reqNotes }) => {
     return () => document.head.removeChild(style);
   }, []);
 
-  const handleFilesSelected = (event) => {
+  // const handleFilesSelected = (event) => {
+  //   const files = Array.from(event.target.files || []);
+  //   if (!files.length) return;
+
+  //   setUploading(true);
+
+  //   const formData = new FormData();
+  //   files.forEach((file) => formData.append("files", file));
+
+  //   const xhr = new XMLHttpRequest();
+  //   xhr.open("POST", uploadUrl);
+  //   xhr.withCredentials = true;
+
+  //   xhr.onload = () => {
+  //     try {
+  //       const data = JSON.parse(xhr.responseText);
+  //       if (!data.files) throw new Error();
+
+  //       const mappedFiles = data.files.map((f) => ({
+  //         name: f.filename,
+  //         url: f.s3_url,
+  //       }));
+
+  //       setFileInfo((prev) => [...(prev || []), ...mappedFiles]);
+  //       message.success("Files uploaded successfully");
+  //     } catch {
+  //       message.error("Upload failed or invalid response");
+  //     } finally {
+  //       setUploading(false);
+  //       if (fileInputRef.current) fileInputRef.current.value = "";
+  //     }
+  //   };
+
+  //   xhr.onerror = () => {
+  //     message.error("Upload failed");
+  //     setUploading(false);
+  //   };
+
+  //   xhr.send(formData);
+  // };
+
+  const handleFilesSelected = async (event) => {
     const files = Array.from(event.target.files || []);
     if (!files.length) return;
 
@@ -66,36 +107,66 @@ const UploadFile = ({ fileInfo = [], setFileInfo, required, reqNotes }) => {
     const formData = new FormData();
     files.forEach((file) => formData.append("files", file));
 
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", uploadUrl);
-    xhr.setRequestHeader("Authorization", `Bearer ${token}`);
-
-    xhr.onload = () => {
-      try {
-        const data = JSON.parse(xhr.responseText);
-        if (!data.files) throw new Error();
-
-        const mappedFiles = data.files.map((f) => ({
-          name: f.filename,
-          url: f.s3_url,
-        }));
-
-        setFileInfo((prev) => [...(prev || []), ...mappedFiles]);
-        message.success("Files uploaded successfully");
-      } catch {
-        message.error("Upload failed or invalid response");
-      } finally {
-        setUploading(false);
-        if (fileInputRef.current) fileInputRef.current.value = "";
-      }
-    };
-
-    xhr.onerror = () => {
+    try {
+      await uploadFiles(formData, false);
+    } catch (err) {
       message.error("Upload failed");
+    } finally {
       setUploading(false);
-    };
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
 
-    xhr.send(formData);
+  const uploadFiles = (formData, isRetry = false) => {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", uploadUrl);
+      xhr.withCredentials = true;
+
+      xhr.onload = async () => {
+        console.log("Upload status:", xhr.status);
+
+        // 🔴 Handle 401
+        if (xhr.status === 401 && !isRetry) {
+          try {
+            console.log("401 detected. Refreshing...");
+            await refreshTokenAuth();
+            console.log("Refresh success. Retrying upload...");
+            return resolve(uploadFiles(formData, true));
+          } catch (err) {
+            console.log("Refresh failed.");
+            return reject(err);
+          }
+        }
+
+        // ❌ If still failing after retry
+        if (xhr.status >= 400) {
+          return reject(new Error("Upload failed"));
+        }
+
+        // ✅ Success
+        try {
+          const data = JSON.parse(xhr.responseText);
+          if (!data.files) throw new Error();
+
+          const mappedFiles = data.files.map((f) => ({
+            name: f.filename,
+            url: f.s3_url,
+          }));
+
+          setFileInfo((prev) => [...(prev || []), ...mappedFiles]);
+          message.success("Files uploaded successfully");
+
+          return resolve(data);
+        } catch (err) {
+          return reject(err);
+        }
+      };
+
+      xhr.onerror = () => reject(new Error("Upload failed"));
+
+      xhr.send(formData);
+    });
   };
 
   const removeFile = (name) => {

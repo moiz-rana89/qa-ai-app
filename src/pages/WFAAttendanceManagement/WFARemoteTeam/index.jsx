@@ -61,8 +61,7 @@ export default function WFARemoteTeam() {
   const [isLoadingAgent, setIsLoadingAgent] = useState(false);
   const [isLoadingOm, setIsLoadingOm] = useState(false);
 
-  const userDetails = JSON.parse(localStorage.getItem("user_details") || "{}");
-
+  const userDetails = useSelector((state) => state.auth.user);
   const {
     attendanceRecords,
     isLoading,

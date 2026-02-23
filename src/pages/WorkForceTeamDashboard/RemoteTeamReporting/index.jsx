@@ -85,7 +85,11 @@ export default function RemoteTeamReporting() {
 
   useEffect(() => {
     let roleObject = {};
-    if (userDetails?.role == "tl" || userDetails?.role === "dtl") {
+    if (
+      userDetails?.role == "tl" ||
+      userDetails?.role === "dtl" ||
+      userDetails?.role == "itl"
+    ) {
       roleObject = {
         team_lead_id: [parseInt(userDetails?.owner_id)],
         columns_to_drop: [
@@ -155,6 +159,7 @@ export default function RemoteTeamReporting() {
     endDate,
     startDate,
     opsDropDownFilters,
+    userDetails,
   ]);
   useEffect(() => {
     if (!isMounted.current) {

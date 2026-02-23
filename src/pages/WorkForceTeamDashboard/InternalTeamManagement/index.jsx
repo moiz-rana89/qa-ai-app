@@ -103,7 +103,7 @@ export default function InternalTeamManagement() {
 
   useEffect(() => {
     let roleObject = {};
-    if (userDetails?.role == "tl") {
+    if (userDetails?.role == "tl" || userDetails?.role == "dtl") {
       roleObject = { team_lead_id: [parseInt(userDetails?.owner_id)] };
     } else if (userDetails?.role == "om") {
       roleObject = { om_id: [parseInt(userDetails?.owner_id)] };
@@ -177,6 +177,7 @@ export default function InternalTeamManagement() {
     omDropDownFilters,
     opsDropDownFilters,
     aomDropDownFilters,
+    userDetails,
   ]);
   useEffect(() => {
     if (!isMounted.current) {

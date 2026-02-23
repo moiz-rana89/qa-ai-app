@@ -97,7 +97,11 @@ export default function RemoteTeamManagement() {
 
   useEffect(() => {
     let roleObject = {};
-    if (userDetails?.role == "tl" || userDetails?.role == "dtl") {
+    if (
+      userDetails?.role == "tl" ||
+      userDetails?.role == "dtl" ||
+      userDetails?.role == "itl"
+    ) {
       roleObject = { team_lead_id: [parseInt(userDetails?.owner_id)] };
     } else if (userDetails?.role == "om") {
       roleObject = { operations_manager_id: [parseInt(userDetails?.owner_id)] };
@@ -151,6 +155,7 @@ export default function RemoteTeamManagement() {
     sortBy,
     sortOrder,
     opsDropDownFilters,
+    userDetails,
   ]);
   useEffect(() => {
     if (!isMounted.current) {

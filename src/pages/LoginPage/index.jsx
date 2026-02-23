@@ -92,12 +92,12 @@ export default function LoginPage() {
     }
   };
 
-  const checkLogin = async () => {
-    const token = await localStorage.getItem("auth_token");
-    if (token !== null) {
-      dispatch(setIsAuthAction(true));
-    }
-  };
+  // const checkLogin = async () => {
+  //   const token = await localStorage.getItem("auth_token");
+  //   if (token !== null) {
+  //     dispatch(setIsAuthAction(true));
+  //   }
+  // };
 
   // useEffect(() => {
   //   const timeout = setTimeout(() => {

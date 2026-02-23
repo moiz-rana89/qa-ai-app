@@ -40,7 +40,6 @@ Includes full, unfiltered data. Multiple report types allowed.`,
   },
 ];
 export const DownloadClientFormReport = () => {
-  const user = JSON.parse(localStorage.getItem("user_details"));
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     selectedReportFormat: null,
@@ -54,6 +53,8 @@ export const DownloadClientFormReport = () => {
   const { clientNamesForDownload } = useSelector(
     (store) => store.formsManagement
   );
+  const user = useSelector((state) => state.auth.user);
+
   useEffect(() => {
     dispatch(getClientsNameForCSFDownload(setLoaderForClients, user?.name));
   }, []);

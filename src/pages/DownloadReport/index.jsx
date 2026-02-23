@@ -38,7 +38,6 @@ Includes full, unfiltered data. Multiple report types allowed.`,
   },
 ];
 export const DownloadReport = () => {
-  const user = JSON.parse(localStorage.getItem("user_details"));
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     selectedReportCat: null,
@@ -50,15 +49,12 @@ export const DownloadReport = () => {
   });
   const [loader, setLoader] = useState();
 
-  const [loaderForClients, setLoaderForClients] = useState();
-  const [loaderForAgents, setLoaderForAgents] = useState();
   const [loaderForTypes, setLoaderForTypes] = useState();
 
-  const {
-    eventTypesForDownload,
-    agentsNamesForDownload,
-    clientNamesForDownload,
-  } = useSelector((store) => store.formsManagement);
+  const { eventTypesForDownload } = useSelector(
+    (store) => store.formsManagement
+  );
+  const user = useSelector((state) => state.auth.user);
   useEffect(() => {
     dispatch(getClientsNameForDownload(setLoaderForClients));
     dispatch(getAgentsNameForDownload(setLoaderForAgents, user?.name));

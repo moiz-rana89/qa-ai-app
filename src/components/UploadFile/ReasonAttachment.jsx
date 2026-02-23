@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Upload, message, Progress } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
+import { refreshTokenAuth } from "../../reduxStore/action/auth";
 
 const baseURL = import.meta.env.VITE_API_URL;
 
@@ -24,57 +25,90 @@ const UploadIcon = () => (
 const ReasonAttachment = ({ fileInfo, setFileInfo }) => {
   const [progress, setProgress] = useState(0);
 
-  const token = localStorage.getItem("auth_token");
   const uploadUrl = `${baseURL}/workforce/reports/upload`;
 
   const props = {
     name: "file",
     multiple: false,
     showUploadList: false,
+
     customRequest: async (options) => {
       const { file, onSuccess, onError, onProgress } = options;
+
       const formData = new FormData();
       formData.append("file", file);
 
+      const uploadFile = async (isRetry = false) => {
+        return new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open("POST", uploadUrl);
+          xhr.withCredentials = true;
+
+          xhr.upload.onprogress = (event) => {
+            if (event.lengthComputable) {
+              const percent = Math.round((event.loaded / event.total) * 100);
+              setProgress(percent);
+              onProgress?.({ percent });
+            }
+          };
+
+          xhr.onload = async () => {
+            console.log("Upload status:", xhr.status);
+
+            // 🔴 If unauthorized and not retried yet
+            if (xhr.status === 401 && !isRetry) {
+              try {
+                console.log("401 received. Refreshing token...");
+                await refreshTokenAuth();
+                console.log("Token refreshed. Retrying upload...");
+
+                // retry once
+                const retryResult = await uploadFile(true);
+                return resolve(retryResult);
+              } catch (err) {
+                console.log("Refresh failed");
+                return reject(err);
+              }
+            }
+
+            // ✅ Success
+            if (xhr.status >= 200 && xhr.status < 300) {
+              try {
+                const data = JSON.parse(xhr.responseText);
+                return resolve(data);
+              } catch (err) {
+                return reject(err);
+              }
+            }
+
+            // ❌ Any other error
+            return reject(new Error("Upload failed"));
+          };
+
+          xhr.onerror = () => {
+            reject(new Error("Upload failed"));
+          };
+
+          xhr.send(formData);
+        });
+      };
+
       try {
-        const xhr = new XMLHttpRequest();
-        xhr.open("POST", uploadUrl);
-        xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+        const data = await uploadFile(false);
 
-        xhr.upload.onprogress = (event) => {
-          if (event.lengthComputable) {
-            const percent = Math.round((event.loaded / event.total) * 100);
-            setProgress(percent);
-            onProgress?.({ percent });
-          }
-        };
+        setFileInfo({
+          name: file.name,
+          url: data.s3_object_url,
+        });
 
-        xhr.onload = () => {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            const data = JSON.parse(xhr.responseText);
-            setFileInfo({ name: file.name, url: data.s3_object_url });
-            message.success("File uploaded successfully");
-            onSuccess?.(data, file);
-          } else {
-            message.error("Upload failed");
-            onError?.(new Error("Upload failed"));
-          }
-        };
-
-        xhr.onerror = () => {
-          message.error("Upload failed");
-          onError?.(new Error("Upload failed"));
-        };
-
-        xhr.send(formData);
+        message.success("File uploaded successfully");
+        onSuccess?.(data, file);
       } catch (err) {
-        console.error(err);
         message.error("Upload failed");
         onError?.(err);
       }
     },
   };
-
   const handleRemove = () => {
     setFileInfo(null);
     setProgress(0);
