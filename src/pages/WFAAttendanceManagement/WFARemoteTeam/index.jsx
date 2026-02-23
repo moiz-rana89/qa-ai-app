@@ -30,6 +30,7 @@ import { Tab, Tabs } from "../../../components/Tabs/Tabs";
 
 export default function WFARemoteTeam() {
   const isMounted = useRef(false);
+  const isTabEffectInitialMount = useRef(true);
 
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
@@ -85,7 +86,7 @@ export default function WFARemoteTeam() {
           ...params,
         })
       );
-    } else if ("Dispute Resolved by TL") {
+    } else if (CurrntActiveTab == "Dispute Resolved by TL") {
       dispatch(
         getDisputedAttendanceRecords({
           ...params,
@@ -107,9 +108,9 @@ export default function WFARemoteTeam() {
   }, []);
 
   useEffect(() => {
-    if (!isMounted.current) {
-      isMounted.current = true; // Set to true after the first render
-      return; // Skip the effect for the first render
+    if (isTabEffectInitialMount.current) {
+      isTabEffectInitialMount.current = false;
+      return;
     }
     const params = {
       ...filterParams,
@@ -123,6 +124,7 @@ export default function WFARemoteTeam() {
   }, [CurrntActiveTab]);
 
   useEffect(() => {
+    if (!userDetails) return;
     let roleObject = {};
     if (userDetails?.role == "tl") {
       roleObject = { team_lead_id: [parseInt(userDetails?.owner_id)] };
@@ -171,6 +173,7 @@ export default function WFARemoteTeam() {
     startDate,
     endDate,
     opsDropDownFilters,
+    userDetails,
   ]);
   useEffect(() => {
     if (!isMounted.current) {

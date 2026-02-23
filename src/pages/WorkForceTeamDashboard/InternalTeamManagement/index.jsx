@@ -26,6 +26,7 @@ import { Tab, Tabs } from "../../../components/Tabs/Tabs";
 
 export default function InternalTeamManagement() {
   const isMounted = useRef(false);
+  const isTabEffectInitialMount = useRef(true);
 
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
@@ -102,6 +103,7 @@ export default function InternalTeamManagement() {
   }, []);
 
   useEffect(() => {
+    if (!userDetails) return;
     let roleObject = {};
     if (userDetails?.role == "tl" || userDetails?.role == "dtl") {
       roleObject = { team_lead_id: [parseInt(userDetails?.owner_id)] };
@@ -195,9 +197,9 @@ export default function InternalTeamManagement() {
   }, [currentpage, currentpageSize]);
 
   useEffect(() => {
-    if (!isMounted.current) {
-      isMounted.current = true; // Set to true after the first render
-      return; // Skip the effect for the first render
+    if (isTabEffectInitialMount.current) {
+      isTabEffectInitialMount.current = false;
+      return;
     }
     const params = {
       ...filterParams,

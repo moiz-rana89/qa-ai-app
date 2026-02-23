@@ -89,6 +89,7 @@ export default function InternalTeamReporting() {
   }, []);
 
   useEffect(() => {
+    if (!userDetails) return;
     let roleObject = {};
     if (userDetails?.role == "tl" || userDetails?.role == "dtl") {
       roleObject = {

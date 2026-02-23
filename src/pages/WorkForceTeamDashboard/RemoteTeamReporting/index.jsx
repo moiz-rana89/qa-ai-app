@@ -84,6 +84,7 @@ export default function RemoteTeamReporting() {
   }, []);
 
   useEffect(() => {
+    if (!userDetails) return;
     let roleObject = {};
     if (
       userDetails?.role == "tl" ||

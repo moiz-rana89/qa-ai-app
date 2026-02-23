@@ -22,6 +22,7 @@ import { Tabs, Tab } from "../../../components/Tabs/Tabs";
 
 export default function RemoteTeamManagement() {
   const isMounted = useRef(false);
+  const isTabEffectInitialMount = useRef(true);
 
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
@@ -96,6 +97,7 @@ export default function RemoteTeamManagement() {
   }, []);
 
   useEffect(() => {
+    if (!userDetails) return;
     let roleObject = {};
     if (
       userDetails?.role == "tl" ||
@@ -172,9 +174,9 @@ export default function RemoteTeamManagement() {
     }
   }, [currentpage, currentpageSize]);
   useEffect(() => {
-    if (!isMounted.current) {
-      isMounted.current = true; // Set to true after the first render
-      return; // Skip the effect for the first render
+    if (isTabEffectInitialMount.current) {
+      isTabEffectInitialMount.current = false;
+      return;
     }
     const params = {
       ...filterParams,

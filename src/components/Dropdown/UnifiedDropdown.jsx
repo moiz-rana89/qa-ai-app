@@ -55,10 +55,24 @@ export default function UnifiedDropdown({
   //   return item;
   // };
 
+  // const getItemValue = (item) => {
+  //   if (typeof item === "object" && item !== null) {
+  //     return String(item.value ?? item.id ?? item.key ?? item.label ?? item);
+  //   }
+  //   return String(item ?? "");
+  // };
+
   const getItemValue = (item) => {
     if (typeof item === "object" && item !== null) {
-      return String(item.value ?? item.id ?? item.key ?? item.label ?? item);
+      if (valueKey && item[valueKey] !== undefined) {
+        return String(item[valueKey]);
+      }
+
+      return String(
+        item.value ?? item.id ?? item.key ?? item.label ?? JSON.stringify(item)
+      );
     }
+
     return String(item ?? "");
   };
 

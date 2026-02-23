@@ -50,14 +50,13 @@ export const DownloadReport = () => {
   const [loader, setLoader] = useState();
 
   const [loaderForTypes, setLoaderForTypes] = useState();
-
   const { eventTypesForDownload } = useSelector(
     (store) => store.formsManagement
   );
   const user = useSelector((state) => state.auth.user);
   useEffect(() => {
-    dispatch(getClientsNameForDownload(setLoaderForClients));
-    dispatch(getAgentsNameForDownload(setLoaderForAgents, user?.name));
+    // dispatch(getClientsNameForDownload(setLoaderForClients));
+    // dispatch(getAgentsNameForDownload(setLoaderForAgents, user?.name));
     dispatch(getEventTypesForDownload(setLoaderForTypes));
   }, []);
 

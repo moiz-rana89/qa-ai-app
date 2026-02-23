@@ -28,6 +28,7 @@ import EditWFAInternalTeam from "./EditWFAInternalTeam.jsx";
 
 export default function WFAInternalTeam() {
   const isMounted = useRef(false);
+  const isTabEffectInitialMount = useRef(true);
 
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
@@ -82,7 +83,7 @@ export default function WFAInternalTeam() {
       dispatch(getAttendanceRecordsWFA(params, true));
     } else if (CurrntActiveTab == "Resolved by TL") {
       dispatch(getAttendanceReportsTL(params, true));
-    } else if ("Dispute Resolved by TL") {
+    } else if (CurrntActiveTab == "Dispute Resolved by TL") {
       dispatch(
         getDisputedAttendanceRecords({
           ...params,
@@ -93,9 +94,9 @@ export default function WFAInternalTeam() {
   };
 
   useEffect(() => {
-    if (!isMounted.current) {
-      isMounted.current = true; // Set to true after the first render
-      return; // Skip the effect for the first render
+    if (isTabEffectInitialMount.current) {
+      isTabEffectInitialMount.current = false;
+      return;
     }
     const params = {
       ...filterParams,
@@ -121,6 +122,7 @@ export default function WFAInternalTeam() {
   }, []);
 
   useEffect(() => {
+    if (!userDetails) return;
     let roleObject = {};
     if (userDetails?.role == "tl") {
       roleObject = { team_lead_id: [parseInt(userDetails?.owner_id)] };
@@ -173,6 +175,7 @@ export default function WFAInternalTeam() {
     omDropDownFilters,
     opsDropDownFilters,
     aomDropDownFilters,
+    userDetails,
   ]);
   useEffect(() => {
     if (!isMounted.current) {

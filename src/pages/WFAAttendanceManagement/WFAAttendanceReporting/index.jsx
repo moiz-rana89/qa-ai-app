@@ -32,6 +32,7 @@ import EditWFAAttendance from "./EditWFAAttendance";
 
 export default function WFAAttendanceReporting() {
   const isMounted = useRef(false);
+  const isTabEffectInitialMount = useRef(true);
 
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
@@ -151,9 +152,9 @@ export default function WFAAttendanceReporting() {
   }, []);
 
   useEffect(() => {
-    if (!isMounted.current) {
-      isMounted.current = true; // Set to true after the first render
-      return; // Skip the effect for the first render
+    if (isTabEffectInitialMount.current) {
+      isTabEffectInitialMount.current = false;
+      return;
     }
     const params = {
       // ...filterParams,
@@ -174,6 +175,7 @@ export default function WFAAttendanceReporting() {
   }, [CurrntActiveTab]);
 
   useEffect(() => {
+    if (!userDetails) return;
     let roleObject = {};
     if (userDetails?.role == "tl") {
       roleObject = { team_lead_id: [parseInt(userDetails?.owner_id)] };
@@ -258,6 +260,7 @@ export default function WFAAttendanceReporting() {
     omDropDownFilters,
     opsDropDownFilters,
     aomDropDownFilters,
+    userDetails,
   ]);
   useEffect(() => {
     if (!isMounted.current) {
