@@ -103,6 +103,7 @@ export default function AppRouter() {
   // if (!isAuthInitialized) {
   //   return null; // or loader
   // }
+  localStorage.clear();
 
   return (
     <AuthProvider>
