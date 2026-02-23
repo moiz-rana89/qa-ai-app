@@ -9,6 +9,6 @@ export default defineConfig({
     sourcemap: false,
   },
   preview: {
-    allowedHosts: ["secops.qaai.talentpopapp.com"],
+    allowedHosts: ["secops.qaai.talentpopapp.com", "talentpopapp.com"],
   },
 });
