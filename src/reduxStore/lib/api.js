@@ -177,13 +177,9 @@
 
 // export default Api;
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "https://api.example.com";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 class Api {
-  /* =======================
-     HEADERS
-  ======================== */
-
   static async headers() {
     return {
       "Content-Type": "application/json",
@@ -195,11 +191,6 @@ class Api {
       accept: "application/json",
     };
   }
-
-  /* =======================
-     PUBLIC METHODS
-  ======================== */
-
   static get(route, queryParams) {
     return this.xhr(route, null, "GET", queryParams);
   }
@@ -228,10 +219,6 @@ class Api {
     return this.xhrMultiForm(route, params, "PUT");
   }
 
-  /* =======================
-     MULTIFORM
-  ======================== */
-
   static async xhrMultiForm(route, params, verb, retry = true) {
     const url = `${API_BASE_URL}${route}`;
 
@@ -239,7 +226,7 @@ class Api {
       method: verb,
       body: params || null,
       headers: await Api.headersMultiForm(),
-      credentials: "include", // 🔥 IMPORTANT
+      credentials: "include",
     };
 
     const resp = await fetch(url, options);
@@ -256,10 +243,6 @@ class Api {
 
     return resp.json();
   }
-
-  /* =======================
-     CORE XHR
-  ======================== */
 
   static async xhr(route, params, verb, queryParams, retry = true) {
     let url = `${API_BASE_URL}${route}`;
@@ -281,7 +264,7 @@ class Api {
     const options = {
       method: verb,
       headers: await Api.headers(),
-      credentials: "include", // 🔥 IMPORTANT
+      credentials: "include",
     };
 
     if (params && verb !== "GET") {
@@ -297,14 +280,12 @@ class Api {
             const blob = await resp.blob();
             return { data: blob, contentType: contentType };
           } else if (resp.status === 204) {
-            // No Content
             return { data: {}, contentType: contentType };
           } else {
             const json = await resp.json();
             return { data: json, contentType: contentType };
           }
         } else {
-          // Handle errors: try to parse JSON error message, otherwise throw response
           const errorData = await resp.json().catch(() => resp.text());
           const error = new Error(
             `API Error: ${resp.status} ${resp.statusText} - ${
@@ -313,8 +294,8 @@ class Api {
                 : errorData
             }`
           );
-          error.response = resp; // Attach the original response for more context
-          error.data = errorData; // Attach parsed error data
+          error.response = resp;
+          error.data = errorData;
           if (resp.status === 401 && retry) {
             await Api.refreshToken();
             return Api.xhr(route, params, verb, queryParams, false);
@@ -328,44 +309,11 @@ class Api {
       .then((result) => {
         return result;
       });
-
-    // const resp = await fetch(url, options);
-
-    // /* ===== HANDLE 401 ===== */
-    // if (resp.status === 401 && retry) {
-    //   await Api.refreshToken();
-    //   return Api.xhr(route, params, verb, queryParams, false);
-    // }
-
-    // if (!resp.ok) {
-    //   const errorData = await resp.json().catch(() => ({}));
-    //   throw { ...errorData, status: resp.status };
-    // }
-
-    // if (resp.status === 204) return {};
-    // return resp.json();
   }
-
-  /* =======================
-     REFRESH TOKEN
-  ======================== */
-
-  // static async refreshToken() {
-  //   const resp = await fetch(`${API_BASE_URL}/refresh`, {
-  //     method: "POST",
-  //     credentials: "include",
-  //   });
-
-  //   if (!resp.ok) {
-  //     window.location.href = "/login";
-  //     throw new Error("Session expired");
-  //   }
-  // }
 
   static refreshPromise = null;
 
   static async refreshToken() {
-    // If a refresh request is already running, return it
     if (this.refreshPromise) {
       return this.refreshPromise;
     }
@@ -379,19 +327,14 @@ class Api {
           window.location.href = "/login";
           throw new Error("Session expired");
         }
-        return resp.json(); // if your API returns JSON
+        return resp.json();
       })
       .finally(() => {
-        // Reset after completion so future refreshes can happen
         this.refreshPromise = null;
       });
 
     return this.refreshPromise;
   }
-
-  /* =======================
-     LOGOUT
-  ======================== */
 
   static async logout() {
     await fetch(`${API_BASE_URL}/auth/logout`, {
