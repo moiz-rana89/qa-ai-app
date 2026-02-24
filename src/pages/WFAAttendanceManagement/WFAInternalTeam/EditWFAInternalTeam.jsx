@@ -127,9 +127,10 @@ export default function EditWFAInternalTeam({
     if (reason?.length == 0) {
       toast.error("Please select reason");
       setIsnotes(true);
-    } else if (!fileInfo?.length > 0 && reason[0]?.isFileReq) {
-      toast.error("You must Upload Attachment before proceeding.");
     }
+    // else if (!fileInfo?.length > 0 && reason[0]?.isFileReq) {
+    //   toast.error("You must Upload Attachment before proceeding.");
+    // }
     // else if (notes?.length < 70) {
     //   toast.error("Notes must be 70 character long");
     //   setIsnotes(true);
@@ -426,7 +427,7 @@ export default function EditWFAInternalTeam({
             <UploadFile
               // required={handleReasonRules(reason[0]?.reason)}
               reqNotes={reason?.[0]?.fileReqMessage}
-              required={reason?.[0]?.isFileReq}
+              required={false}
               fileInfo={fileInfo}
               setFileInfo={setFileInfo}
             />

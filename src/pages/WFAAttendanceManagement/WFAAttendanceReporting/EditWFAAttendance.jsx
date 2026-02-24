@@ -137,9 +137,11 @@ export default function EditWFAAttendance({
     // }
     else if (!isResolved) {
       toast.error("Please check Mark as Resolved checkbox");
-    } else if (!fileInfo?.length > 0 && reason[0]?.isFileReq) {
-      toast.error("You must Upload Attachment before proceeding.");
-    } else if (!authCheck) {
+    }
+    // else if (!fileInfo?.length > 0 && reason[0]?.isFileReq) {
+    //   toast.error("You must Upload Attachment before proceeding.");
+    // }
+    else if (!authCheck) {
       toast.error(
         "Please confirm that you have reviewed the infraction and provided the required notes or documentation."
       );
@@ -171,13 +173,8 @@ export default function EditWFAAttendance({
       }
 
       if (CurrntActiveTab == "Remote Team") {
-        if (
-          handleReasonRules(reason[0]?.reason) &&
-          (!endDate?.ds || !fileInfo)
-        ) {
-          toast.error(
-            "You must provide End Date and Upload Attachment before proceeding."
-          );
+        if (handleReasonRules(reason[0]?.reason) && !endDate?.ds) {
+          toast.error("You must provide End Date before proceeding.");
           return;
         } else if (
           handleReasonRules(reason[0]?.reason) &&
@@ -517,7 +514,7 @@ export default function EditWFAAttendance({
               //   handleReasonRules(reason[0]?.reason)
               // }
               reqNotes={reason?.[0]?.fileReqMessage}
-              required={reason?.[0]?.isFileReq}
+              required={false}
               fileInfo={fileInfo}
               setFileInfo={setFileInfo}
             />

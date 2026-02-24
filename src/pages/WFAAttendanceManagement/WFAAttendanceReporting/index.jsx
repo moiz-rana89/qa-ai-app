@@ -29,6 +29,7 @@ import DownloadCSVButton from "../../../components/Buttons/DownloadCSVButton";
 import Skeleton from "../../../components/Skeleton";
 import AntDTable from "../../../components/AntDTable";
 import EditWFAAttendance from "./EditWFAAttendance";
+import AntDRangePicker from "../../../components/AntDRangePicker";
 
 export default function WFAAttendanceReporting() {
   const isMounted = useRef(false);
@@ -290,6 +291,10 @@ export default function WFAAttendanceReporting() {
     };
     fetchData(params);
   };
+  const onChangeDate = (date) => {
+    setStartDate(date[0]);
+    setEndDate(date[1]);
+  };
   return (
     <div className="w-full h-full flex flex-col">
       <div className="pt-7 flex items-center pl-8">
@@ -318,6 +323,11 @@ export default function WFAAttendanceReporting() {
               setStartDate={setStartDate}
               setEndDate={setEndDate}
             /> */}
+            <AntDRangePicker
+              onChange={onChangeDate}
+              startPlaceholder="Start Date"
+              endPlaceholder="End Date"
+            />
             {CurrntActiveTab == "Remote Team" ? (
               <UnifiedDropdown
                 name="Clients"
