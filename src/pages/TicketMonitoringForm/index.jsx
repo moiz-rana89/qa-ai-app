@@ -17,6 +17,7 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { pstDate } from "../../utils/helperFunctions";
 import { useSelector } from "react-redux";
+import Api from "../../reduxStore/lib/api";
 
 const baseURL = import.meta.env.VITE_API_URL;
 
@@ -150,8 +151,8 @@ export function TicketMonitoringForm() {
           updated_by_tl: userDetails?.name,
         };
       }
-      const endPointUrl = `${baseURL}/openai/ticket_monitoring_form`;
-      const response = await axios.post(endPointUrl, submissionData);
+      const endPointUrl = `/openai/ticket_monitoring_form`;
+      const response = await Api.post(endPointUrl, submissionData);
       toast.success("Form submitted successfully!");
       let messageTimer = setTimeout(() => {
         window.location.reload();

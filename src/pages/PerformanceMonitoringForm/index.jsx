@@ -17,6 +17,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { pstDate } from "../../utils/helperFunctions";
 import { useSelector } from "react-redux";
+import Api from "../../reduxStore/lib/api";
 
 const baseURL = import.meta.env.VITE_API_URL;
 
@@ -161,8 +162,8 @@ export function PerformanceMonitoringForm() {
           updated_by_tl: userDetails?.name,
         };
       }
-      const endPointUrl = `${baseURL}/openai/performance-coaching-form`;
-      const response = await axios.post(endPointUrl, submissionData);
+      const endPointUrl = `/openai/performance-coaching-form`;
+      const response = await Api.post(endPointUrl, submissionData);
       toast.success("Form submitted successfully!");
       let messageTimer = setTimeout(() => {
         window.location.reload();
