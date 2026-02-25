@@ -152,6 +152,7 @@ export default function EditRemoteTeam({
       const paramsDisputeResolve = {
         id: selectedReport?.id,
         updated_reason_tl: reason[0]?.reason,
+        reason: reason[0]?.reason,
         updated_notes_tl: notes,
         file_urls:
           fileInfo?.length > 0 ? fileInfo?.map((item) => item.url) : [],

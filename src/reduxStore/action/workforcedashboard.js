@@ -796,8 +796,28 @@ export const disputeAttendnceReportbyWFA = (params, handleResponse) => {
   return (dispatch) => {
     // dispatch(setLoaderAction(true));
     Api.post(
-      `/workforce/reports/attendance/dispute?table_type=${params?.table_type}&id=${params?.id}&notes_wfa=${params?.notes_wfa}`
+      `/workforce/reports/attendance/dispute?table_type=${params?.table_type}&id=${params?.id}&notes_wfa=${params?.notes_wfa}&reason=${params?.reason}`
     )
+      .then((resp) => {
+        // dispatch(setLoaderAction(false));
+
+        handleResponse(true);
+      })
+      .catch((err) => {
+        dispatch(setLoaderAction(false));
+        handleResponse(false);
+        console.log("resp from api is error", err);
+      });
+  };
+};
+
+export const disputeReopenAttendnceReportbyWFA = (params, handleResponse) => {
+  return (dispatch) => {
+    // dispatch(setLoaderAction(true));
+    Api.patch(`/workforce/reports/attendance/dispute/reopen/${params?.id}`, {
+      updated_notes_wfa: params?.notes_wfa,
+      reason: params?.reason,
+    })
       .then((resp) => {
         // dispatch(setLoaderAction(false));
 

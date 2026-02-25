@@ -454,7 +454,7 @@ export default function WFARemoteTeam() {
                     current={attendanceDisputedRecords?.pagination?.currentPage}
                     pageSize={attendanceDisputedRecords?.pagination?.pageSize}
                     rowKey={"id"}
-                    // onEdit={handleEditClick}
+                    onEdit={handleEditClick}
                     onPageChange={setcurrentpage}
                     onPageSizeChange={setPageSize}
                     onSortChange={(columnKey, order) => {

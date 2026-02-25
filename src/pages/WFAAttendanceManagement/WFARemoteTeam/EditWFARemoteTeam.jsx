@@ -23,6 +23,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   addAutomationReport,
   disputeAttendnceReportbyWFA,
+  disputeReopenAttendnceReportbyWFA,
   getAttendanceRecords,
   getAttendanceReportsTL,
   updateAttendnceReport,
@@ -144,6 +145,16 @@ export default function EditWFARemoteTeam({
     }
     setLoading(false);
   };
+  const handleResponseDisputeReopen = (success) => {
+    if (success) {
+      toast.success("Dispute added again Successfuly");
+      onClose();
+      fetchData({ ...filterParams, page: currentpage });
+    } else {
+      toast.error(`Error occured while adding dispute, Please try again`);
+    }
+    setLoading(false);
+  };
   const handleSave = () => {
     if (reason?.length == 0) {
       toast.error("Please select reason");
@@ -176,9 +187,17 @@ export default function EditWFARemoteTeam({
       toast.error(
         "Please confirm that you have reviewed the infraction and provided the required notes or documentation."
       );
-    } else if (isDisputed && !isResolved) {
+    } else if (
+      isDisputed &&
+      !isResolved &&
+      activeTab != "Dispute Resolved by TL"
+    ) {
       toast.error(
         "Please Mark this as resolved if you want to add this in dispute"
+      );
+    } else if (!isDisputed && activeTab == "Dispute Resolved by TL") {
+      toast.error(
+        "Please check Mark as disputed if you want to add this in dispute"
       );
     } else {
       setLoading(true);
@@ -222,11 +241,21 @@ export default function EditWFARemoteTeam({
         id: selectedReport?.id,
         table_type: "remote",
         notes_wfa: notes,
+        reason: reason[0]?.reason,
       };
       if (isDisputed && activeTab == "Resolved by TL") {
         dispatch(
           disputeAttendnceReportbyWFA(paramsDispute, handleResponseDispute)
         );
+      }
+      if (isDisputed && activeTab == "Dispute Resolved by TL") {
+        dispatch(
+          disputeReopenAttendnceReportbyWFA(
+            paramsDispute,
+            handleResponseDisputeReopen
+          )
+        );
+        return;
       }
       dispatch(updateAttendnceReport(params, handleResponse));
     }
@@ -322,18 +351,22 @@ export default function EditWFARemoteTeam({
             <div className="text-[#163143] text-[14px] font-semibold">
               Mark As:
             </div>
-            <label className="flex items-center ml-1 mt-3">
-              <input
-                type="checkbox"
-                class="custom-checkbox"
-                checked={isResolved}
-                onChange={(e) => setIsResolved(e.target.checked)}
-              ></input>
-              <span className="text-[#163143] text-center font-poppins text-[16px] not-italic font-normal leading-[20px] ml-2">
-                Mark as Resolved
-              </span>
-            </label>
-            {activeTab == "Resolved by TL" && (
+            {activeTab != "Dispute Resolved by TL" && (
+              <label className="flex items-center ml-1 mt-3">
+                <input
+                  type="checkbox"
+                  class="custom-checkbox"
+                  checked={isResolved}
+                  onChange={(e) => setIsResolved(e.target.checked)}
+                ></input>
+                <span className="text-[#163143] text-center font-poppins text-[16px] not-italic font-normal leading-[20px] ml-2">
+                  Mark as Resolved
+                </span>
+              </label>
+            )}
+
+            {(activeTab == "Resolved by TL" ||
+              activeTab == "Dispute Resolved by TL") && (
               <label className="flex items-center ml-1 mt-3">
                 <input
                   type="checkbox"
