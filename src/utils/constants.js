@@ -1,3 +1,65 @@
+export const EVENT_TYPES = [
+  { label: "Customer Service - Email/Chat", value: "customer-service-email" },
+  { label: "Brand Concierge – Live Chat", value: "brand-concierge-live-chat" },
+  {
+    label: "Brand Concierge – Post Purchase Call",
+    value: "brand-concierge-post-purchase-call",
+  },
+  {
+    label: "Brand Concierge - Subscription",
+    value: "brand-concierge-subscription",
+  },
+  {
+    label: "Brand Concierge - Abandon Cart",
+    value: "brand-concierge-abandon-cart",
+  },
+  { label: "Customer Service - Phone", value: "customer-service-phone" },
+  {
+    label: "Customer Service - Email/Chat",
+    value: "customer-service-email-chat",
+  },
+  {
+    label: "Customer Service - Email, Chat & Phone",
+    value: "customer-service-email-chat-phone",
+  },
+  { label: "Brand Concierge", value: "brand-concierge" },
+  { label: "Growth Assistant", value: "growth-assistant" },
+];
+
+/** Event types from ticket-form-data.js (Ticket Monitoring) */
+export const EVENT_TYPES_TICKET_MONITORING = [
+  { label: "Customer Service - Email/Chat", value: "customer-service-email" },
+  { label: "Brand Concierge – Live Chat", value: "brand-concierge-live-chat" },
+  {
+    label: "Brand Concierge – Post Purchase Call",
+    value: "brand-concierge-post-purchase-call",
+  },
+  {
+    label: "Brand Concierge - Subscription",
+    value: "brand-concierge-subscription",
+  },
+  {
+    label: "Brand Concierge - Abandon Cart",
+    value: "brand-concierge-abandon-cart",
+  },
+  { label: "Customer Service - Phone", value: "customer-service-phone" },
+];
+
+/** Event types from PC-form-data.js (PC) */
+export const EVENT_TYPES_PC = [
+  {
+    label: "Customer Service - Email/Chat",
+    value: "customer-service-email-chat",
+  },
+  { label: "Customer Service - Phone", value: "customer-service-phone" },
+  {
+    label: "Customer Service - Email, Chat & Phone",
+    value: "customer-service-email-chat-phone",
+  },
+  { label: "Brand Concierge", value: "brand-concierge" },
+  { label: "Growth Assistant", value: "growth-assistant" },
+];
+
 export const ATT_REASONS = [
   "Approved Extended Lunch",
   "Bereavement Leave",

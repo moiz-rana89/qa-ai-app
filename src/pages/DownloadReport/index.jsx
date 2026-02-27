@@ -12,6 +12,11 @@ import {
   getEventTypesForDownload,
 } from "../../reduxStore/action/formsManagement";
 import UnifiedDropdown from "../../components/Dropdown/UnifiedDropdown";
+import {
+  EVENT_TYPES,
+  EVENT_TYPES_PC,
+  EVENT_TYPES_TICKET_MONITORING,
+} from "../../utils/constants";
 
 const REPORTCATEGORY = [
   {
@@ -54,16 +59,19 @@ export const DownloadReport = () => {
     (store) => store.formsManagement
   );
   const user = useSelector((state) => state.auth.user);
-  useEffect(() => {
-    // dispatch(getClientsNameForDownload(setLoaderForClients));
-    // dispatch(getAgentsNameForDownload(setLoaderForAgents, user?.name));
-    dispatch(getEventTypesForDownload(setLoaderForTypes));
-  }, []);
 
   const handleChange = (name, value) => {
     setFormData({
       ...formData,
       [name]: value,
+    });
+  };
+
+  const handleChangeReportCategory = (value) => {
+    setFormData({
+      ...formData,
+      selectedReportCat: value,
+      event_type: [],
     });
   };
 
@@ -87,12 +95,12 @@ export const DownloadReport = () => {
       toast.error("Please select Start and end date");
       return;
     }
-    dispatch(
-      getDownloadReport(setLoader, toast, {
-        ...formData,
-        updated_by_tl: user?.name,
-      })
-    );
+    const params = {
+      ...formData,
+      event_type: formData?.event_type?.map((item) => item?.value),
+      updated_by_tl: user?.name,
+    };
+    dispatch(getDownloadReport(setLoader, toast, params));
   };
   return (
     <div className="w-full h-full flex flex-col p-8">
@@ -115,7 +123,9 @@ export const DownloadReport = () => {
               <button
                 key={type?.id}
                 type="button"
-                onClick={() => handleChange("selectedReportCat", type?.id)}
+                onClick={() => {
+                  handleChangeReportCategory(type?.id);
+                }}
                 className={`p-4 rounded-[16px] border-1 text-left transition-all duration-200 ${
                   formData?.selectedReportCat?.includes(type?.id)
                     ? "border-[#86FE96] bg-[#86FE960A]"
@@ -153,7 +163,13 @@ export const DownloadReport = () => {
               <button
                 key={type?.id}
                 type="button"
-                onClick={() => handleChange("selectedReportFormat", type?.id)}
+                onClick={() =>
+                  setFormData({
+                    ...formData,
+                    selectedReportFormat: type?.id,
+                    event_type: [],
+                  })
+                }
                 className={`p-4 rounded-[16px] border-1 text-left transition-all duration-200 ${
                   formData?.selectedReportFormat?.includes(type?.id)
                     ? "border-[#86FE96] bg-[#86FE960A]"
@@ -183,7 +199,7 @@ export const DownloadReport = () => {
           </div>
         </div>
 
-        <div className="mt-[14px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[24px]">
+        <div className="mt-[14px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[24px]">
           <div>
             <label className="block font-semibold text-[14px] mb-3">
               Date
@@ -208,13 +224,25 @@ export const DownloadReport = () => {
             <UnifiedDropdown
               name="Type"
               className="bg-[#FBFBFB] border-[#efefef] h-[50px] flex items-center justify-between px-3"
-              data={eventTypesForDownload}
+              fullwidthDropdown={true}
+              // data={eventTypesForDownload}
+              data={
+                formData?.selectedReportCat == "ticket_monitoring_form"
+                  ? EVENT_TYPES_TICKET_MONITORING
+                  : formData?.selectedReportCat == "performance_coaching_form"
+                  ? EVENT_TYPES_PC
+                  : EVENT_TYPES
+              }
               isLoading={loaderForTypes}
               selectedList={formData?.event_type}
+              // setselectedList={(e) => handleChange("event_type", e)}
               setselectedList={(e) => handleChange("event_type", e)}
               multiSelect={
                 formData?.selectedReportFormat == "expanded" ? false : true
               }
+              displayKey="label"
+              valueKey="value"
+              searchKeys={["label"]}
             />
           </div>
         </div>
