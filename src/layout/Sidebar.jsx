@@ -106,13 +106,13 @@ const menuList = [
     title: "Download Report",
     icon: "hugeicons:download-03",
     route: "download-report",
-    roles: ["tl", "admin", "dev", "aom"],
+    roles: ["admin", "dev", "tl", "aom", "dtl", "wfa", "om"],
   },
   {
     title: "Download Client Specific Report",
     icon: "hugeicons:download-03",
     route: "download-client-specific-report",
-    roles: ["admin", "dev", "dtl", "aom", "om"],
+    roles: ["admin", "dev", "dtl", "tl", "aom", "wfa", "om"],
   },
   {
     title: "Quality Assurance",

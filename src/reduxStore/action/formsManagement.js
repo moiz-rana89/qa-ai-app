@@ -460,7 +460,7 @@ export const getDownloadReport = (setLoader, toast, params = {}) => {
       addParam("form_name", params.selectedReportCat);
       addParam("event_type", params.event_type);
       addParam("updated_by_tl", params.updated_by_tl);
-
+      addParam("admin", params.admin);
       Api.get("/openai/forms-download", queryParams)
         .then((resp) => {
           const blob = new Blob([resp.data], { type: "text/csv" });
@@ -488,16 +488,16 @@ export const getDownloadReport = (setLoader, toast, params = {}) => {
   };
 };
 
-export const getClientsNameForCSFDownload = (setLoader, tlName) => {
+export const getClientsNameForCSFDownload = (setLoader, tlName, role) => {
   return (dispatch) => {
     try {
       setLoader(true);
-      Api.get(`/openai/client-form-client-names?updated_by_tl=${tlName}`).then(
-        (resp) => {
-          dispatch(setClientsNameDownload(resp.data));
-          setLoader(false);
-        }
-      );
+      Api.get(
+        `/openai/client-form-client-names?updated_by_tl=${tlName}&admin=${role}`
+      ).then((resp) => {
+        dispatch(setClientsNameDownload(resp.data));
+        setLoader(false);
+      });
     } catch (error) {
       setLoader(false);
     }
@@ -524,6 +524,7 @@ export const getDownloadCSFReport = (setLoader, toast, params = {}) => {
       addParam("start_date", params.date[0]);
       addParam("raw", params.selectedReportFormat == "raw" ? true : false);
       addParam("updated_by_tl", params.updated_by_tl);
+      addParam("admin", params.admin);
 
       Api.get("/openai/client-form-download", queryParams)
         .then((resp) => {

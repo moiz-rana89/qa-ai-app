@@ -29,7 +29,7 @@ import { OtherCoachingTypes } from "../pages/OtherCoachingTypes";
 import AdvanceNoticeSubmission from "../pages/AdvanceNoticeSubmission";
 import { DownloadClientFormReport } from "../pages/DownloadClientFormReport";
 import AuthProvider from "./AuthProvider";
-
+// admin download = wfa,om
 const ROUTE_ROLES = {
   "evaluate-tickets": ["admin", "dev", "qas", "tl", "dtl"],
   "forms-management": ["admin", "dev"],
@@ -49,8 +49,16 @@ const ROUTE_ROLES = {
     "dm",
     "dtl",
   ],
-  "download-report": ["admin", "dev", "tl", "aom"],
-  "download-client-specific-report": ["admin", "dev", "dtl", "aom", "om"],
+  "download-report": ["admin", "dev", "tl", "aom", "dtl", "wfa", "om"],
+  "download-client-specific-report": [
+    "admin",
+    "dev",
+    "dtl",
+    "tl",
+    "aom",
+    "wfa",
+    "om",
+  ],
   "ticket-monitoring-form": [
     "dev",
     "tl",

@@ -56,7 +56,13 @@ export const DownloadClientFormReport = () => {
   const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
-    dispatch(getClientsNameForCSFDownload(setLoaderForClients, user?.name));
+    dispatch(
+      getClientsNameForCSFDownload(
+        setLoaderForClients,
+        user?.name,
+        user?.role == "wfa" || user?.role == "om" ? true : false
+      )
+    );
   }, []);
 
   const handleChange = (name, value) => {
@@ -83,6 +89,7 @@ export const DownloadClientFormReport = () => {
       getDownloadCSFReport(setLoader, toast, {
         ...formData,
         updated_by_tl: user?.name,
+        admin: user?.role == "wfa" || user?.role == "om" ? true : false,
       })
     );
   };

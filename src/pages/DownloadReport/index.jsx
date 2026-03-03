@@ -99,6 +99,7 @@ export const DownloadReport = () => {
       ...formData,
       event_type: formData?.event_type?.map((item) => item?.value),
       updated_by_tl: user?.name,
+      admin: user?.role == "wfa" || user?.role == "om" ? true : false,
     };
     dispatch(getDownloadReport(setLoader, toast, params));
   };
