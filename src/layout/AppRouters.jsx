@@ -9,6 +9,7 @@ import LoginPage from "../pages/LoginPage";
 import EvaluateTickets from "../pages/EvaluateTickets";
 import { EvaluteForm } from "../pages/EvaluateTickets/EvaluteForm";
 import FormsManagement from "../pages/FormsManagement";
+import QASettings from "../pages/QASettings";
 import MainLayout from "./MainLayout";
 import FullWidthLayout from "./FullWidthLayout";
 import ProtectedRoute from "./ProtectedRoute";
@@ -33,6 +34,7 @@ import AuthProvider from "./AuthProvider";
 const ROUTE_ROLES = {
   "evaluate-tickets": ["admin", "dev", "qas", "tl", "dtl"],
   "forms-management": ["admin", "dev"],
+  "qa-settings": ["admin", "dev", "om"],
   "shadowing-form": ["admin", "dev", "qas", "tl"],
   "evalute-form": ["admin", "dev", "tl", "dtl"],
   "workforce-remote-team-attendance": [
@@ -148,6 +150,17 @@ export default function AppRouter() {
                   routeRoles={ROUTE_ROLES}
                 >
                   <FormsManagement />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/qa-settings"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["qa-settings"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <QASettings />
                 </ProtectedRoute>
               }
             />

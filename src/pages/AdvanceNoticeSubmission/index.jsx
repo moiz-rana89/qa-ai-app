@@ -21,7 +21,7 @@ export default function AdvanceNoticeSubmission({ setOpen }) {
   const [loading, setLoading] = useState(false);
   const [isLoadingAgent, setisLoadingAgent] = useState(false);
 
-  const [reason, setReason] = useState("");
+  const [reason, setReason] = useState([]);
   const [notes, setNotes] = useState("");
   const [isNotes, setIsnotes] = useState(false);
 

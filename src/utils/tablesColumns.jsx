@@ -1,4 +1,8 @@
-import { formateToLA, formatSecondsToHHMMSS } from "./helperFunctions";
+import {
+  formateToLA,
+  formatSecondsToHHMMSS,
+  formatDateTimeEnglish,
+} from "./helperFunctions";
 
 /* =========================
    Remote Team
@@ -439,6 +443,118 @@ export const ColumnDataInternalTeam = [
     dataIndex: "date",
     key: "date",
     render: (value) => (value ? formateToLA(value) : "-"),
+  },
+];
+
+/* =========================
+   QA Settings - Attendance Alerts
+========================= */
+export const ColumnDataQASettings = [
+  {
+    title: "Account",
+    width: 150,
+    dataIndex: "account",
+    key: "account",
+    fixed: "left",
+  },
+  {
+    title: "ID",
+    width: 120,
+    dataIndex: "id",
+    key: "id",
+  },
+  {
+    title: "Hubspot company Ids",
+    width: 160,
+    dataIndex: "hubspot_company_ids",
+    key: "hubspot_company_ids",
+    render: (value) => value ?? "-",
+  },
+  {
+    title: "All Client Id",
+    width: 130,
+    dataIndex: "all_client_id",
+    key: "all_client_id",
+    render: (value) => value ?? "-",
+  },
+
+  {
+    title: "CS Helpdesk",
+    width: 130,
+    dataIndex: "cs_helpdesk",
+    key: "cs_helpdesk",
+    render: (value) => value ?? "-",
+  },
+  {
+    title: "Helpdesk Client Id",
+    width: 130,
+    dataIndex: "helpdesk_client_id",
+    key: "helpdesk_client_id",
+    render: (value) => value ?? "-",
+  },
+  {
+    title: "Hubstaff Client Id",
+    width: 130,
+    dataIndex: "hubstaff_client_id",
+    key: "hubstaff_client_id",
+    render: (value) => value ?? "-",
+  },
+  {
+    title: "No of Tickets Per Agent",
+    width: 130,
+    dataIndex: "no_of_tickets_per_agent",
+    key: "no_of_tickets_per_agent",
+    render: (value) => value ?? "-",
+  },
+  {
+    title: "No of Tickets Per QA",
+    width: 130,
+    dataIndex: "no_of_tickets_per_qa_specialist",
+    key: "no_of_tickets_per_qa_specialist",
+    render: (value) => value ?? "-",
+  },
+  {
+    title: "No of Tickets Per TL",
+    width: 130,
+    dataIndex: "no_of_tickets_per_teamlead",
+    key: "no_of_tickets_per_teamlead",
+    render: (value) => value ?? "-",
+  },
+  {
+    title: "QA Enabled",
+    width: 130,
+    dataIndex: "qa_enabled",
+    key: "qa_enabled",
+    render: (value) => value ?? "-",
+  },
+  {
+    title: "TL ID",
+    width: 130,
+    dataIndex: "team_id",
+    key: "team_id",
+    render: (value) => value ?? "-",
+  },
+  {
+    title: "Updated View",
+    width: 130,
+    dataIndex: "updated_view",
+    key: "updated_view",
+    render: (value) => value ?? "-",
+  },
+  {
+    title: "View ID",
+    width: 130,
+    dataIndex: "view_id",
+    key: "view_id",
+    render: (value) => value ?? "-",
+  },
+
+  {
+    title: "DB Created At",
+    width: 200,
+    dataIndex: "db_created_at",
+    key: "db_created_at",
+    render: (value) => (value ? formatDateTimeEnglish(value) : "-"),
   },
 ];
 

@@ -130,6 +130,11 @@ const menuList = [
         route: "forms-management",
         roles: ["admin", "dev"],
       },
+      // {
+      //   title: "QA Settings",
+      //   route: "qa-settings",
+      //   roles: ["admin", "dev", "om"],
+      // },
     ],
   },
 ];
