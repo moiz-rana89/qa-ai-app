@@ -37,7 +37,9 @@ function EvaluateTickets() {
   const userDetails = useSelector((state) => state.auth.user);
 
   const [selectedQas, setSelectedQas] = useState(
-    userDetails?.role == "admin" || userDetails?.role == "dev"
+    userDetails?.role == "admin" ||
+      userDetails?.role == "dev" ||
+      userDetails?.role == "qa"
       ? []
       : userDetails?.role == "qas"
       ? [{ owner: userDetails?.owner_id }]
@@ -45,7 +47,9 @@ function EvaluateTickets() {
   );
   const [selectedAgents, setSelectedAgents] = useState([]);
   const [selectedTL, setSelectedTL] = useState(
-    userDetails?.role == "admin" || userDetails?.role == "dev"
+    userDetails?.role == "admin" ||
+      userDetails?.role == "dev" ||
+      userDetails?.role == "qa"
       ? []
       : userDetails?.role != "qas"
       ? [{ teamlead_id: userDetails?.owner_id }]

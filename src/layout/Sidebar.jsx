@@ -118,22 +118,22 @@ const menuList = [
     title: "Quality Assurance",
     icon: "icon-park-outline:success",
     route: "quality-assurance",
-    roles: ["admin", "dev", "qas", "tl", "dtl"],
+    roles: ["admin", "dev", "qas", "tl", "dtl", "qa"],
     submenu: [
       {
         title: "Evaluate Tickets",
         route: "evaluate-tickets",
-        roles: ["admin", "dev", "qas", "tl", "dtl"],
+        roles: ["admin", "dev", "qas", "tl", "dtl", "qa"],
       },
       {
         title: "Forms Management",
         route: "forms-management",
-        roles: ["admin", "dev"],
+        roles: ["admin", "dev", "qa"],
       },
       // {
       //   title: "QA Settings",
       //   route: "qa-settings",
-      //   roles: ["admin", "dev", "om"],
+      //   roles: ["admin", "dev", "om","qa"],
       // },
     ],
   },
