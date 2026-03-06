@@ -57,37 +57,38 @@ export default function QASettings() {
   };
 
   useEffect(() => {
-    dispatch(getOPSTLFiltersList(() => {}));
+    // dispatch(getOPSTLFiltersList(() => {}));
     dispatch(getClientsFilterQAList(setIsLoadingClient));
-    dispatch(getTeamListFilterData(setIsLoadingTeam));
-    dispatch(getCSMFilterData(setIsLoadingCsm));
-    dispatch(getOMFilterData(setIsLoadingOm));
+    // dispatch(getTeamListFilterData(setIsLoadingTeam));
+    // dispatch(getCSMFilterData(setIsLoadingCsm));
+    // dispatch(getOMFilterData(setIsLoadingOm));
   }, []);
 
   useEffect(() => {
     if (!userDetails) return;
     let roleObject = {};
-    if (
-      userDetails?.role === "tl" ||
-      userDetails?.role === "dtl" ||
-      userDetails?.role === "itl"
-    ) {
-      roleObject = { team_lead_id: [parseInt(userDetails?.owner_id)] };
-    } else if (userDetails?.role === "om") {
-      roleObject = { operations_manager_id: [parseInt(userDetails?.owner_id)] };
-    } else if (userDetails?.role === "csm") {
-      roleObject = { csm_id: [parseInt(userDetails?.owner_id)] };
-    }
+    // if (
+    //   userDetails?.role === "tl" ||
+    //   userDetails?.role === "dtl" ||
+    //   userDetails?.role === "itl"
+    // ) {
+    //   roleObject = { team_lead_id: [parseInt(userDetails?.owner_id)] };
+    // } else if (userDetails?.role === "om") {
+    //   roleObject = { operations_manager_id: [parseInt(userDetails?.owner_id)] };
+    // } else if (userDetails?.role === "csm") {
+    //   roleObject = { csm_id: [parseInt(userDetails?.owner_id)] };
+    // }
+
     const params = {
-      client_name: clientsFilter?.map((item) => item?.client),
-      team_lead_id: teamLeadsFilters?.map((item) =>
-        parseInt(item?.teamlead_id)
-      ),
-      operations_manager_id: omFilters?.map((item) =>
-        parseInt(item?.operations_manager_id)
-      ),
-      csm_id: csmFilters?.map((item) => parseInt(item?.csm_id)),
-      date: dateFilter ? moment(dateFilter).format("YYYY-MM-DD") : undefined,
+      accounts: clientsFilter?.map((item) => item?.account),
+      // team_lead_id: teamLeadsFilters?.map((item) =>
+      //   parseInt(item?.teamlead_id)
+      // ),
+      // operations_manager_id: omFilters?.map((item) =>
+      //   parseInt(item?.operations_manager_id)
+      // ),
+      // csm_id: csmFilters?.map((item) => parseInt(item?.csm_id)),
+      // date: dateFilter ? moment(dateFilter).format("YYYY-MM-DD") : undefined,
       sort_order: sortOrder,
       sort_by: sortBy || undefined,
       page: 1,
@@ -176,51 +177,6 @@ export default function QASettings() {
               valueKey="id"
               searchKeys={["account"]}
             />
-            {userDetails?.role === "tl" ||
-            userDetails?.role === "dtl" ? null : (
-              <UnifiedDropdown
-                name="TL"
-                className="border-[#d9d9d9] bg-white flex items-center justify-between px-3"
-                data={teamList || []}
-                isLoading={isLoadingTeam}
-                selectedList={teamLeadsFilters}
-                setselectedList={setTeamLeadsFilters}
-                multiSelect={true}
-                displayKey="teamleads"
-                valueKey="teamlead_id"
-                searchKeys={["teamleads"]}
-              />
-            )}
-            {userDetails?.role === "om" ||
-            userDetails?.role === "tl" ||
-            userDetails?.role === "dtl" ? null : (
-              <UnifiedDropdown
-                name="OM"
-                className="border-[#d9d9d9] bg-white flex items-center justify-between px-3"
-                data={omList || []}
-                isLoading={isLoadingOm}
-                selectedList={omFilters}
-                setselectedList={setOmFilters}
-                multiSelect={true}
-                displayKey="operations_manager"
-                valueKey="operations_manager_id"
-                searchKeys={["operations_manager"]}
-              />
-            )}
-            {userDetails?.role === "csm" ? null : (
-              <UnifiedDropdown
-                name="CSM"
-                className="border-[#d9d9d9] bg-white flex items-center justify-between px-3"
-                data={csmList || []}
-                isLoading={isLoadingCsm}
-                selectedList={csmFilters}
-                setselectedList={setCsmFilters}
-                multiSelect={true}
-                displayKey="csm"
-                valueKey="csm_id"
-                searchKeys={["csm"]}
-              />
-            )}
           </div>
         </div>
       </div>

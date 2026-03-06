@@ -1,16 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Drawer, Select } from "antd";
+import { Drawer, Input, Select } from "antd";
 import { Icon } from "@iconify/react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { CustomButton } from "../../components/Buttons/CustomButton";
-import UnifiedDropdown from "../../components/Dropdown/UnifiedDropdown";
-import {
-  getQasName,
-  getTeamLeadName,
-} from "../../reduxStore/action/formsManagement";
 import { updateQASettings } from "../../reduxStore/action/qaSettings";
 import Skeleton from "../../components/Skeleton";
 
@@ -25,74 +20,28 @@ export default function EditQASettings({
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [qaEnabled, setQaEnabled] = useState(false);
-  const [ticketsPerAgents, setTicketsPerAgents] = useState(10);
-  const [ticketsPerTeamLead, setTicketsPerTeamLead] = useState(2);
-  const [ticketsPerQASpecialist, setTicketsPerQASpecialist] = useState(2);
-  const [qasAssigned, setQasAssigned] = useState([]);
-  const [tlAssigned, setTlAssigned] = useState([]);
-
-  const [isLoadingTL, setIsLoadingTL] = useState(false);
-  const { qasNames, teamLeadNames, isLoadingQas } = useSelector(
-    (store) => store.formsManagement
-  );
-
-  useEffect(() => {
-    if (open) {
-      dispatch(getQasName());
-      dispatch(getTeamLeadName(setIsLoadingTL));
-    }
-  }, [open, dispatch]);
+  const [ticketsPerAgents, setTicketsPerAgents] = useState(0);
+  const [ticketsPerTeamLead, setTicketsPerTeamLead] = useState(0);
+  const [ticketsPerQASpecialist, setTicketsPerQASpecialist] = useState(0);
 
   useEffect(() => {
     if (open && selectedRow) {
       setQaEnabled(selectedRow?.qa_enabled ?? false);
-      setTicketsPerAgents(selectedRow?.no_of_tickets_per_agents ?? 10);
-      setTicketsPerTeamLead(selectedRow?.no_of_tickets_per_team_lead ?? 2);
+      setTicketsPerAgents(selectedRow?.no_of_tickets_per_agent ?? 0);
+      setTicketsPerTeamLead(selectedRow?.no_of_tickets_per_teamlead ?? 0);
       setTicketsPerQASpecialist(
-        selectedRow?.no_of_tickets_per_qa_specialist ?? 2
+        selectedRow?.no_of_tickets_per_qa_specialist ?? 0
       );
-      if (selectedRow?.quality_assurance_specialist_assigned) {
-        setQasAssigned([
-          {
-            name: selectedRow.quality_assurance_specialist_assigned,
-            owner: selectedRow.qa_specialist_id,
-          },
-        ]);
-      } else {
-        setQasAssigned([]);
-      }
-      if (selectedRow?.team_lead_assigned) {
-        setTlAssigned([
-          {
-            teamleads: selectedRow.team_lead_assigned,
-            teamlead_id: selectedRow.team_lead_id,
-          },
-        ]);
-      } else {
-        setTlAssigned([]);
-      }
     }
   }, [selectedRow, open]);
 
   const handleSave = () => {
-    if (!qasAssigned?.length) {
-      toast.error("Please select Quality Assurance Specialist Assigned");
-      return;
-    }
-    if (!tlAssigned?.length) {
-      toast.error("Please select Team Lead Assigned");
-      return;
-    }
     setLoading(true);
     const body = {
       qa_enabled: qaEnabled,
-      no_of_tickets_per_agents: ticketsPerAgents,
-      no_of_tickets_per_team_lead: ticketsPerTeamLead,
-      no_of_tickets_per_qa_specialist: ticketsPerQASpecialist,
-      quality_assurance_specialist_assigned: qasAssigned[0]?.name,
-      qa_specialist_id: qasAssigned[0]?.owner,
-      team_lead_assigned: tlAssigned[0]?.teamleads,
-      team_lead_id: tlAssigned[0]?.teamlead_id,
+      no_of_tickets_per_agent: parseInt(ticketsPerAgents),
+      no_of_tickets_per_teamlead: parseInt(ticketsPerTeamLead),
+      no_of_tickets_per_qa_specialist: parseInt(ticketsPerQASpecialist),
     };
     dispatch(
       updateQASettings(selectedRow?.id, body, (success) => {
@@ -132,7 +81,7 @@ export default function EditQASettings({
     >
       {loading ? (
         <div className="flex flex-col justify-between bg-white rounded shadow-lg h-[100%] w-[100%]">
-          <div className="w-full h-[50vh] relative flex items-center justify-center">
+          <div className="w-full h-[95vh] relative flex items-center justify-center">
             <div className="absolute text-4xl text-slate-400">Updating</div>
             <Skeleton className="w-full h-full" />
           </div>
@@ -176,14 +125,12 @@ export default function EditQASettings({
                 No. of Tickets per Agents
                 <span className="text-red-500 ml-1">*</span>
               </label>
-              <Select
+              <Input
                 value={ticketsPerAgents}
-                onChange={setTicketsPerAgents}
+                onChange={(e) => setTicketsPerAgents(e.target.value)}
                 className="w-full !h-[45px]"
-                options={TICKET_COUNT_OPTIONS.map((n) => ({
-                  label: String(n),
-                  value: n,
-                }))}
+                type="number"
+                min={0}
               />
             </div>
 
@@ -192,14 +139,12 @@ export default function EditQASettings({
                 No. of Tickets per Team Lead
                 <span className="text-red-500 ml-1">*</span>
               </label>
-              <Select
+              <Input
                 value={ticketsPerTeamLead}
-                onChange={setTicketsPerTeamLead}
+                onChange={(e) => setTicketsPerTeamLead(e.target.value)}
                 className="w-full !h-[45px]"
-                options={TICKET_COUNT_OPTIONS.map((n) => ({
-                  label: String(n),
-                  value: n,
-                }))}
+                type="number"
+                min={0}
               />
             </div>
 
@@ -208,53 +153,12 @@ export default function EditQASettings({
                 No. of Tickets per QA Specialist
                 <span className="text-red-500 ml-1">*</span>
               </label>
-              <Select
+              <Input
                 value={ticketsPerQASpecialist}
-                onChange={setTicketsPerQASpecialist}
+                onChange={(e) => setTicketsPerQASpecialist(e.target.value)}
                 className="w-full !h-[45px]"
-                options={TICKET_COUNT_OPTIONS.map((n) => ({
-                  label: String(n),
-                  value: n,
-                }))}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-[#163143] font-poppins text-[14px] not-italic font-semibold leading-[20.5px]">
-                Quality Assurance Specialist Assigned
-                <span className="text-red-500 ml-1">*</span>
-              </label>
-              <UnifiedDropdown
-                name="Select QAS"
-                className="border-[#d9d9d9] w-full h-[45px] bg-[#FBFBFB]"
-                data={qasNames || []}
-                isLoading={isLoadingQas}
-                selectedList={qasAssigned}
-                setselectedList={setQasAssigned}
-                multiSelect={false}
-                displayKey="name"
-                valueKey="owner"
-                searchKeys={["name"]}
-                fullwidthDropdown={true}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-[#163143] font-poppins text-[14px] not-italic font-semibold leading-[20.5px]">
-                Team Lead Assigned<span className="text-red-500 ml-1">*</span>
-              </label>
-              <UnifiedDropdown
-                name="Select Team Lead"
-                className="border-[#d9d9d9] w-full h-[45px] bg-[#FBFBFB]"
-                data={teamLeadNames || []}
-                isLoading={isLoadingTL}
-                selectedList={tlAssigned}
-                setselectedList={setTlAssigned}
-                multiSelect={false}
-                displayKey="teamleads"
-                valueKey="teamlead_id"
-                searchKeys={["teamleads"]}
-                fullwidthDropdown={true}
+                type="number"
+                min={0}
               />
             </div>
           </div>

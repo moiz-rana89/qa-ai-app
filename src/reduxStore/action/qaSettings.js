@@ -37,12 +37,13 @@ export const getQASettingsList = (params) => {
     addParam("sort_by", params?.sort_by);
     addParam("sort_order", params?.sort_order);
     addParam("client_name", params?.client_name);
+    addParam("accounts", params?.accounts);
     addParam("team_lead_id", params?.team_lead_id);
     addParam("operations_manager_id", params?.operations_manager_id);
     addParam("csm_id", params?.csm_id);
     addParam("date", params?.date);
 
-    Api.get("/api/qa-ai/clients/paginated", queryParams)
+    Api.get("/api/qa-ai/clients", queryParams)
       .then((result) => {
         const data = result?.data ?? result;
         dispatch(
@@ -82,7 +83,7 @@ export const updateQASettings = (id, body, callback) => {
 export const getClientsFilterQAList = (setIsLoading) => {
   return (dispatch) => {
     setIsLoading(true);
-    Api.get(`/api/qa-ai/clients`)
+    Api.get(`/api/qa-ai/clients/dropdown`)
       .then((resp) => {
         dispatch(setClientsFiltersList(resp?.data));
         setIsLoading(false);
