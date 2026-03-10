@@ -32,11 +32,20 @@ import { DownloadClientFormReport } from "../pages/DownloadClientFormReport";
 import AuthProvider from "./AuthProvider";
 // admin download = wfa,om
 const ROUTE_ROLES = {
-  "evaluate-tickets": ["admin", "dev", "qas", "tl", "dtl", "qa"],
-  "forms-management": ["admin", "dev", "qa"],
-  "qa-settings": ["admin", "dev", "om", "qa"],
-  "shadowing-form": ["admin", "dev", "qas", "tl", "qa"],
-  "evalute-form": ["admin", "dev", "tl", "dtl", "qa"],
+  "evaluate-tickets": [
+    "admin",
+    "dev",
+    "qas",
+    "tl",
+    "dtl",
+    "qa",
+    "qa-dm",
+    "qa-tl",
+  ],
+  "forms-management": ["admin", "dev", "qa", "qa-dm", "qa-tl"],
+  "qa-settings": ["admin", "dev", "om", "qa", "qa-dm", "qa-tl"],
+  "shadowing-form": ["admin", "dev", "qas", "tl", "qa", "qa-dm", "qa-tl"],
+  "evalute-form": ["admin", "dev", "tl", "dtl", "qa", "qa-dm", "qa-tl"],
   "workforce-remote-team-attendance": [
     "dev",
     "csm",

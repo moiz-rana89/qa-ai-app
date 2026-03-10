@@ -26,6 +26,8 @@ const menuList = [
       "dd",
       "dm",
       "dtl",
+      "qa-dm",
+      "qa-tl",
     ],
     submenu: [
       {
@@ -41,12 +43,34 @@ const menuList = [
       {
         title: "Internal Team Management",
         route: "workforce-internal-team-attendance",
-        roles: ["dev", "om", "som", "aom", "admin", "itl", "dm", "dd"],
+        roles: [
+          "dev",
+          "om",
+          "som",
+          "aom",
+          "admin",
+          "itl",
+          "dm",
+          "dd",
+          "qa-dm",
+          "qa-tl",
+        ],
       },
       {
         title: "Internal Team Reporting",
         route: "workforce-internal-team-attendance-report",
-        roles: ["dev", "om", "som", "aom", "admin", "itl", "dm", "dd"],
+        roles: [
+          "dev",
+          "om",
+          "som",
+          "aom",
+          "admin",
+          "itl",
+          "dm",
+          "dd",
+          "qa-dm",
+          "qa-tl",
+        ],
       },
       {
         title: "Advance Notice",
@@ -118,22 +142,22 @@ const menuList = [
     title: "Quality Assurance",
     icon: "icon-park-outline:success",
     route: "quality-assurance",
-    roles: ["admin", "dev", "qas", "tl", "dtl", "qa"],
+    roles: ["admin", "dev", "qas", "tl", "dtl", "qa", "qa-dm", "qa-tl"],
     submenu: [
       {
         title: "Evaluate Tickets",
         route: "evaluate-tickets",
-        roles: ["admin", "dev", "qas", "tl", "dtl", "qa"],
+        roles: ["admin", "dev", "qas", "tl", "dtl", "qa", "qa-dm", "qa-tl"],
       },
       {
         title: "Forms Management",
         route: "forms-management",
-        roles: ["admin", "dev", "qa"],
+        roles: ["admin", "dev", "qa", "qa-dm", "qa-tl"],
       },
       {
         title: "QA Settings",
         route: "qa-settings",
-        roles: ["admin", "dev", "om", "qa"],
+        roles: ["admin", "dev", "om", "qa", "qa-dm", "qa-tl"],
       },
     ],
   },
