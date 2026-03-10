@@ -40,7 +40,8 @@ function EvaluateTickets() {
     userDetails?.role == "admin" ||
       userDetails?.role == "dev" ||
       userDetails?.role == "qa" ||
-      userDetails?.role == "qa-dm"
+      userDetails?.role == "qa-dm" ||
+      userDetails?.role == "qa-tl"
       ? []
       : userDetails?.role == "qas"
       ? [{ owner: userDetails?.owner_id }]
@@ -51,7 +52,8 @@ function EvaluateTickets() {
     userDetails?.role == "admin" ||
       userDetails?.role == "dev" ||
       userDetails?.role == "qa" ||
-      userDetails?.role == "qa-tl"
+      userDetails?.role == "qa-tl" ||
+      userDetails?.role == "qa-dm"
       ? []
       : userDetails?.role != "qas"
       ? [{ teamlead_id: userDetails?.owner_id }]
