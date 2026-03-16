@@ -152,12 +152,12 @@ const menuList = [
       {
         title: "Forms Management",
         route: "forms-management",
-        roles: ["admin", "dev", "qa", "qa-dm", "qa-tl"],
+        roles: ["admin", "dev", "qa", "qa-dm", "qa-tl", "tl"],
       },
       {
         title: "QA Settings",
         route: "qa-settings",
-        roles: ["admin", "dev", "om", "qa", "qa-dm", "qa-tl"],
+        roles: ["admin", "dev", "om", "qa", "qa-dm", "qa-tl", "tl"],
       },
     ],
   },
