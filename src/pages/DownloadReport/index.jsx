@@ -17,6 +17,7 @@ import {
   EVENT_TYPES_PC,
   EVENT_TYPES_TICKET_MONITORING,
 } from "../../utils/constants";
+import Api from "../../reduxStore/lib/api";
 
 const REPORTCATEGORY = [
   {
@@ -53,6 +54,8 @@ export const DownloadReport = () => {
     date: null,
   });
   const [loader, setLoader] = useState();
+  const [refreshTMLoader, setRefreshTMLoader] = useState(false);
+  const [refreshPCLoader, setRefreshPCLoader] = useState(false);
 
   const [loaderForTypes, setLoaderForTypes] = useState();
   const { eventTypesForDownload } = useSelector(
@@ -73,6 +76,23 @@ export const DownloadReport = () => {
       selectedReportCat: value,
       event_type: [],
     });
+  };
+
+  const handleRefresh = async (route, setLoading) => {
+    setLoading(true);
+    try {
+      const result = await Api.post(route);
+      const body = result?.data;
+      if (body?.status === "error") {
+        toast("A refresh is already in progress", { icon: "⚠️" });
+      } else {
+        toast.success(body?.message || "Process started");
+      }
+    } catch (err) {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = () => {
@@ -105,8 +125,48 @@ export const DownloadReport = () => {
   };
   return (
     <div className="w-full h-full flex flex-col p-8">
-      <div className="text-[#163143] text-[24px] font-semibold">
-        Download Report
+      <div className="flex items-center justify-between">
+        <div className="text-[#163143] text-[24px] font-semibold">
+          Download Report
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() =>
+              handleRefresh(
+                "/openai/ticket-monitoring-form-expanded",
+                setRefreshTMLoader
+              )
+            }
+            disabled={refreshTMLoader}
+            className={`min-w-[213px] min-h-[40px] px-4 text-[14px] font-medium rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#61BF19] focus:ring-offset-2 ${
+              refreshTMLoader
+                ? "bg-gray-400 cursor-not-allowed text-white"
+                : "bg-[#69C920] hover:bg-[#5CB518] text-white"
+            }`}
+          >
+            {refreshTMLoader ? "Refreshing..." : "Refresh Ticket Monitoring Data"}
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              handleRefresh(
+                "/openai/performance-coaching-expanded",
+                setRefreshPCLoader
+              )
+            }
+            disabled={refreshPCLoader}
+            className={`min-w-[213px] min-h-[40px] px-4 text-[14px] font-medium rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#61BF19] focus:ring-offset-2 ${
+              refreshPCLoader
+                ? "bg-gray-400 cursor-not-allowed text-white"
+                : "bg-[#69C920] hover:bg-[#5CB518] text-white"
+            }`}
+          >
+            {refreshPCLoader
+              ? "Refreshing..."
+              : "Refresh Performance Coaching Data"}
+          </button>
+        </div>
       </div>
       <div className="font-semibold pr-2 mt-[30px] text-[20px] text-[#163143]">
         Customize Your Report
