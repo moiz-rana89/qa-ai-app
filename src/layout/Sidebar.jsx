@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import logo from "../assets/tp-logo.jpg";
 import { logout, logoutAction } from "../reduxStore/action/auth";
 import { filterMenuByRole } from "../utils/roleHelpers";
+import NeedHelpModal from "../components/NeedHelpModal";
 
 const menuList = [
   {
@@ -221,6 +222,7 @@ export default function Sidebar() {
   const [openMenu, setOpenMenu] = useState(null);
   const [isPopover, setIsPopover] = useState(false);
   const [filteredMenu, setFilteredMenu] = useState([]);
+  const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -339,6 +341,22 @@ export default function Sidebar() {
           );
         })}
       </div>
+
+      {/* NEED HELP BUTTON */}
+      <div className="px-4 pb-3">
+        <button
+          onClick={() => setIsHelpModalOpen(true)}
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-full bg-[#86FE964D] hover:bg-[#86FE9680] text-[#163143] text-[14px] font-medium transition-all cursor-pointer"
+        >
+          <Icon icon="mdi:help-circle-outline" className="text-[18px]" />
+          Need help?
+        </button>
+      </div>
+
+      <NeedHelpModal
+        open={isHelpModalOpen}
+        onClose={() => setIsHelpModalOpen(false)}
+      />
 
       {/* LOGOUT POPOVER */}
       {isPopover && (
