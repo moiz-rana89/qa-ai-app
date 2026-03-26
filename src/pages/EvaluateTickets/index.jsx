@@ -18,6 +18,7 @@ import {
   getClientNames,
   getQasName,
   getTeamLeadName,
+  getTeamMemberFilter,
   setSelectedFormToEvaluate,
 } from "../../reduxStore/action/formsManagement";
 import {
@@ -81,7 +82,7 @@ function EvaluateTickets() {
     dispatch(getClientNames());
     dispatch(getQasName());
     dispatch(getTeamLeadName(setIsLoadingTL));
-    dispatch(getAgentName(setIsLoadingAgent));
+    dispatch(getTeamMemberFilter(setIsLoadingAgent));
   }, []);
   useEffect(() => {
     // if (type) {
@@ -119,19 +120,19 @@ function EvaluateTickets() {
     },
     {
       title: "QAS Name",
-      dataIndex: "assigned_to_qas",
-      key: "assigned_to_qas",
+      dataIndex: "qas_name",
+      key: "qas_name",
       width: 120,
       disableSort: true,
-      render: (_, { assigned_to_qas }) => <div>{assigned_to_qas}</div>,
+      render: (_, { qas_name }) => <div>{qas_name}</div>,
     },
     {
       title: "TL Name",
-      dataIndex: "assigned_to_tl",
-      key: "assigned_to_tl",
+      dataIndex: "tl_name",
+      key: "tl_name",
       width: 120,
       disableSort: true,
-      render: (_, { assigned_to_tl }) => <div>{assigned_to_tl}</div>,
+      render: (_, { tl_name }) => <div>{tl_name}</div>,
     },
     {
       title: "Due Date",
@@ -143,23 +144,23 @@ function EvaluateTickets() {
       ),
     },
     {
-      title: "Agent ID",
-      dataIndex: "agent_id",
-      key: "agent_id",
+      title: "Agent Name",
+      dataIndex: "agent_name",
+      key: "agent_name",
       width: 150,
       disableSort: true,
     },
     {
-      title: "Client ID",
-      dataIndex: "client_id",
-      key: "client_id",
+      title: "Client Name",
+      dataIndex: "client_name",
+      key: "client_name",
       width: 150,
       disableSort: true,
     },
     {
-      title: "Form ID",
-      dataIndex: "form_id",
-      key: "form_id",
+      title: "Form Name",
+      dataIndex: "form_name",
+      key: "form_name",
       width: 150,
       disableSort: true,
     },

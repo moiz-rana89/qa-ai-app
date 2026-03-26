@@ -288,6 +288,20 @@ export const getAgentName = (setLoader) => {
     }
   };
 };
+
+export const getTeamMemberFilter = (setLoader) => {
+  return (dispatch) => {
+    try {
+      setLoader(true);
+      Api.get(`/qa_ai_apis/get-team-members-filter`).then((resp) => {
+        dispatch(setAgentName(resp.data?.data));
+        setLoader(false);
+      });
+    } catch (error) {
+      setLoader(false);
+    }
+  };
+};
 export const getTeamLeadName = (setLoader) => {
   return (dispatch) => {
     try {
