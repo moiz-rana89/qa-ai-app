@@ -92,7 +92,7 @@ function EvaluateTickets() {
     getData(pagination, sorting, {
       client_id: selectedClients.map((item) => item.client_id),
       assigned_to_qas: selectedQas?.map((item) => item.owner),
-      agent_id: selectedAgents?.map((item) => item.user_id),
+      agent_id: selectedAgents?.map((item) => item.helpdesk_user_id),
       assigned_to_tl: selectedTL?.map((item) => item.teamlead_id),
     });
     // }
@@ -256,7 +256,7 @@ function EvaluateTickets() {
     getData({ page: 1, size: 10 }, sorting, {
       client_id: selectedClients.map((item) => item.client_id),
       assigned_to_qas: selectedQas?.map((item) => item.owner),
-      agent_id: selectedAgents?.map((item) => item.user_id),
+      agent_id: selectedAgents?.map((item) => item.helpdesk_user_id),
       assigned_to_tl: selectedTL?.map((item) => item.teamlead_id),
       due_date_from: date[0],
       due_date_to: date[1],
@@ -348,7 +348,7 @@ function EvaluateTickets() {
                 setselectedList={setSelectedAgents}
                 multiSelect={true}
                 displayKey="user_name"
-                valueKey="user_id"
+                valueKey="helpdesk_user_id"
                 searchKeys={["user_name"]}
                 className="h-[44px] w-[100%] border-[#d9d9d9] bg-white"
               />
