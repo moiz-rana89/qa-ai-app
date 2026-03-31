@@ -8,18 +8,6 @@ export default function AuthProvider({ children }) {
   const dispatch = useDispatch();
   const { isLoadingAuth } = useSelector((state) => state.auth);
 
-  const refreshToken = async () => {
-    const resp = await fetch(`${import.meta.env.VITE_API_URL}/refresh`, {
-      method: "POST",
-      credentials: "include",
-    });
-    if (!resp.ok && !(window.location.pathname == "/login")) {
-      window.location.href = "/login";
-      throw new Error("Session expired");
-    } else if (resp.ok && !(window.location.pathname == "/login")) {
-      window.location.reload();
-    }
-  };
   useEffect(() => {
     const checkAuth = async () => {
       dispatch({ type: "IS_LOADING_AUTH", data: true });
@@ -28,10 +16,42 @@ export default function AuthProvider({ children }) {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/me`, {
           credentials: "include",
         });
+
         if (res.status === 401) {
-          await refreshToken();
-          return; // stop further execution
+          // Try refreshing the token
+          const refreshResp = await fetch(
+            `${import.meta.env.VITE_API_URL}/refresh`,
+            { method: "POST", credentials: "include" }
+          );
+
+          if (!refreshResp.ok) {
+            // Refresh failed — session is gone, go to login
+            if (window.location.pathname !== "/login") {
+              window.location.href = "/login";
+            }
+            return;
+          }
+
+          // Refresh succeeded — retry /me once
+          const retryRes = await fetch(`${import.meta.env.VITE_API_URL}/me`, {
+            credentials: "include",
+          });
+
+          if (!retryRes.ok) {
+            // Cookie still not working — go to login instead of looping
+            if (window.location.pathname !== "/login") {
+              window.location.href = "/login";
+            }
+            return;
+          }
+
+          const retryData = await retryRes.json();
+          dispatch(
+            setIsAuthAction({ isAuthenticated: true, user: retryData })
+          );
+          return;
         }
+
         if (!res.ok) throw new Error();
         const data = await res.json();
 
