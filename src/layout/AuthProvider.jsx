@@ -29,7 +29,7 @@ export default function AuthProvider({ children }) {
           credentials: "include",
         });
         if (res.status === 401) {
-          refreshToken();
+          await refreshToken();
           return; // stop further execution
         }
         if (!res.ok) throw new Error();
