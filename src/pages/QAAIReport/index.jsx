@@ -26,7 +26,7 @@ export const QAAIReport = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col p-8">
+    <div className="w-full flex flex-col p-8">
       <div className="flex items-center justify-between">
         <div className="text-[#163143] text-[24px] font-semibold">
           Download Report
@@ -35,7 +35,7 @@ export const QAAIReport = () => {
       <div className="font-semibold pr-2 mt-[30px] text-[20px] text-[#163143]">
         Customize Your Report
       </div>
-      <div className="mt-2 py-[35px] px-[24px] h-full border border-[#D7E6E7] rounded-[24px] bg-[#FFF] overflow-y-auto">
+      <div className="mt-2 py-[35px] px-[24px] border border-[#D7E6E7] rounded-[24px] bg-[#FFF]">
         <div className="mt-[14px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[24px]">
           <div>
             <label className="block font-semibold text-[14px] mb-3">
