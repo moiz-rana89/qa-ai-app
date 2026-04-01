@@ -885,19 +885,33 @@ export default function CategoryWithQuestion() {
               </label>
               {formData.questionType === "boolean" ? (
                 <div className="flex flex-col gap-3 mt-[10px]">
-                  {[...gradingCriteria].reverse()?.map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex-1 rounded-[12px] bg-[#fbfbfb] border border-[#efefef] p-4"
-                    >
-                      <div className="text-[14px] font-semibold text-[#163143] mb-1">
-                        {item.score} Points
+                  {[...gradingCriteria].reverse()?.map((item) => {
+                    const originalIndex = item.remarks === "Yes" ? 1 : 0;
+                    return (
+                      <div key={originalIndex} className="relative w-full">
+                        <label
+                          className={`absolute left-3 top-2 text-[#163143] text-[14px] font-semibold transition-all duration-200
+                          pointer-events-none z-10 bg-[#fbfbfb]
+                          ${formData.questionText ? "top-0 text-xs px-1" : ""}
+                        `}
+                        >
+                          {item.score} Points · {item.remarks}
+                        </label>
+
+                        <TextArea
+                          placeholder="Explain how this question should be assessed..."
+                          value={item.explanation || ""}
+                          onChange={(e) => {
+                            const updated = [...gradingCriteria];
+                            updated[originalIndex].explanation = e.target.value;
+                            setGradingCriteria(updated);
+                          }}
+                          className="!pt-[30px] !bg-[#fbfbfb] !border-[#efefef] !rounded-[12px] pt-10 overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                          autoSize={{ minRows: 3, maxRows: 5 }}
+                        />
                       </div>
-                      <div className="text-[14px] text-[#6B7280]">
-                        {item.remarks}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 gradingCriteria?.map((item, index) => (
