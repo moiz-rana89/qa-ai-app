@@ -185,8 +185,18 @@ export default function CategoryWithQuestion() {
   //   setGradingCriteria(updatedCriteria);
   // };
 
-  const handleTotalScoreChange = (e) => {
+  const handleTotalScoreChange = (e, questionType) => {
     const totalScore = Number(e) || 0;
+    const type = questionType || formData.questionType;
+
+    if (type === "boolean") {
+      setGradingCriteria([
+        { score: 0, remarks: "No" },
+        { score: totalScore, remarks: "Yes" },
+      ]);
+      return;
+    }
+
     const criteriaCount = gradingCriteria.length;
 
     if (!criteriaCount) return;
@@ -738,7 +748,25 @@ export default function CategoryWithQuestion() {
                 showSearch
                 placeholder="Select Question Type"
                 value={formData.questionType || "text"}
-                onChange={(value) => handleFormChange("questionType", value)}
+                onChange={(value) => {
+                  handleFormChange("questionType", value);
+                  if (value === "boolean") {
+                    const totalScore = Number(formData.questionPoints) || 0;
+                    setGradingCriteria([
+                      { score: 0, remarks: "No" },
+                      { score: totalScore, remarks: "Yes" },
+                    ]);
+                  } else {
+                    const totalScore = Number(formData.questionPoints) || 0;
+                    const step = totalScore / 5;
+                    setGradingCriteria(
+                      Array.from({ length: 5 }, (_, i) => ({
+                        score: parseFloat(((i + 1) * step).toFixed(2)),
+                        remarks: "",
+                      }))
+                    );
+                  }
+                }}
                 options={QUESTION_TYPE}
                 className="w-[100%] custom-select"
                 style={{ height: "44px" }}
@@ -855,26 +883,44 @@ export default function CategoryWithQuestion() {
                 Grading Criteria Breakdown
                 <span className="text-red-500">*</span>
               </label>
-              {gradingCriteria?.map((item, index) => (
-                <div className="relative w-full mt-[10px]">
-                  <label
-                    className={`absolute left-3 top-2 text-[#163143] text-[14px] font-semibold transition-all duration-200 
-                    pointer-events-none z-10 bg-[#fbfbfb]
-                    ${formData.questionText ? "top-0 text-xs px-1" : ""}
-                  `}
-                  >
-                    {item?.score} Points
-                  </label>
-
-                  <TextArea
-                    placeholder="Explain how this question should be assessed..."
-                    value={item.remarks}
-                    onChange={(e) => handleRemarkChange(index, e.target.value)}
-                    className="!pt-[30px] !bg-[#fbfbfb] !border-[#efefef] !rounded-[12px] pt-10 overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
-                    autoSize={{ minRows: 3, maxRows: 5 }}
-                  />
+              {formData.questionType === "boolean" ? (
+                <div className="flex flex-col gap-3 mt-[10px]">
+                  {[...gradingCriteria].reverse()?.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex-1 rounded-[12px] bg-[#fbfbfb] border border-[#efefef] p-4"
+                    >
+                      <div className="text-[14px] font-semibold text-[#163143] mb-1">
+                        {item.score} Points
+                      </div>
+                      <div className="text-[14px] text-[#6B7280]">
+                        {item.remarks}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              ) : (
+                gradingCriteria?.map((item, index) => (
+                  <div className="relative w-full mt-[10px]" key={index}>
+                    <label
+                      className={`absolute left-3 top-2 text-[#163143] text-[14px] font-semibold transition-all duration-200
+                      pointer-events-none z-10 bg-[#fbfbfb]
+                      ${formData.questionText ? "top-0 text-xs px-1" : ""}
+                    `}
+                    >
+                      {item?.score} Points
+                    </label>
+
+                    <TextArea
+                      placeholder="Explain how this question should be assessed..."
+                      value={item.remarks}
+                      onChange={(e) => handleRemarkChange(index, e.target.value)}
+                      className="!pt-[30px] !bg-[#fbfbfb] !border-[#efefef] !rounded-[12px] pt-10 overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                      autoSize={{ minRows: 3, maxRows: 5 }}
+                    />
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
