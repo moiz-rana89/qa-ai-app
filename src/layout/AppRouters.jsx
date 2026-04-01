@@ -29,6 +29,7 @@ import { CustomMonitoringForm } from "../pages/CustomMonitoringForm";
 import { OtherCoachingTypes } from "../pages/OtherCoachingTypes";
 import AdvanceNoticeSubmission from "../pages/AdvanceNoticeSubmission";
 import { DownloadClientFormReport } from "../pages/DownloadClientFormReport";
+import { QAAIReport } from "../pages/QAAIReport";
 import AuthProvider from "./AuthProvider";
 // admin download = wfa,om
 const ROUTE_ROLES = {
@@ -71,6 +72,7 @@ const ROUTE_ROLES = {
     "wfa",
     "om",
   ],
+  "qa-ai-report": ["admin", "dev", "qa-tl", "tl", "aom", "dtl", "wfa", "om"],
   "ticket-monitoring-form": [
     "dev",
     "qa-tl",
@@ -300,6 +302,17 @@ export default function AppRouter() {
                   routeRoles={ROUTE_ROLES}
                 >
                   <DownloadClientFormReport />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/qa-ai-report"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["qa-ai-report"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <QAAIReport />
                 </ProtectedRoute>
               }
             />

@@ -191,6 +191,11 @@ const menuList = [
         route: "download-client-specific-report",
         roles: ["admin", "dev", "dtl", "qa-tl", "tl", "aom", "wfa", "om"],
       },
+      {
+        title: "QA AI Report",
+        route: "qa-ai-report",
+        roles: ["admin", "dev", "qa-tl", "tl", "aom", "dtl", "wfa", "om"],
+      },
     ],
   },
   {

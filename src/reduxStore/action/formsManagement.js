@@ -566,3 +566,49 @@ export const getDownloadCSFReport = (setLoader, toast, params = {}) => {
     }
   };
 };
+
+export const getQAAIReport = (setLoader, toast, params = {}) => {
+  return (dispatch) => {
+    try {
+      setLoader(true);
+      const queryParams = {};
+
+      const addParam = (key, value) => {
+        if (value !== undefined && value !== null && value !== "") {
+          if (Array.isArray(value) && value.length === 0) {
+            return;
+          }
+          queryParams[key] = value;
+        }
+      };
+
+      addParam("tl_name", params.tl_name);
+      addParam("start_date", params.start_date);
+      addParam("end_date", params.end_date);
+
+      Api.get("/qa_ai_apis/qa_ai_report_download", queryParams)
+        .then((resp) => {
+          const blob = new Blob([resp.data], { type: "text/csv" });
+
+          const link = document.createElement("a");
+
+          link.href = URL.createObjectURL(blob);
+
+          link.download = `qa_ai_report.csv`;
+
+          link.click();
+
+          URL.revokeObjectURL(link.href);
+          setLoader(false);
+          toast.success("File Downloaded Successfuly");
+        })
+        .catch((error) => {
+          setLoader(false);
+          toast.error("No data found for selected filters");
+        });
+    } catch (error) {
+      setLoader(false);
+      toast.error("No data found for selected filters");
+    }
+  };
+};
