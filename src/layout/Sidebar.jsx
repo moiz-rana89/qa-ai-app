@@ -118,6 +118,7 @@ const menuList = [
       "som",
       "aom",
       "dtl",
+      "qas",
     ],
     submenu: [
       {
@@ -134,6 +135,7 @@ const menuList = [
           "som",
           "aom",
           "dtl",
+          "qas",
         ],
       },
       {
@@ -150,6 +152,7 @@ const menuList = [
           "qa-tl",
           "tl",
           "dtl",
+          "qas",
         ],
       },
       {
@@ -166,6 +169,7 @@ const menuList = [
           "qa-tl",
           "tl",
           "dtl",
+          "qas",
         ],
       },
       {
@@ -179,22 +183,22 @@ const menuList = [
     title: "Reports",
     icon: "hugeicons:download-03",
     route: "reports",
-    roles: ["admin", "dev", "qa-tl", "tl", "aom", "dtl", "wfa", "om"],
+    roles: ["admin", "dev", "qa-tl", "tl", "aom", "dtl", "wfa", "om", "qas"],
     submenu: [
       {
         title: "Download Ticket OR Performance Report",
         route: "download-report",
-        roles: ["admin", "dev", "qa-tl", "tl", "aom", "dtl", "wfa", "om"],
+        roles: ["admin", "dev", "qa-tl", "tl", "aom", "dtl", "wfa", "om", "qas"],
       },
       {
         title: "Download Client Specific Report",
         route: "download-client-specific-report",
-        roles: ["admin", "dev", "dtl", "qa-tl", "tl", "aom", "wfa", "om"],
+        roles: ["admin", "dev", "dtl", "qa-tl", "tl", "aom", "wfa", "om", "qas"],
       },
       {
         title: "QA AI Report",
         route: "qa-ai-report",
-        roles: ["admin", "dev", "qa-tl", "tl", "aom", "dtl", "wfa", "om"],
+        roles: ["admin", "dev", "qa-tl", "tl", "aom", "dtl", "wfa", "om", "qas"],
       },
     ],
   },
@@ -212,7 +216,7 @@ const menuList = [
       {
         title: "Forms Management",
         route: "forms-management",
-        roles: ["admin", "dev", "qa", "qa-dm", "qa-tl"],
+        roles: ["admin", "dev", "qa", "qa-dm", "qa-tl", "qas"],
       },
       {
         title: "QA Settings",
