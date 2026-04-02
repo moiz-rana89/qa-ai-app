@@ -78,6 +78,7 @@ export const getFirstAllowedSidebarRoute = (menuList, userRole) => {
 };
 
 export const ROLE_DEFAULT_ROUTES = {
+  dev: "/workforce-remote-team-attendance",
   wfa: "/wfa-remote-team-attendance",
   tl: "/workforce-remote-team-attendance",
   dtl: "/workforce-remote-team-attendance",
@@ -88,6 +89,8 @@ export const ROLE_DEFAULT_ROUTES = {
   som: "/workforce-remote-team-attendance",
   aom: "/workforce-remote-team-attendance",
   admin: "/workforce-remote-team-attendance",
+  csm: "/workforce-remote-team-attendance",
+  cstm: "/workforce-remote-team-attendance",
   qas: "/evaluate-tickets",
   qa: "/evaluate-tickets",
   "qa-dm": "/evaluate-tickets",

@@ -29,6 +29,7 @@ import { PerformanceMonitoringForm } from "../pages/PerformanceMonitoringForm";
 import { CustomMonitoringForm } from "../pages/CustomMonitoringForm";
 import { OtherCoachingTypes } from "../pages/OtherCoachingTypes";
 import AdvanceNoticeSubmission from "../pages/AdvanceNoticeSubmission";
+import ScheduleManagement from "../pages/ScheduleManagement";
 import { DownloadClientFormReport } from "../pages/DownloadClientFormReport";
 import { QAAIReport } from "../pages/QAAIReport";
 import AuthProvider from "./AuthProvider";
@@ -116,6 +117,7 @@ const ROUTE_ROLES = {
     "qas",
   ],
   "advance-notice": ["admin", "dev", "tl"],
+  "schedule-management": ["admin", "dev"],
 };
 
 function DefaultRedirect() {
@@ -383,6 +385,17 @@ export default function AppRouter() {
                   routeRoles={ROUTE_ROLES}
                 >
                   <AdvanceNoticeSubmission />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/schedule-management"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["schedule-management"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <ScheduleManagement />
                 </ProtectedRoute>
               }
             />

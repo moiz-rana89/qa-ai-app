@@ -13,6 +13,7 @@ export default defineConfig({
       "secops.qaai.talentpopapp.com",
       "talentpopapp.com",
       "wfa.talentpopapp.com",
+      "dev.talentpopapp.com",
     ],
   },
 });

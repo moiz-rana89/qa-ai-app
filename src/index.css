@@ -112,6 +112,34 @@ body {
   padding: 13px 53px 13px 14px !important;
   border-color: #ff5546 !important;
 }
+/* Schedule Management - TimePicker & DatePicker pill style */
+.schedule-time-picker .ant-picker-suffix,
+.schedule-date-picker .ant-picker-suffix {
+  order: -1;
+  margin-right: 8px;
+  margin-left: 4px;
+  color: #69C920;
+}
+.schedule-time-picker .ant-picker-prefix,
+.schedule-date-picker .ant-picker-prefix {
+  color: #69C920;
+}
+.schedule-time-picker.ant-picker,
+.schedule-date-picker.ant-picker {
+  border-radius: 24px !important;
+  border-color: #D7E6E7 !important;
+  padding-left: 12px !important;
+}
+.schedule-time-picker.ant-picker:hover,
+.schedule-date-picker.ant-picker:hover {
+  border-color: #69C920 !important;
+}
+.schedule-time-picker.ant-picker-focused,
+.schedule-date-picker.ant-picker-focused {
+  border-color: #69C920 !important;
+  box-shadow: 0 0 0 2px rgba(105, 201, 32, 0.1) !important;
+}
+
 /* Ant Design Tab Customization */
 .qa-form-tabs .ant-tabs-nav {
   /* background-color: #e8f5e9; */
