@@ -13,6 +13,7 @@ import QASettings from "../pages/QASettings";
 import MainLayout from "./MainLayout";
 import FullWidthLayout from "./FullWidthLayout";
 import ProtectedRoute from "./ProtectedRoute";
+import { getDefaultRouteForRole } from "../utils/roleHelpers";
 import { setIsAuthAction } from "../reduxStore/action/auth";
 import RemoteTeamManagement from "../pages/WorkForceTeamDashboard/RemoteTeamManagement";
 import UnauthorizedPage from "./UnauthorizedPage";
@@ -43,7 +44,7 @@ const ROUTE_ROLES = {
     "qa-dm",
     "qa-tl",
   ],
-  "forms-management": ["admin", "dev", "qa", "qa-dm", "qa-tl"],
+  "forms-management": ["admin", "dev", "qa", "qa-dm", "qa-tl", "qas"],
   "qa-settings": ["admin", "dev", "om", "qa", "qa-dm", "qa-tl"],
   "shadowing-form": ["admin", "dev", "qas", "tl", "qa", "qa-dm", "qa-tl"],
   "evalute-form": ["admin", "dev", "tl", "dtl", "qa", "qa-dm", "qa-tl"],
@@ -61,7 +62,7 @@ const ROUTE_ROLES = {
     "dm",
     "dtl",
   ],
-  "download-report": ["admin", "dev", "qa-tl", "tl", "aom", "dtl", "wfa", "om"],
+  "download-report": ["admin", "dev", "qa-tl", "tl", "aom", "dtl", "wfa", "om", "qas"],
   "download-client-specific-report": [
     "admin",
     "dev",
@@ -71,8 +72,9 @@ const ROUTE_ROLES = {
     "aom",
     "wfa",
     "om",
+    "qas",
   ],
-  "qa-ai-report": ["admin", "dev", "qa-tl", "tl", "aom", "dtl", "wfa", "om"],
+  "qa-ai-report": ["admin", "dev", "qa-tl", "tl", "aom", "dtl", "wfa", "om", "qas"],
   "ticket-monitoring-form": [
     "dev",
     "qa-tl",
@@ -84,6 +86,7 @@ const ROUTE_ROLES = {
     "som",
     "aom",
     "dtl",
+    "qas",
   ],
   "performance-monitoring-form": [
     "om",
@@ -96,6 +99,7 @@ const ROUTE_ROLES = {
     "tl",
     "qa-tl",
     "dtl",
+    "qas",
   ],
   "custom-monitoring-form": ["admin", "dev", "dtl", "om", "aom"],
   "other-coaching-types": [
@@ -109,9 +113,17 @@ const ROUTE_ROLES = {
     "tl",
     "qa-tl",
     "dtl",
+    "qas",
   ],
   "advance-notice": ["admin", "dev", "tl"],
 };
+
+function DefaultRedirect() {
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  const defaultRoute = getDefaultRouteForRole(user?.role);
+  return <Navigate to={defaultRoute} replace />;
+}
 
 export default function AppRouter() {
   // const dispatch = useDispatch();
@@ -397,10 +409,7 @@ export default function AppRouter() {
             />
           </Route>
 
-          <Route
-            path="*"
-            element={<Navigate to="/forms-management" replace />}
-          />
+          <Route path="*" element={<DefaultRedirect />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

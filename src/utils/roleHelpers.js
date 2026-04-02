@@ -88,6 +88,10 @@ export const ROLE_DEFAULT_ROUTES = {
   som: "/workforce-remote-team-attendance",
   aom: "/workforce-remote-team-attendance",
   admin: "/workforce-remote-team-attendance",
+  qas: "/evaluate-tickets",
+  qa: "/evaluate-tickets",
+  "qa-dm": "/evaluate-tickets",
+  "qa-tl": "/evaluate-tickets",
 };
 
 export const getDefaultRouteForRole = (userRole) => {
