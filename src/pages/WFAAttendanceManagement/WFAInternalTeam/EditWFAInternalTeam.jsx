@@ -20,6 +20,7 @@ import { useDispatch } from "react-redux";
 import {
   disputeAttendnceReportbyWFA,
   disputeReopenAttendnceReportbyWFA,
+  resolveAttendanceDispute,
   updateAttendnceInternalReport,
 } from "../../../reduxStore/action/workforcedashboard";
 import UploadFile from "../../../components/UploadFile/index";
@@ -48,6 +49,7 @@ export default function EditWFAInternalTeam({
   const [isNotes, setIsnotes] = useState(false);
   const [isResolved, setIsResolved] = useState(false);
   const [isDisputed, setIsDisputed] = useState(false);
+  const [isDisputeResolved, setIsDisputeResolved] = useState(false);
 
   const [notes, setNotes] = useState(" ");
   const [notesTL, setNotesTL] = useState(" ");
@@ -74,6 +76,7 @@ export default function EditWFAInternalTeam({
       setNotes(selectedReport?.notes_wfa);
       setNotesTL(selectedReport?.notes);
       setIsDisputed(false);
+      setIsDisputeResolved(false);
       setAuthCheck(false);
       if (selectedReport?.attachments) {
         // setFileInfo(JSON.parse(selectedReport?.attachments));
@@ -124,6 +127,16 @@ export default function EditWFAInternalTeam({
     }
     setLoading(false);
   };
+  const handleResponseDisputeResolve = (success) => {
+    if (success) {
+      toast.success("Dispute resolved successfully");
+      onClose();
+      fetchData({ ...filterParams, page: currentpage });
+    } else {
+      toast.error("Error occurred while resolving dispute, Please try again");
+    }
+    setLoading(false);
+  };
   const handleResponseDisputeReopen = (success) => {
     if (success) {
       toast.success("Dispute added again Successfuly");
@@ -158,9 +171,13 @@ export default function EditWFAInternalTeam({
       toast.error(
         "Please Mark this as resolved if you want to add this in dispute"
       );
-    } else if (!isDisputed && activeTab == "Dispute Resolved by TL") {
+    } else if (
+      !isDisputed &&
+      !isDisputeResolved &&
+      activeTab == "Dispute Resolved by TL"
+    ) {
       toast.error(
-        "Please check Mark as disputed if you want to add this in dispute"
+        "Please select Mark as Disputed or Mark as Resolved"
       );
     } else {
       setLoading(true);
@@ -203,6 +220,20 @@ export default function EditWFAInternalTeam({
           disputeReopenAttendnceReportbyWFA(
             paramsDispute,
             handleResponseDisputeReopen
+          )
+        );
+        return;
+      }
+      if (isDisputeResolved && activeTab == "Dispute Resolved by TL") {
+        dispatch(
+          resolveAttendanceDispute(
+            {
+              id: selectedReport?.id,
+              resolved_by_wfa: true,
+              updated_notes_wfa: notes,
+              reason: reason[0]?.reason,
+            },
+            handleResponseDisputeResolve
           )
         );
         return;
@@ -300,27 +331,49 @@ export default function EditWFAInternalTeam({
             <div className="text-[#163143] text-[14px] font-semibold">
               Mark As:
             </div>
-            <label className="flex items-center ml-1 mt-3">
-              <input
-                type="checkbox"
-                class="custom-checkbox"
-                checked={isResolved}
-                onChange={(e) => setIsResolved(e.target.checked)}
-              ></input>
-              <span className="text-[#163143] text-center font-poppins text-[16px] not-italic font-normal leading-[20px] ml-2">
-                Mark as Resolved
-              </span>
-            </label>
-            {activeTab == "Resolved by TL" && (
+            {activeTab != "Dispute Resolved by TL" && (
+              <label className="flex items-center ml-1 mt-3">
+                <input
+                  type="checkbox"
+                  class="custom-checkbox"
+                  checked={isResolved}
+                  onChange={(e) => setIsResolved(e.target.checked)}
+                ></input>
+                <span className="text-[#163143] text-center font-poppins text-[16px] not-italic font-normal leading-[20px] ml-2">
+                  Mark as Resolved
+                </span>
+              </label>
+            )}
+            {(activeTab == "Resolved by TL" ||
+              activeTab == "Dispute Resolved by TL") && (
               <label className="flex items-center ml-1 mt-3">
                 <input
                   type="checkbox"
                   class="custom-checkbox"
                   checked={isDisputed}
-                  onChange={(e) => setIsDisputed(e.target.checked)}
+                  onChange={(e) => {
+                    setIsDisputed(e.target.checked);
+                    if (e.target.checked) setIsDisputeResolved(false);
+                  }}
                 ></input>
                 <span className="text-[#163143] text-center font-poppins text-[16px] not-italic font-normal leading-[20px] ml-2">
                   Mark as Disputed
+                </span>
+              </label>
+            )}
+            {activeTab == "Dispute Resolved by TL" && (
+              <label className="flex items-center ml-1 mt-3">
+                <input
+                  type="checkbox"
+                  class="custom-checkbox"
+                  checked={isDisputeResolved}
+                  onChange={(e) => {
+                    setIsDisputeResolved(e.target.checked);
+                    if (e.target.checked) setIsDisputed(false);
+                  }}
+                ></input>
+                <span className="text-[#163143] text-center font-poppins text-[16px] not-italic font-normal leading-[20px] ml-2">
+                  Mark as Resolved
                 </span>
               </label>
             )}

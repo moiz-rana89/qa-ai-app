@@ -447,6 +447,101 @@ export const ColumnDataInternalTeam = [
 ];
 
 /* =========================
+   Resolved By WFA
+========================= */
+export const ColumnDataResolvedByWFA = [
+  {
+    title: "Agent Name",
+    width: 150,
+    dataIndex: "agent_name",
+    key: "agent_name",
+    fixed: "left",
+  },
+  {
+    title: "Client Name",
+    width: 150,
+    dataIndex: "client_name",
+    key: "client_name",
+    fixed: "left",
+  },
+  {
+    title: "Team Lead",
+    width: 150,
+    dataIndex: "team_lead",
+    key: "team_lead",
+  },
+  {
+    title: "Date",
+    width: 120,
+    dataIndex: "date",
+    key: "date",
+  },
+  {
+    title: "Status",
+    width: 120,
+    dataIndex: "status",
+    key: "status",
+    render: (_, item) => (
+      <div className="flex items-center justify-center">
+        <div
+          className={`capitalize flex items-center justify-center rounded-full px-2 py-1 ${
+            item.status === "late"
+              ? "bg-[#FFF7D8]"
+              : item.status === "missed"
+              ? "bg-[#FFECEC]"
+              : item.status === "abandoned" || item.status === "unknown"
+              ? "bg-[#FFE8CC]"
+              : ""
+          }`}
+        >
+          {item.status}
+        </div>
+      </div>
+    ),
+  },
+  {
+    title: "Disputed At",
+    width: 180,
+    dataIndex: "disputed_at",
+    key: "disputed_at",
+    render: (value) => (value ? formatDateTimeEnglish(value) : "-"),
+  },
+  {
+    title: "Resolved At",
+    width: 180,
+    dataIndex: "resolved_at",
+    key: "resolved_at",
+    render: (value) => (value ? formatDateTimeEnglish(value) : "-"),
+  },
+  {
+    title: "Updated By TL",
+    width: 150,
+    dataIndex: "updated_by_tl",
+    key: "updated_by_tl",
+  },
+  {
+    title: "Updated By WFA",
+    width: 150,
+    dataIndex: "updated_by_wfa",
+    key: "updated_by_wfa",
+  },
+  {
+    title: "WFA Notes",
+    width: 200,
+    dataIndex: "updated_notes_wfa",
+    key: "updated_notes_wfa",
+    render: (value) => value || "-",
+  },
+  {
+    title: "Reason",
+    width: 200,
+    dataIndex: "attendance_reason",
+    key: "attendance_reason",
+    render: (value) => value || "-",
+  },
+];
+
+/* =========================
    QA Settings - Attendance Alerts
 ========================= */
 export const ColumnDataQASettings = [
