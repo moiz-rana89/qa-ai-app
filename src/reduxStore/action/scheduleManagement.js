@@ -36,6 +36,7 @@ export const getSchedules = (params = {}) => {
     dispatch(setScheduleLoading(true));
 
     const queryParams = {};
+    addParam(queryParams, "user_id", params.user_id);
     addParam(queryParams, "member_name", params.member_name);
     addParam(queryParams, "client_name", params.client_name);
     addParam(queryParams, "client_id", params.client_id);

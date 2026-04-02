@@ -109,12 +109,10 @@ export default function ScheduleManagement() {
     if (!userDetails) return;
 
     const params = {
-      member_name: membersFilter?.map((item) => item?.member_name),
-      client_name: clientsFilter?.map((item) => item?.client),
-      project: projectFilter?.[0]?.project,
-      team_lead_id: teamLeadsFilter?.map((item) =>
-        String(item?.team_lead_id)
-      ),
+      user_id: membersFilter?.map((item) => String(item?.user_id)),
+      client_id: clientsFilter?.map((item) => String(item?.hubstaff_client_id)),
+      project: projectFilter?.[0]?.id ? String(projectFilter[0].id) : undefined,
+      team_lead_id: teamLeadsFilter?.map((item) => String(item?.team_lead_id)),
       schedule_type: scheduleTypeFilter?.[0]?.value !== "all" ? scheduleTypeFilter?.[0]?.value : undefined,
       status: statusFilter?.[0]?.value !== "all" ? statusFilter?.[0]?.value : undefined,
       mapping_status: mappingStatusFilter?.[0]?.value !== "all" ? mappingStatusFilter?.[0]?.value : undefined,
@@ -297,9 +295,9 @@ export default function ScheduleManagement() {
               selectedList={clientsFilter}
               setselectedList={setClientsFilter}
               multiSelect={true}
-              displayKey="client"
-              valueKey="client_id"
-              searchKeys={["client"]}
+              displayKey="name"
+              valueKey="hubstaff_client_id"
+              searchKeys={["name"]}
             />
 
             <UnifiedDropdown
@@ -309,9 +307,9 @@ export default function ScheduleManagement() {
               selectedList={membersFilter}
               setselectedList={setMembersFilter}
               multiSelect={true}
-              displayKey="member_name"
+              displayKey="user_name"
               valueKey="user_id"
-              searchKeys={["member_name"]}
+              searchKeys={["user_name"]}
             />
 
             <UnifiedDropdown
@@ -321,9 +319,9 @@ export default function ScheduleManagement() {
               selectedList={projectFilter}
               setselectedList={setProjectFilter}
               multiSelect={false}
-              displayKey="project"
-              valueKey="project"
-              searchKeys={["project"]}
+              displayKey="name"
+              valueKey="id"
+              searchKeys={["name"]}
             />
 
             <UnifiedDropdown
