@@ -5,7 +5,8 @@
       "Bash(find D:talentpopcreated-by-metp-qa-appsrccomponents -name *AntDTable* -o -name *antdtable*)",
       "Bash(xargs ls:*)",
       "Bash(/tmp/wfa_attendance_report.txt:*)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "mcp__mcp-registry__search_mcp_registry"
     ]
   }
 }

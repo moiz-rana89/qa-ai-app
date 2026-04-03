@@ -15,15 +15,8 @@ import {
 } from "../../reduxStore/action/scheduleManagement";
 
 const TIMEZONE_OPTIONS = [
-  { label: "Organization (PDT)", value: "America/Los_Angeles" },
-  { label: "Eastern (EST)", value: "America/New_York" },
-  { label: "Central (CST)", value: "America/Chicago" },
-  { label: "Mountain (MST)", value: "America/Denver" },
-  { label: "Pacific (PST)", value: "America/Los_Angeles" },
-  { label: "Philippines (PHT)", value: "Asia/Manila" },
-  { label: "Jamaica (EST)", value: "America/Jamaica" },
-  { label: "South Africa (SAST)", value: "Africa/Johannesburg" },
-  { label: "UTC", value: "UTC" },
+  { label: "Organization", value: "organization" },
+  { label: "User", value: "user" },
 ];
 
 const RECURRING_OPTIONS = [
@@ -46,7 +39,7 @@ export default function EditScheduleDrawer({
     client: null,
     client_id: null,
     project: null,
-    use_time_zone: "America/Los_Angeles",
+    use_time_zone: "organization",
     minimum_time: "",
     start_time: null,
     end_time: null,
@@ -98,7 +91,7 @@ export default function EditScheduleDrawer({
         client: null,
         client_id: null,
         project: null,
-        use_time_zone: "America/Los_Angeles",
+        use_time_zone: "organization",
         minimum_time: "",
         start_time: null,
         end_time: null,
@@ -118,12 +111,12 @@ export default function EditScheduleDrawer({
 
   const handleClientChange = (value) => {
     const client = scheduleFilters?.clients?.find(
-      (c) => c.client_id === value
+      (c) => Number(c.hubstaff_client_id) === Number(value)
     );
     setFormData((prev) => ({
       ...prev,
-      client: client?.client,
-      client_id: client?.client_id,
+      client: client?.name,
+      client_id: Number(client?.hubstaff_client_id),
     }));
   };
 
@@ -133,7 +126,7 @@ export default function EditScheduleDrawer({
     );
     setFormData((prev) => ({
       ...prev,
-      member_name: member?.member_name,
+      member_name: member?.user_name,
       user_id: member?.user_id,
     }));
   };
@@ -282,7 +275,7 @@ export default function EditScheduleDrawer({
               }
               options={scheduleFilters?.members?.map((item) => ({
                 value: item?.user_id,
-                label: item?.member_name,
+                label: item?.user_name,
               }))}
               onChange={handleMemberChange}
               value={formData.user_id}
@@ -307,11 +300,11 @@ export default function EditScheduleDrawer({
                 .includes(input.toLowerCase())
             }
             options={scheduleFilters?.clients?.map((item) => ({
-              value: item?.client_id,
-              label: item?.client,
+              value: Number(item?.hubstaff_client_id),
+              label: item?.name,
             }))}
             onChange={handleClientChange}
-            value={formData.client_id}
+            value={formData.client_id ? Number(formData.client_id) : null}
             className="w-full custom-select-forms"
             popupClassName="custom-select-dropdown"
             style={{ height: "44px" }}
@@ -332,8 +325,8 @@ export default function EditScheduleDrawer({
                 .includes(input.toLowerCase())
             }
             options={scheduleFilters?.projects?.map((item) => ({
-              value: item?.project,
-              label: item?.project,
+              value: item?.name,
+              label: item?.name,
             }))}
             onChange={(value) => handleChange("project", value)}
             value={formData.project}

@@ -8,7 +8,6 @@ import toast from "react-hot-toast";
 import AntDTable from "../../components/AntDTable";
 import AntDRangePicker from "../../components/AntDRangePicker";
 import UnifiedDropdown from "../../components/Dropdown/UnifiedDropdown";
-import DownloadCSVButton from "../../components/Buttons/DownloadCSVButton";
 import Skeleton from "../../components/Skeleton";
 import { GenericAntDeleteModal } from "../../components/GenericAntDeleteModal";
 import { ColumnDataScheduleManagement } from "../../utils/tablesColumns";
@@ -227,10 +226,6 @@ export default function ScheduleManagement() {
     );
   };
 
-  const handleCSVDownload = () => {
-    fetchData({ ...filterParams, page: undefined, csv: true });
-  };
-
   const handleSummaryCardClick = (filter) => {
     setMappingStatusFilter(
       filter === "unmapped" ? [{ label: "Unmapped", value: "unmapped" }] : undefined
@@ -422,7 +417,6 @@ export default function ScheduleManagement() {
         <div className="flex items-center w-full mb-[20px]">
           <span className="text-xl font-semibold">Schedules Overview</span>
           <div className="ml-auto flex items-center gap-3">
-            <DownloadCSVButton onClick={handleCSVDownload} />
             <div
               onClick={handleCreateClick}
               className="group flex items-center border border-[#D7E6E7] px-[16px] py-[6px] rounded-[30px] text-[14px] text-[#163143] cursor-pointer hover:border-[#69C920] hover:bg-[#69C920] hover:text-[#fff] transition-all duration-200"
