@@ -157,20 +157,24 @@ export const ColumnDataRemoteTeam = [
   {
     title: "Resolved by WFA",
     width: 150,
-    dataIndex: "status_resolved",
-    key: "status_resolved",
+    dataIndex: "updated_by_wfa",
+    key: "updated_by_wfa",
+    render: (value) => value || "-",
   },
   {
     title: "Resolved by TL",
     width: 150,
     dataIndex: "status_resolved_tl",
     key: "status_resolved_tl",
+    render: (value) =>
+      value === true ? "Yes" : value === false ? "No" : "-",
   },
   {
     title: "Updated by TL",
     width: 150,
     dataIndex: "updated_by_tl",
     key: "updated_by_tl",
+    render: (value) => value || "-",
   },
   {
     title: "TL Updated Time",
@@ -384,20 +388,24 @@ export const ColumnDataInternalTeam = [
   {
     title: "Resolved by WFA",
     width: 150,
-    dataIndex: "status_resolved",
-    key: "status_resolved",
+    dataIndex: "updated_by_wfa",
+    key: "updated_by_wfa",
+    render: (value) => value || "-",
   },
   {
     title: "Resolved by TL",
     width: 150,
     dataIndex: "status_resolved_tl",
     key: "status_resolved_tl",
+    render: (value) =>
+      value === true ? "Yes" : value === false ? "No" : "-",
   },
   {
     title: "Updated by TL",
     width: 150,
     dataIndex: "updated_by_tl",
     key: "updated_by_tl",
+    render: (value) => value || "-",
   },
   {
     title: "TL Updated Time",
@@ -533,10 +541,24 @@ export const ColumnDataResolvedByWFA = [
     render: (value) => value || "-",
   },
   {
-    title: "Reason",
+    title: "Original Reason",
     width: 200,
-    dataIndex: "attendance_reason",
-    key: "attendance_reason",
+    dataIndex: "initial_reason",
+    key: "initial_reason",
+    render: (value) => value || "-",
+  },
+  {
+    title: "WFA Dispute Reason",
+    width: 200,
+    dataIndex: "updated_reason_wfa",
+    key: "updated_reason_wfa",
+    render: (value) => value || "-",
+  },
+  {
+    title: "TL Resolution Reason",
+    width: 200,
+    dataIndex: "updated_reason_tl",
+    key: "updated_reason_tl",
     render: (value) => value || "-",
   },
 ];

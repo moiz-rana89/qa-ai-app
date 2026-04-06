@@ -26,9 +26,9 @@ import EditScheduleDrawer from "./EditScheduleDrawer";
 import EditMappingModal from "./EditMappingModal";
 
 const SCHEDULE_TYPE_OPTIONS = [
-  { label: "All", value: "all" },
-  { label: "Recurring", value: "weekly" },
-  { label: "One-Off", value: "daily" },
+  { label: "Weekly", value: "weekly" },
+  { label: "Never", value: "never" },
+  { label: "Bi-Weekly", value: "bi_weekly" },
 ];
 
 const STATUS_OPTIONS = [
@@ -112,7 +112,7 @@ export default function ScheduleManagement() {
       client_id: clientsFilter?.map((item) => String(item?.hubstaff_client_id)),
       project: projectFilter?.[0]?.id ? String(projectFilter[0].id) : undefined,
       team_lead_id: teamLeadsFilter?.map((item) => String(item?.team_lead_id)),
-      schedule_type: scheduleTypeFilter?.[0]?.value !== "all" ? scheduleTypeFilter?.[0]?.value : undefined,
+      schedule_type: scheduleTypeFilter?.[0]?.value,
       status: statusFilter?.[0]?.value !== "all" ? statusFilter?.[0]?.value : undefined,
       mapping_status: mappingStatusFilter?.[0]?.value !== "all" ? mappingStatusFilter?.[0]?.value : undefined,
       sort_order: sortOrder,

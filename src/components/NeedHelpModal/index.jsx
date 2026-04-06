@@ -107,6 +107,14 @@ export default function NeedHelpModal({ open, onClose }) {
       });
       return;
     }
+    if (!formData.pageLink) {
+      AntDNotification({
+        status: "error",
+        title: "Validation Error",
+        description: "Page Link is required.",
+      });
+      return;
+    }
     if (!formData.loomLink) {
       AntDNotification({
         status: "error",
@@ -221,7 +229,7 @@ export default function NeedHelpModal({ open, onClose }) {
           {/* Page Link */}
           <div>
             <label className="block text-[14px] font-semibold text-[#163143] mb-1">
-              Page Link
+              Page Link<span className="text-red-500">*</span>
             </label>
             <p className="text-[12px] text-[#6B7280] mb-1">
               {isFeature

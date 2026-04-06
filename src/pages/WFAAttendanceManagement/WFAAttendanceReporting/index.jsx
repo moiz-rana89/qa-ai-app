@@ -135,7 +135,7 @@ export default function WFAAttendanceReporting() {
       dispatch(getAttendanceReports(params, true));
     } else if (CurrntActiveTab == "Remote Team") {
       dispatch(getAttendanceReports(params));
-    } else if (CurrntActiveTab == "Resolved By WFA") {
+    } else if (CurrntActiveTab == "Dispute History") {
       dispatch(getResolvedByWfaRecords(params));
     }
   };
@@ -715,11 +715,11 @@ export default function WFAAttendanceReporting() {
                 emptyMessage="None of your team members has any unresolved attendance issues at the moment."
               /> */}
             </Tab>
-            <Tab data-label={"Resolved By WFA"} labelData={""}>
+            <Tab data-label={"Dispute History"} labelData={""}>
               <div className="w-full overflow-y-scroll pb-[50px] pt-2 space-y-9 scrollbar-hide">
                 <div className="flex items-center w-[100%] mb-[20px]">
                   <span className="text-xl font-semibold">
-                    {"Resolved By WFA"}
+                    {"Dispute History"}
                   </span>
                   <div className="ml-auto mr-[15px]">
                     <DownloadCSVButton onClick={handleCSVDownload} />

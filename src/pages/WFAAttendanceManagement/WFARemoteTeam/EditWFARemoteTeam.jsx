@@ -111,10 +111,11 @@ export default function EditWFARemoteTeam({
       } else {
         setFileInfo();
       }
-      if (selectedReport?.attendance_reason != null) {
+      const reasonToUse = selectedReport?.updated_reason_tl || selectedReport?.attendance_reason;
+      if (reasonToUse != null) {
         setReason([
           ATT_REASONS_STATUS?.find(
-            (item) => item.reason == selectedReport?.attendance_reason
+            (item) => item.reason == reasonToUse
           ),
         ]);
       } else {

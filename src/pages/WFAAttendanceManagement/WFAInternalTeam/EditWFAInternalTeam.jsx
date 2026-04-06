@@ -90,10 +90,11 @@ export default function EditWFAInternalTeam({
       } else {
         setFileInfo();
       }
-      if (selectedReport?.attendance_reason != null) {
+      const reasonToUse = selectedReport?.updated_reason_tl || selectedReport?.attendance_reason;
+      if (reasonToUse != null) {
         setReason([
           ATT_REASONS_STATUS?.find(
-            (item) => item.reason == selectedReport?.attendance_reason
+            (item) => item.reason == reasonToUse
           ),
         ]);
       } else {
@@ -475,7 +476,6 @@ export default function EditWFAInternalTeam({
                 autoSize={{ minRows: 5, maxRows: 10 }}
                 value={notesTL}
                 readOnly={true}
-                // onChange={(e) => setNotes(e.target.value)}
               />
             </div>
           )}
