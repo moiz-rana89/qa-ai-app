@@ -116,6 +116,44 @@ const ROUTE_ROLES = {
     "qas",
   ],
   "advance-notice": ["admin", "dev", "tl"],
+  "workforce-remote-team-attendance-report": [
+    "dev",
+    "csm",
+    "om",
+    "som",
+    "aom",
+    "admin",
+    "tl",
+    "dtl",
+  ],
+  "workforce-internal-team-attendance": [
+    "dev",
+    "om",
+    "som",
+    "aom",
+    "admin",
+    "itl",
+    "dm",
+    "dd",
+    "qa-dm",
+    "qa-tl",
+  ],
+  "workforce-internal-team-attendance-report": [
+    "dev",
+    "om",
+    "som",
+    "aom",
+    "admin",
+    "itl",
+    "dm",
+    "dd",
+    "qa-dm",
+    "qa-tl",
+  ],
+  "wfa-remote-team-attendance": ["dev", "wfa", "admin"],
+  "wfa-internal-team-attendance": ["dev", "wfa", "admin"],
+  "wfa-attendance-reporting": ["dev", "wfa", "admin"],
+  "schedule-management": ["dev", "admin"],
 };
 
 function DefaultRedirect() {
@@ -140,8 +178,6 @@ export default function AppRouter() {
   // if (!isAuthInitialized) {
   //   return null; // or loader
   // }
-  localStorage.clear();
-
   return (
     <AuthProvider>
       <BrowserRouter>
