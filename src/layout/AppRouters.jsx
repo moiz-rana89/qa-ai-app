@@ -63,7 +63,17 @@ const ROUTE_ROLES = {
     "dm",
     "dtl",
   ],
-  "download-report": ["admin", "dev", "qa-tl", "tl", "aom", "dtl", "wfa", "om", "qas"],
+  "download-report": [
+    "admin",
+    "dev",
+    "qa-tl",
+    "tl",
+    "aom",
+    "dtl",
+    "wfa",
+    "om",
+    "qas",
+  ],
   "download-client-specific-report": [
     "admin",
     "dev",
@@ -75,7 +85,17 @@ const ROUTE_ROLES = {
     "om",
     "qas",
   ],
-  "qa-ai-report": ["admin", "dev", "qa-tl", "tl", "aom", "dtl", "wfa", "om", "qas"],
+  "qa-ai-report": [
+    "admin",
+    "dev",
+    "qa-tl",
+    "tl",
+    "aom",
+    "dtl",
+    "wfa",
+    "om",
+    "qas",
+  ],
   "ticket-monitoring-form": [
     "dev",
     "qa-tl",
@@ -117,7 +137,44 @@ const ROUTE_ROLES = {
     "qas",
   ],
   "advance-notice": ["admin", "dev", "tl"],
-  "schedule-management": ["admin", "dev"],
+  "workforce-remote-team-attendance-report": [
+    "dev",
+    "csm",
+    "om",
+    "som",
+    "aom",
+    "admin",
+    "tl",
+    "dtl",
+  ],
+  "workforce-internal-team-attendance": [
+    "dev",
+    "om",
+    "som",
+    "aom",
+    "admin",
+    "itl",
+    "dm",
+    "dd",
+    "qa-dm",
+    "qa-tl",
+  ],
+  "workforce-internal-team-attendance-report": [
+    "dev",
+    "om",
+    "som",
+    "aom",
+    "admin",
+    "itl",
+    "dm",
+    "dd",
+    "qa-dm",
+    "qa-tl",
+  ],
+  "wfa-remote-team-attendance": ["dev", "wfa", "admin"],
+  "wfa-internal-team-attendance": ["dev", "wfa", "admin"],
+  "wfa-attendance-reporting": ["dev", "wfa", "admin"],
+  "schedule-management": ["dev", "admin"],
 };
 
 function DefaultRedirect() {
@@ -142,8 +199,6 @@ export default function AppRouter() {
   // if (!isAuthInitialized) {
   //   return null; // or loader
   // }
-  localStorage.clear();
-
   return (
     <AuthProvider>
       <BrowserRouter>
