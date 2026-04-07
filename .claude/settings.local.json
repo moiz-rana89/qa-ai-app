@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(ls -d D:/talentpop/created-by-me/tp-qa-app/src/components/*/)"
+      "Bash(ls -d D:/talentpop/created-by-me/tp-qa-app/src/components/*/)",
+      "Bash(find /d/talentpop/created-by-me/tp-qa-app -type f -name *[Ee]valuate*)"
     ]
   }
 }
