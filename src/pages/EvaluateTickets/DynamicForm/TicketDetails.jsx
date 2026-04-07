@@ -10,15 +10,24 @@ export const TicketDetails = ({ details }) => {
           <label className="block text-[14px] font-semibold mb-3">
             Ticket Link:
           </label>
-          <Input
-            type="text"
-            disabled
-            value={details.uri}
-            // onChange={(e) => handleFormChange("form_name", e.target.value)}
-            placeholder="Please type Ticket Link"
-            style={{ color: "#007be5" }}
-            className=" min-h-[44px] p-[13px_53px_13px_14px] font-poppins text-[#163143] bg-[#FFFFFF] border border-[#D7E6E7] rounded-full placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#69C920] focus:border-[#69C920] hover:border-[#69C920] transition-all duration-200"
-          />
+          {details.uri ? (
+            <a
+              href={details.uri}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block min-h-[44px] p-[13px_53px_13px_14px] font-poppins text-[#007be5] bg-[#FFFFFF] border border-[#D7E6E7] rounded-full hover:border-[#69C920] transition-all duration-200 truncate cursor-pointer underline"
+            >
+              {details.uri}
+            </a>
+          ) : (
+            <Input
+              type="text"
+              disabled
+              value=""
+              placeholder="Please type Ticket Link"
+              className="min-h-[44px] p-[13px_53px_13px_14px] font-poppins text-[#163143] bg-[#FFFFFF] border border-[#D7E6E7] rounded-full placeholder-gray-400 transition-all duration-200"
+            />
+          )}
         </div>
 
         <div className="w-[100%]">

@@ -98,8 +98,14 @@ const ConversationScreen = ({
             {message?.attachments && message?.attachments?.length > 0 && (
               <div className="flex flex-wrap gap-4 mb-4">
                 {message?.attachments?.map((attachment, attIndex) => (
-                  <div className="flex items-center gap-2 text-[12px] bg-[#F1F5F5] px-[16px] py-[2px] rounded-[30px]">
-                    <span> {attachment?.filename}</span>
+                  <div
+                    className="flex items-center gap-2 text-[12px] bg-[#F1F5F5] px-[16px] py-[2px] rounded-[30px] cursor-pointer hover:bg-[#E5EBEB] transition-all"
+                    onClick={() => {
+                      const url = attachment?.content_url || attachment?.url || attachment?.mapped_content_url;
+                      if (url) window.open(url, "_blank");
+                    }}
+                  >
+                    <span> {attachment?.file_name || attachment?.filename || attachment?.name}</span>
                     <span className="text-[#69C920]">
                       <Icon icon="fluent:open-12-regular" fontSize={16} />
                     </span>
