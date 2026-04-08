@@ -238,6 +238,12 @@ const menuList = [
     ],
   },
   {
+    title: "Performance Review",
+    icon: "carbon:dashboard",
+    route: "performance-review",
+    roles: ["admin", "dev"],
+  },
+  {
     title: "Quality Assurance",
     icon: "icon-park-outline:success",
     route: "quality-assurance",
