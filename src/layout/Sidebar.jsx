@@ -78,11 +78,11 @@ const menuList = [
         route: "advance-notice",
         roles: ["dev", "admin", "tl"],
       },
-      {
-        title: "Schedule Management",
-        route: "schedule-management",
-        roles: ["dev", "admin"],
-      },
+      // {
+      //   title: "Schedule Management",
+      //   route: "schedule-management",
+      //   roles: ["dev", "admin"],
+      // },
     ],
   },
   {

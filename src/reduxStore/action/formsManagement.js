@@ -585,6 +585,7 @@ export const getQAAIReport = (setLoader, toast, params = {}) => {
       addParam("tl_name", params.tl_name);
       addParam("start_date", params.start_date);
       addParam("end_date", params.end_date);
+      addParam("admin", params.admin);
 
       Api.get("/qa_ai_apis/qa_ai_report_download", queryParams)
         .then((resp) => {
