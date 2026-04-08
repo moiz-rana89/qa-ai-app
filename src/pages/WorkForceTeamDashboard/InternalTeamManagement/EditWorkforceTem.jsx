@@ -86,10 +86,11 @@ export default function EditRemoteTeam({
       } else {
         setFileInfo();
       }
-      if (selectedReport?.attendance_reason != null) {
+      const reasonToUse = selectedReport?.updated_reason_tl || selectedReport?.attendance_reason;
+      if (reasonToUse != null) {
         setReason([
           ATT_REASONS_STATUS?.find(
-            (item) => item.reason == selectedReport?.attendance_reason
+            (item) => item.reason == reasonToUse
           ),
         ]);
       } else {
@@ -391,23 +392,21 @@ export default function EditRemoteTeam({
           </div>
 
           {activeTab === "Disputed by WFA" && (
-            <div className="space-y-2 px-6">
-              <label
-                htmlFor="notes"
-                className="text-[#163143] font-poppins text-[16px] not-italic font-semibold leading-[20.5px]"
-              >
-                Notes By WFA
-              </label>
-
-              <TextArea
-                className="!mt-[10px] !border-[#EFEFEF] !bg-[#FFF7D8] !rounded-[16px] focus:!shadow-none focus:!border-[#EFEFEF] hover:!border-[#EFEFEF]"
-                id="notesbytl"
-                placeholder="Add notes here..."
-                autoSize={{ minRows: 5, maxRows: 10 }}
-                value={selectedReport?.notes_wfa}
-                readOnly={true}
-              />
-            </div>
+            <>
+              <div className="space-y-2 px-6">
+                <label className="text-[#163143] font-poppins text-[16px] not-italic font-semibold leading-[20.5px]">
+                  Notes By WFA
+                </label>
+                <TextArea
+                  className="!mt-[10px] !border-[#EFEFEF] !bg-[#FFF7D8] !rounded-[16px] focus:!shadow-none focus:!border-[#EFEFEF] hover:!border-[#EFEFEF]"
+                  id="notesbytl"
+                  placeholder="Add notes here..."
+                  autoSize={{ minRows: 5, maxRows: 10 }}
+                  value={selectedReport?.notes_wfa}
+                  readOnly={true}
+                />
+              </div>
+            </>
           )}
 
           <div className="space-y-2 px-6">

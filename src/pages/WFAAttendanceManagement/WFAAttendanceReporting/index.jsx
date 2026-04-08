@@ -16,6 +16,7 @@ import {
   getOMFilterData,
   getOMFiltersList,
   getOPSTLFiltersList,
+  getResolvedByWfaRecords,
   getSomList,
   getTeamLeadList,
   getTeamListFilterData,
@@ -24,6 +25,7 @@ import { Tab, Tabs } from "../../../components/Tabs/Tabs";
 import {
   ColumnDataInternalTeam,
   ColumnDataRemoteTeam,
+  ColumnDataResolvedByWFA,
 } from "../../../utils/tablesColumns";
 import DownloadCSVButton from "../../../components/Buttons/DownloadCSVButton";
 import Skeleton from "../../../components/Skeleton";
@@ -126,12 +128,15 @@ export default function WFAAttendanceReporting() {
     csmList,
     agentList,
     omList,
+    resolvedByWfaRecords,
   } = useSelector((store) => store.workforcedashboard);
   const fetchData = (params) => {
     if (CurrntActiveTab == "Internal Team") {
       dispatch(getAttendanceReports(params, true));
     } else if (CurrntActiveTab == "Remote Team") {
       dispatch(getAttendanceReports(params));
+    } else if (CurrntActiveTab == "Dispute History") {
+      dispatch(getResolvedByWfaRecords(params));
     }
   };
 
@@ -709,6 +714,46 @@ export default function WFAAttendanceReporting() {
                 title="Overview"
                 emptyMessage="None of your team members has any unresolved attendance issues at the moment."
               /> */}
+            </Tab>
+            <Tab data-label={"Dispute History"} labelData={""}>
+              <div className="w-full overflow-y-scroll pb-[50px] pt-2 space-y-9 scrollbar-hide">
+                <div className="flex items-center w-[100%] mb-[20px]">
+                  <span className="text-xl font-semibold">
+                    {"Dispute History"}
+                  </span>
+                  <div className="ml-auto mr-[15px]">
+                    <DownloadCSVButton onClick={handleCSVDownload} />
+                  </div>
+                </div>
+                {isLoading ? (
+                  <Skeleton className="w-full h-[75vh]" />
+                ) : (
+                  <AntDTable
+                    columns={ColumnDataResolvedByWFA}
+                    data={resolvedByWfaRecords?.data}
+                    bordered={true}
+                    total={resolvedByWfaRecords?.pagination?.totalRecords}
+                    current={resolvedByWfaRecords?.pagination?.currentPage}
+                    pageSize={resolvedByWfaRecords?.pagination?.pageSize}
+                    rowKey={"id"}
+                    onPageChange={setcurrentpage}
+                    onPageSizeChange={setPageSize}
+                    onSortChange={(columnKey, order) => {
+                      setSorting({ sort_by: columnKey, sort_order: order });
+                      setsortBy(columnKey);
+                      setsortOrder(
+                        order == "ascend"
+                          ? "asc"
+                          : order == "descend"
+                          ? "desc"
+                          : null
+                      );
+                    }}
+                    sorting={sorting}
+                    pagination={true}
+                  />
+                )}
+              </div>
             </Tab>
           </Tabs>
 

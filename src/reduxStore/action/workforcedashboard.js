@@ -123,6 +123,81 @@ function setAttendanceDisputedRecords(data) {
   };
 }
 
+function setResolvedByWfaRecords(data) {
+  return {
+    type: types.FETCH_RESOLVED_BY_WFA_RECORDS,
+    data,
+  };
+}
+
+export const getResolvedByWfaRecords = (params = {}) => {
+  return (dispatch) => {
+    dispatch(setLoaderAction(true));
+
+    const queryParams = {};
+
+    const addParam = (key, value) => {
+      if (value !== undefined && value !== null && value !== "") {
+        if (Array.isArray(value) && value.length === 0) return;
+        queryParams[key] = value;
+      }
+    };
+
+    addParam("client_name", params.client_name);
+    addParam("department", params.department);
+    addParam("agent_name", params.agent_name);
+    addParam("team_lead_id", params.team_lead_id);
+    addParam("csm_id", params.csm_id);
+    addParam("department_director_id", params.csm);
+    addParam("senior_csm_id", params.senior_csm_id);
+    addParam("operations_manager_id", params.om_id);
+    addParam("start_date", params.startdate);
+    addParam("end_date", params.enddate);
+    addParam("sort_order", params.sort_order);
+    addParam("sort_by", params.sort_by);
+    addParam("associate_operations_manager_id", params.aom_id);
+    addParam("ops_team_lead_id", params.ops_team_lead_id);
+    addParam("senior_operations_manager", params.senior_operations_manager);
+    addParam("size", params.pageSize);
+
+    if (params.page !== undefined) {
+      queryParams.page = Math.max(1, params.page);
+    }
+    if (params.size !== undefined) {
+      queryParams.size = Math.min(100, Math.max(1, params.size));
+    }
+
+    addParam("csv", params.csv);
+
+    Api.get(`/workforce/reports/attendance/dispute/resolved`, queryParams)
+      .then(({ data, contentType }) => {
+        dispatch(setLoaderAction(false));
+        if (contentType.includes("text/csv")) {
+          const url = window.URL.createObjectURL(
+            new Blob([data], { type: contentType })
+          );
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute(
+            "download",
+            `resolved_by_wfa_${new Date().toISOString().slice(0, 10)}.csv`
+          );
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        } else {
+          dispatch(setResolvedByWfaRecords(data));
+        }
+      })
+      .catch((err) => {
+        dispatch(setResolvedByWfaRecords([]));
+        dispatch(setLoaderAction(false));
+        console.error("Error fetching resolved by WFA records:", err);
+      });
+  };
+};
+
 export const getAttendanceRecords = (params = {}, internal) => {
   return (dispatch) => {
     dispatch(setLoaderAction(true));

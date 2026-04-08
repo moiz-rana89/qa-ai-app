@@ -29,6 +29,7 @@ import { PerformanceMonitoringForm } from "../pages/PerformanceMonitoringForm";
 import { CustomMonitoringForm } from "../pages/CustomMonitoringForm";
 import { OtherCoachingTypes } from "../pages/OtherCoachingTypes";
 import AdvanceNoticeSubmission from "../pages/AdvanceNoticeSubmission";
+import ScheduleManagement from "../pages/ScheduleManagement";
 import { DownloadClientFormReport } from "../pages/DownloadClientFormReport";
 import { QAAIReport } from "../pages/QAAIReport";
 import AuthProvider from "./AuthProvider";
@@ -62,7 +63,17 @@ const ROUTE_ROLES = {
     "dm",
     "dtl",
   ],
-  "download-report": ["admin", "dev", "qa-tl", "tl", "aom", "dtl", "wfa", "om", "qas"],
+  "download-report": [
+    "admin",
+    "dev",
+    "qa-tl",
+    "tl",
+    "aom",
+    "dtl",
+    "wfa",
+    "om",
+    "qas",
+  ],
   "download-client-specific-report": [
     "admin",
     "dev",
@@ -74,7 +85,17 @@ const ROUTE_ROLES = {
     "om",
     "qas",
   ],
-  "qa-ai-report": ["admin", "dev", "qa-tl", "tl", "aom", "dtl", "wfa", "om", "qas"],
+  "qa-ai-report": [
+    "admin",
+    "dev",
+    "qa-tl",
+    "tl",
+    "aom",
+    "dtl",
+    "wfa",
+    "om",
+    "qas",
+  ],
   "ticket-monitoring-form": [
     "dev",
     "qa-tl",
@@ -419,6 +440,17 @@ export default function AppRouter() {
                   routeRoles={ROUTE_ROLES}
                 >
                   <AdvanceNoticeSubmission />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/schedule-management"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["schedule-management"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <ScheduleManagement />
                 </ProtectedRoute>
               }
             />

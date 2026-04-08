@@ -157,20 +157,24 @@ export const ColumnDataRemoteTeam = [
   {
     title: "Resolved by WFA",
     width: 150,
-    dataIndex: "status_resolved",
-    key: "status_resolved",
+    dataIndex: "updated_by_wfa",
+    key: "updated_by_wfa",
+    render: (value) => value || "-",
   },
   {
     title: "Resolved by TL",
     width: 150,
     dataIndex: "status_resolved_tl",
     key: "status_resolved_tl",
+    render: (value) =>
+      value === true ? "Yes" : value === false ? "No" : "-",
   },
   {
     title: "Updated by TL",
     width: 150,
     dataIndex: "updated_by_tl",
     key: "updated_by_tl",
+    render: (value) => value || "-",
   },
   {
     title: "TL Updated Time",
@@ -384,20 +388,24 @@ export const ColumnDataInternalTeam = [
   {
     title: "Resolved by WFA",
     width: 150,
-    dataIndex: "status_resolved",
-    key: "status_resolved",
+    dataIndex: "updated_by_wfa",
+    key: "updated_by_wfa",
+    render: (value) => value || "-",
   },
   {
     title: "Resolved by TL",
     width: 150,
     dataIndex: "status_resolved_tl",
     key: "status_resolved_tl",
+    render: (value) =>
+      value === true ? "Yes" : value === false ? "No" : "-",
   },
   {
     title: "Updated by TL",
     width: 150,
     dataIndex: "updated_by_tl",
     key: "updated_by_tl",
+    render: (value) => value || "-",
   },
   {
     title: "TL Updated Time",
@@ -443,6 +451,287 @@ export const ColumnDataInternalTeam = [
     dataIndex: "date",
     key: "date",
     render: (value) => (value ? formateToLA(value) : "-"),
+  },
+];
+
+/* =========================
+   Resolved By WFA
+========================= */
+export const ColumnDataResolvedByWFA = [
+  {
+    title: "Agent Name",
+    width: 150,
+    dataIndex: "agent_name",
+    key: "agent_name",
+    fixed: "left",
+  },
+  {
+    title: "Client Name",
+    width: 150,
+    dataIndex: "client_name",
+    key: "client_name",
+    fixed: "left",
+  },
+  {
+    title: "Team Lead",
+    width: 150,
+    dataIndex: "team_lead",
+    key: "team_lead",
+  },
+  {
+    title: "Date",
+    width: 120,
+    dataIndex: "date",
+    key: "date",
+  },
+  {
+    title: "Status",
+    width: 120,
+    dataIndex: "status",
+    key: "status",
+    render: (_, item) => (
+      <div className="flex items-center justify-center">
+        <div
+          className={`capitalize flex items-center justify-center rounded-full px-2 py-1 ${
+            item.status === "late"
+              ? "bg-[#FFF7D8]"
+              : item.status === "missed"
+              ? "bg-[#FFECEC]"
+              : item.status === "abandoned" || item.status === "unknown"
+              ? "bg-[#FFE8CC]"
+              : ""
+          }`}
+        >
+          {item.status}
+        </div>
+      </div>
+    ),
+  },
+  {
+    title: "Disputed At",
+    width: 180,
+    dataIndex: "disputed_at",
+    key: "disputed_at",
+    render: (value) => (value ? formatDateTimeEnglish(value) : "-"),
+  },
+  {
+    title: "Resolved At",
+    width: 180,
+    dataIndex: "resolved_at",
+    key: "resolved_at",
+    render: (value) => (value ? formatDateTimeEnglish(value) : "-"),
+  },
+  {
+    title: "Updated By TL",
+    width: 150,
+    dataIndex: "updated_by_tl",
+    key: "updated_by_tl",
+  },
+  {
+    title: "Updated By WFA",
+    width: 150,
+    dataIndex: "updated_by_wfa",
+    key: "updated_by_wfa",
+  },
+  {
+    title: "WFA Notes",
+    width: 200,
+    dataIndex: "updated_notes_wfa",
+    key: "updated_notes_wfa",
+    render: (value) => value || "-",
+  },
+  {
+    title: "Original Reason",
+    width: 200,
+    dataIndex: "initial_reason",
+    key: "initial_reason",
+    render: (value) => value || "-",
+  },
+  {
+    title: "WFA Dispute Reason",
+    width: 200,
+    dataIndex: "updated_reason_wfa",
+    key: "updated_reason_wfa",
+    render: (value) => value || "-",
+  },
+  {
+    title: "TL Resolution Reason",
+    width: 200,
+    dataIndex: "updated_reason_tl",
+    key: "updated_reason_tl",
+    render: (value) => value || "-",
+  },
+];
+
+/* =========================
+   Schedule Management
+========================= */
+const formatDurationHours = (seconds) => {
+  if (!seconds && seconds !== 0) return "-";
+  const hours = seconds / 3600;
+  return hours % 1 === 0 ? `${hours}h` : `${hours.toFixed(1)}h`;
+};
+
+const formatShiftTime = (startTime, duration, timezone) => {
+  if (!startTime) return "-";
+  const [h, m] = startTime.split(":");
+  const startHour = parseInt(h);
+  const startMin = parseInt(m);
+  const startDate = new Date(2026, 0, 1, startHour, startMin);
+  const endDate = new Date(startDate.getTime() + (duration || 0) * 1000);
+
+  const fmt = (d) =>
+    d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true });
+
+  const tz = timezone
+    ? timezone.split("/").pop().replace(/_/g, " ")
+    : "";
+  return `${fmt(startDate)} - ${fmt(endDate)}${tz ? ` ${tz}` : ""}`;
+};
+
+export const ColumnDataScheduleManagement = [
+  {
+    title: "Agent Name",
+    width: 160,
+    dataIndex: "member_name",
+    key: "member_name",
+    fixed: "left",
+  },
+  {
+    title: "Status of Attendance",
+    width: 140,
+    dataIndex: "app_label",
+    key: "app_label",
+    render: (value) => value || "-",
+  },
+  {
+    title: "Shift",
+    width: 220,
+    dataIndex: "shift",
+    key: "shift",
+    disableSort: true,
+    render: (_, item) =>
+      formatShiftTime(item.start_time, item.duration, item.use_time_zone),
+  },
+  {
+    title: "Schedule Type",
+    width: 130,
+    dataIndex: "schedule_type",
+    key: "schedule_type",
+    render: (value) => (
+      <span className="capitalize">{value || "-"}</span>
+    ),
+  },
+  {
+    title: "Effective From",
+    width: 140,
+    dataIndex: "effective_from",
+    key: "effective_from",
+    render: (value) =>
+      value
+        ? new Date(value).toLocaleDateString("en-US", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          })
+        : "-",
+  },
+  {
+    title: "Repeat Until",
+    width: 130,
+    dataIndex: "repeat_until",
+    key: "repeat_until",
+    render: (value) =>
+      value
+        ? new Date(value).toLocaleDateString("en-US", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          })
+        : "Forever",
+  },
+  {
+    title: "Client Name",
+    width: 150,
+    dataIndex: "client",
+    key: "client",
+    render: (value) =>
+      value ? (
+        value
+      ) : (
+        <span className="text-[#D97706] font-medium">-- Unmapped</span>
+      ),
+  },
+  {
+    title: "Project",
+    width: 140,
+    dataIndex: "project",
+    key: "project",
+    render: (value) =>
+      value ? (
+        value
+      ) : (
+        <span className="text-[#D97706] font-medium">-- Unmapped</span>
+      ),
+  },
+  {
+    title: "Team Lead",
+    width: 150,
+    dataIndex: "team_lead",
+    key: "team_lead",
+    render: (value) => value || "-",
+  },
+  {
+    title: "Status",
+    width: 110,
+    dataIndex: "status",
+    key: "status",
+    render: (_, item) => (
+      <div className="flex items-center justify-center">
+        <div
+          className={`capitalize rounded-full px-3 py-1 text-[13px] font-medium ${
+            item.status === "active"
+              ? "bg-[#E4FAED] text-[#16A34A]"
+              : "bg-[#F3F4F6] text-[#6B7280]"
+          }`}
+        >
+          {item.status === "active" ? "Active" : "Inactive"}
+        </div>
+      </div>
+    ),
+  },
+  {
+    title: "Hubstaff Sync Status",
+    width: 170,
+    dataIndex: "hubstaff_sync_status",
+    key: "hubstaff_sync_status",
+    render: (_, item) => {
+      const status = item.hubstaff_sync_status;
+      if (!status) return "-";
+      const config = {
+        synced: { label: "Synced", bg: "bg-[#E4FAED]", text: "text-[#16A34A]" },
+        modified_in_hubstaff: {
+          label: "Modified",
+          bg: "bg-[#FFF7D8]",
+          text: "text-[#D97706]",
+        },
+        removed_in_hubstaff: {
+          label: "Removed",
+          bg: "bg-[#FFECEC]",
+          text: "text-[#DC2626]",
+        },
+      };
+      const c = config[status] || { label: status, bg: "bg-gray-100", text: "text-gray-500" };
+      return (
+        <div className="flex items-center justify-center">
+          <div
+            className={`capitalize rounded-full px-3 py-1 text-[13px] font-medium ${c.bg} ${c.text}`}
+          >
+            {c.label}
+          </div>
+        </div>
+      );
+    },
   },
 ];
 

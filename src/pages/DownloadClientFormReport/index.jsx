@@ -62,7 +62,7 @@ export const DownloadClientFormReport = () => {
       getClientsNameForCSFDownload(
         setLoaderForClients,
         user?.name,
-        user?.role == "wfa" || user?.role == "om" ? true : false
+        ["admin", "dev", "wfa"].includes(user?.role)
       )
     );
   }, []);
@@ -108,7 +108,7 @@ export const DownloadClientFormReport = () => {
       getDownloadCSFReport(setLoader, toast, {
         ...formData,
         updated_by_tl: user?.name,
-        admin: user?.role == "wfa" || user?.role == "om" ? true : false,
+        admin: ["admin", "dev", "wfa"].includes(user?.role),
       })
     );
   };

@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(ls -d D:/talentpop/created-by-me/tp-qa-app/src/components/*/)",
-      "Bash(find /d/talentpop/created-by-me/tp-qa-app -type f -name *[Ee]valuate*)"
+      "Bash(find D:talentpopcreated-by-metp-qa-appsrccomponents -name *AntDTable* -o -name *antdtable*)",
+      "Bash(xargs ls:*)",
+      "Bash(/tmp/wfa_attendance_report.txt:*)",
+      "Read(//tmp/**)",
+      "mcp__mcp-registry__search_mcp_registry"
     ]
   }
 }

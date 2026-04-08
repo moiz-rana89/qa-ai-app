@@ -5,6 +5,7 @@ import formsManagementReducer from "./formsManagement";
 import evalute from "./evalute";
 import workforceReducer from "./workforcedashboard";
 import qaSettingsReducer from "./qaSettings";
+import scheduleManagementReducer from "./scheduleManagement";
 export default combineReducers(
   Object.assign({
     auth: auth,
@@ -12,5 +13,6 @@ export default combineReducers(
     evalute: evalute,
     workforcedashboard: workforceReducer,
     qaSettings: qaSettingsReducer,
+    scheduleManagement: scheduleManagementReducer,
   })
 );

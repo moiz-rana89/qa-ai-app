@@ -21,6 +21,7 @@ export const QAAIReport = () => {
         tl_name: user?.name,
         start_date: date[0],
         end_date: date[1],
+        admin: ["admin", "dev", "wfa"].includes(user?.role),
       })
     );
   };
