@@ -8,7 +8,7 @@ import { useDispatch } from "react-redux";
 import dayjs from "dayjs";
 import { CustomButton } from "../../components/Buttons/CustomButton";
 import UploadFile from "../../components/UploadFile";
-import { submitResolve } from "../../reduxStore/action/performanceReview";
+import { submitResolutions } from "../../reduxStore/action/performanceReview";
 
 const { TextArea } = Input;
 
@@ -61,6 +61,8 @@ export default function ResolveDrawer({
   open,
   setOpen,
   kpiTitle,
+  metricType,
+  sessionId,
   missedMetrics = [],
   onSuccess,
 }) {
@@ -103,22 +105,36 @@ export default function ResolveDrawer({
       return;
     }
 
+    if (!sessionId || !metricType) {
+      toast.error("Session data is missing");
+      return;
+    }
+
     setLoading(true);
     const body = {
-      kpi_type: kpiTitle,
-      tl_commitment: tlCommitment,
-      tl_options: tlOptions.filter((o) => o.trim()),
-      tl_option_date: tlOptionDate?.format("YYYY-MM-DD"),
-      agent_commitment: agentCommitment,
-      start: startItems.filter((s) => s.trim()),
-      stop: stopItems.filter((s) => s.trim()),
-      continue: continueItems.filter((c) => c.trim()),
-      resolve_date: resolveDate?.format("YYYY-MM-DD"),
-      attachments: fileInfo?.length > 0 ? JSON.stringify(fileInfo) : null,
+      session_id: sessionId,
+      resolutions: [
+        {
+          metric_type: metricType,
+          team_lead_commitment: tlCommitment,
+          team_lead_commitment_options: tlOptions
+            .filter((o) => o.trim())
+            .map((text) => ({
+              text,
+              datee: tlOptionDate?.format("YYYY-MM-DD") || null,
+            })),
+          agent_commitment_start: startItems.filter((s) => s.trim()).join("\n"),
+          agent_commitment_stop: stopItems.filter((s) => s.trim()).join("\n"),
+          agent_commitment_continue: continueItems.filter((c) => c.trim()).join("\n"),
+          resolution_date: resolveDate?.format("YYYY-MM-DD"),
+          upload_url:
+            fileInfo?.length > 0 ? fileInfo[0]?.url : null,
+        },
+      ],
     };
 
     dispatch(
-      submitResolve(body, (success) => {
+      submitResolutions(body, (success) => {
         if (success) {
           toast.success("Resolved successfully");
           onClose();
@@ -177,25 +193,27 @@ export default function ResolveDrawer({
         {/* Missed SLA Cards */}
         {missedMetrics.length > 0 && (
           <div>
-            <div className="text-[14px] font-semibold text-[#EF4444] mb-2">
+            <div className="text-[14px] font-semibold text-[#EF4444] mb-3">
               Missed:
             </div>
             <div className="flex gap-3">
               {missedMetrics.map((m, i) => (
                 <div
                   key={i}
-                  className="flex-1 border border-[#EBF3F4] rounded-[12px] p-3"
+                  className="flex-1 bg-[#F0FFF4] border border-[#D7E6E7] rounded-[12px] p-4"
                 >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[13px] font-medium text-[#163143]">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[14px] font-semibold text-[#163143]">
                       {m.label}
                     </span>
                     <Icon
                       icon="mdi:close-circle"
-                      className="text-[16px] text-[#EF4444]"
+                      className="text-[20px] text-[#EF4444]"
                     />
                   </div>
-                  <span className="text-[14px] text-[#163143]">{m.value}</span>
+                  <span className="text-[15px] text-[#163143] font-medium">
+                    {m.value}
+                  </span>
                 </div>
               ))}
             </div>
@@ -225,8 +243,11 @@ export default function ResolveDrawer({
           </label>
           <div className="space-y-2">
             {tlOptions.map((opt, i) => (
-              <div key={i} className="flex items-center gap-2">
-                <span className="text-[14px] text-[#9CA3AF] min-w-[24px]">
+              <div
+                key={i}
+                className="flex items-center border border-[#D7E6E7] rounded-[24px] overflow-hidden"
+              >
+                <span className="text-[14px] text-[#9CA3AF] pl-4 pr-2">
                   {i + 1}
                 </span>
                 <Input
@@ -237,25 +258,32 @@ export default function ResolveDrawer({
                     updated[i] = e.target.value;
                     setTlOptions(updated);
                   }}
-                  className="flex-1"
-                  style={{ height: "40px", borderRadius: "8px" }}
+                  className="flex-1 !border-0 !shadow-none"
+                  style={{ height: "40px" }}
                 />
-                <DatePicker
-                  value={tlOptionDate}
-                  onChange={(d) => setTlOptionDate(d)}
-                  className="w-[120px]"
-                  style={{ height: "40px", borderRadius: "8px" }}
-                  suffixIcon={
-                    <Icon
-                      icon="mdi:calendar-outline"
-                      className="text-[#69C920]"
-                    />
-                  }
-                />
-                <Icon
-                  icon="mdi:chevron-down"
-                  className="text-[#9CA3AF] text-[18px]"
-                />
+                <div className="flex items-center gap-1 pr-3 border-l border-[#D7E6E7] pl-3">
+                  <Icon
+                    icon="mdi:calendar-outline"
+                    className="text-[#69C920] text-[18px] cursor-pointer"
+                    onClick={() => {
+                      document
+                        .getElementById(`tl-option-date-${i}`)
+                        ?.querySelector("input")
+                        ?.click();
+                    }}
+                  />
+                  <DatePicker
+                    id={`tl-option-date-${i}`}
+                    value={tlOptionDate}
+                    onChange={(d) => setTlOptionDate(d)}
+                    className="!w-0 !p-0 !border-0 !shadow-none opacity-0 absolute"
+                    style={{ height: 0 }}
+                  />
+                  <Icon
+                    icon="mdi:chevron-down"
+                    className="text-[#9CA3AF] text-[16px]"
+                  />
+                </div>
               </div>
             ))}
           </div>

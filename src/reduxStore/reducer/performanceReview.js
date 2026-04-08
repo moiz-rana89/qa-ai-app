@@ -4,6 +4,10 @@ import * as types from "../action/types";
 const INITIAL_STATE = {
   isLoading: false,
   performanceData: null,
+  prClients: [],
+  prAgents: [],
+  prChannels: [],
+  coachingForm: {},
 };
 
 const performanceReviewReducer = createReducer(INITIAL_STATE, {
@@ -12,6 +16,18 @@ const performanceReviewReducer = createReducer(INITIAL_STATE, {
   },
   [types.FETCH_PERFORMANCE_REVIEW](state, action) {
     return { ...state, performanceData: action.data };
+  },
+  [types.FETCH_PR_CLIENTS](state, action) {
+    return { ...state, prClients: action.data };
+  },
+  [types.FETCH_PR_AGENTS](state, action) {
+    return { ...state, prAgents: action.data };
+  },
+  [types.FETCH_PR_CHANNELS](state, action) {
+    return { ...state, prChannels: action.data };
+  },
+  [types.FETCH_PR_COACHING_FORM](state, action) {
+    return { ...state, coachingForm: action.data };
   },
 });
 

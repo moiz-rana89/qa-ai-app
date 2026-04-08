@@ -112,6 +112,14 @@ body {
   padding: 13px 53px 13px 14px !important;
   border-color: #ff5546 !important;
 }
+/* Multi-select vertical centering */
+.custom-select-forms.ant-select-multiple .ant-select-selector {
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: nowrap !important;
+  padding: 4px 14px !important;
+}
+
 /* Schedule Management - TimePicker & DatePicker pill style */
 .schedule-time-picker .ant-picker-suffix,
 .schedule-date-picker .ant-picker-suffix {

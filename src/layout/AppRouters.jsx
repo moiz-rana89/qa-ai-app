@@ -176,7 +176,7 @@ const ROUTE_ROLES = {
   "wfa-internal-team-attendance": ["dev", "wfa", "admin"],
   "wfa-attendance-reporting": ["dev", "wfa", "admin"],
   "schedule-management": ["dev", "admin"],
-  "performance-review": ["dev", "admin"],
+  "performance-review": ["dev", "admin", "tl"],
 };
 
 function DefaultRedirect() {

@@ -598,11 +598,22 @@ export const ColumnDataScheduleManagement = [
     fixed: "left",
   },
   {
-    title: "Status of Attendance",
+    title: "TP vs. Non-TP",
     width: 140,
     dataIndex: "app_label",
     key: "app_label",
     render: (value) => value || "-",
+  },
+  {
+    title: "Weekdays",
+    width: 180,
+    dataIndex: "weekdays",
+    key: "weekdays",
+    disableSort: true,
+    render: (value) =>
+      Array.isArray(value) && value.length > 0
+        ? value.map((d) => d.charAt(0).toUpperCase() + d.slice(1)).join(", ")
+        : "-",
   },
   {
     title: "Shift",

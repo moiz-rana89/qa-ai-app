@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Select, DatePicker, Collapse } from "antd";
+import { Select, DatePicker } from "antd";
 import { Icon } from "@iconify/react";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
@@ -10,203 +10,322 @@ import dayjs from "dayjs";
 import KPICard from "./KPICard";
 import ResolveDrawer from "./ResolveDrawer";
 import Skeleton from "../../components/Skeleton";
-import { getAgentName } from "../../reduxStore/action/formsManagement";
-import { getClientNamesTMF } from "../../reduxStore/action/workforcedashboard";
-import { getPerformanceReview } from "../../reduxStore/action/performanceReview";
+import {
+  getPRClients,
+  getPRAgents,
+  getPRChannels,
+  createPerformanceReviewSession,
+  getCoachingForm,
+} from "../../reduxStore/action/performanceReview";
 
-const CHANNEL_OPTIONS = [
-  { label: "All", value: "all" },
-  { label: "Email", value: "email" },
-  { label: "Chat", value: "chat" },
-  { label: "Phone", value: "phone" },
-];
+const { RangePicker } = DatePicker;
 
-// Mock KPI data — replace with API response data
-const MOCK_KPI_DATA = {
-  attendance: {
-    title: "Attendance",
-    tooltip: "Tracks agent attendance including on-time, missed, late, and abandoned shifts.",
-    metrics: [
-      { label: "On-Time", value: "17/26" },
-      { label: "Missed", value: "2/26", status: "pass" },
-      { label: "Late", value: "6/26", status: "fail" },
-      { label: "Abandoned", value: "1/26", status: "pass" },
-    ],
-    showResolve: true,
-  },
-  activity: {
-    title: "Activity Percentage",
-    tooltip: "Measures agent activity levels against daily, weekly, and monthly SLAs.",
-    metrics: [
-      {
-        label: "Daily SLA",
-        status: "pass",
-        subValues: [
-          { icon: "mdi:clock-outline", value: "85%" },
-          { icon: "mdi:chart-bar", value: "82%" },
-        ],
-      },
-      {
-        label: "Weekly SLA",
-        status: "pass",
-        subValues: [
-          { icon: "mdi:clock-outline", value: "84%" },
-          { icon: "mdi:chart-bar", value: "79%" },
-        ],
-      },
-      {
-        label: "Monthly SLA",
-        status: "pass",
-        subValues: [
-          { icon: "mdi:clock-outline", value: "81%" },
-          { icon: "mdi:chart-bar", value: "76%" },
-        ],
-      },
-    ],
-    showResolve: false,
-  },
-  messagesSent: {
-    title: "Messages Sent",
-    tooltip: "Tracks the number of messages sent against daily, weekly, and monthly targets.",
-    metrics: [
-      { label: "Daily SLA", value: "124 / 110", status: "pass" },
-      { label: "Weekly SLA", value: "538 / 560", status: "fail" },
-      { label: "Monthly SLA", value: "2,312 / 2,200", status: "pass" },
-    ],
-    showResolve: true,
-    missedMetrics: [
-      { label: "Daily SLA", value: "98 / 110" },
-      { label: "Weekly SLA", value: "538 / 560" },
-      { label: "Monthly SLA", value: "2,112 / 2,200" },
-    ],
-  },
-  ticketsClosed: {
-    title: "Tickets Closed",
-    tooltip: "Tracks the number of tickets closed against daily, weekly, and monthly targets.",
-    metrics: [
-      { label: "Daily SLA", value: "42 / 40", status: "pass" },
-      { label: "Weekly SLA", value: "198 / 200", status: "pass" },
-      { label: "Monthly SLA", value: "782 / 800", status: "pass" },
-    ],
-    showResolve: false,
-  },
-  firstResponseTime: {
-    title: "First Response Time",
-    tooltip: "Average first response time compared to SLA targets.",
-    metrics: [
-      { label: "Avg. Daily SLA", value: "2m 18s / 2m", status: "fail" },
-      { label: "Avg. Weekly SLA", value: "2m 11s / 2m", status: "fail" },
-      { label: "Avg. Monthly SLA", value: "Avg 2m 06s / 2m", status: "fail" },
-    ],
-    showResolve: true,
-    missedMetrics: [
-      { label: "Avg. Daily SLA", value: "2m 18s / 2m" },
-      { label: "Avg. Weekly SLA", value: "2m 11s / 2m" },
-      { label: "Avg. Monthly SLA", value: "Avg 2m 06s / 2m" },
-    ],
-  },
-  resolutionTime: {
-    title: "Resolution Time",
-    tooltip: "Average resolution time compared to SLA targets.",
-    metrics: [
-      { label: "Avg. Daily SLA", value: "15m / 20m", status: "pass" },
-      { label: "Weekly SLA", value: "17m / 20m", status: "pass" },
-      { label: "Monthly SLA", value: "19m / 20m", status: "pass" },
-    ],
-    showResolve: false,
-  },
-  qaScore: {
-    title: "QA Score",
-    tooltip: "Quality assurance scores for audited tickets.",
-    metrics: [
-      { label: "Tickets QA'ed", value: "34", status: "pass" },
-      { label: "Avg. Weekly", value: "84%", status: "pass" },
-      { label: "Avg. Monthly", value: "89%", status: "pass" },
-    ],
-    showResolve: false,
-  },
-  ticketMonitoring: {
-    title: "Ticket Monitoring",
-    tooltip: "Ticket monitoring scores and coverage.",
-    metrics: [
-      { label: "Tickets Monitored", value: "23", status: "pass" },
-      { label: "Avg. Weekly", value: "84%", status: "pass" },
-      { label: "Avg. Monthly", value: "89%", status: "pass" },
-    ],
-    showResolve: false,
-  },
+// Helper: compare metric value to SLA and return "pass" or "fail"
+const checkSLA = (actual, slaTarget, higherIsBetter = true) => {
+  if (actual == null || slaTarget == null) return null;
+  return higherIsBetter
+    ? actual >= slaTarget
+      ? "pass"
+      : "fail"
+    : actual <= slaTarget
+    ? "pass"
+    : "fail";
 };
+
+// Helper: format seconds to "Xm Ys"
+const fmtTime = (str) => {
+  if (!str) return "-";
+  return str;
+};
+
+// Build KPI cards from session data
+function buildKPICards(data) {
+  if (!data) return [];
+  const sla = data.sla || {};
+
+  return [
+    {
+      key: "attendance",
+      title: "Attendance",
+      tooltip: "Tracks agent attendance including on-time, missed, late, and abandoned shifts.",
+      metrics: [
+        { label: "On-Time", value: `${data.attendance?.on_time ?? 0}/${data.attendance?.total ?? 0}` },
+        {
+          label: "Missed",
+          value: `${data.attendance?.missed ?? 0}/${data.attendance?.total ?? 0}`,
+          status: checkSLA(sla.sla_missed, data.attendance?.missed, false) === "pass" ? "pass" : data.attendance?.missed > 0 ? "fail" : "pass",
+        },
+        {
+          label: "Late",
+          value: `${data.attendance?.late ?? 0}/${data.attendance?.total ?? 0}`,
+          status: data.attendance?.late > 0 ? "fail" : "pass",
+        },
+        {
+          label: "Abandoned",
+          value: `${data.attendance?.abandoned ?? 0}/${data.attendance?.total ?? 0}`,
+          status: data.attendance?.abandoned > 0 ? "fail" : "pass",
+        },
+      ],
+      showResolve: (data.attendance?.missed > 0 || data.attendance?.late > 0 || data.attendance?.abandoned > 0),
+    },
+    {
+      key: "activity_percentage",
+      title: "Activity Percentage",
+      tooltip: "Measures agent keyboard and mouse activity levels against SLAs.",
+      metrics: [
+        {
+          label: "Daily SLA",
+          status: checkSLA(data.activity?.daily?.keyboard_avg, sla.sla_daily_percentage_keyboard),
+          subValues: [
+            { icon: "mdi:keyboard-outline", value: `${data.activity?.daily?.keyboard_avg?.toFixed(0) ?? "-"}%` },
+            { icon: "mdi:mouse", value: `${data.activity?.daily?.mouse_avg?.toFixed(0) ?? "-"}%` },
+          ],
+        },
+        {
+          label: "Weekly SLA",
+          status: checkSLA(data.activity?.weekly?.keyboard_avg, sla.sla_weekly_percentage_keyboard),
+          subValues: [
+            { icon: "mdi:keyboard-outline", value: `${data.activity?.weekly?.keyboard_avg?.toFixed(0) ?? "-"}%` },
+            { icon: "mdi:mouse", value: `${data.activity?.weekly?.mouse_avg?.toFixed(0) ?? "-"}%` },
+          ],
+        },
+        {
+          label: "Monthly SLA",
+          status: checkSLA(data.activity?.monthly?.keyboard_avg, sla.sla_monthly_percentage_keyboard),
+          subValues: [
+            { icon: "mdi:keyboard-outline", value: `${data.activity?.monthly?.keyboard_avg?.toFixed(0) ?? "-"}%` },
+            { icon: "mdi:mouse", value: `${data.activity?.monthly?.mouse_avg?.toFixed(0) ?? "-"}%` },
+          ],
+        },
+      ],
+      showResolve:
+        checkSLA(data.activity?.daily?.keyboard_avg, sla.sla_daily_percentage_keyboard) === "fail" ||
+        checkSLA(data.activity?.weekly?.keyboard_avg, sla.sla_weekly_percentage_keyboard) === "fail" ||
+        checkSLA(data.activity?.monthly?.keyboard_avg, sla.sla_monthly_percentage_keyboard) === "fail",
+    },
+    {
+      key: "messages_sent",
+      title: "Messages Sent",
+      tooltip: "Tracks the number of messages sent against daily, weekly, and monthly targets.",
+      metrics: [
+        { label: "Daily SLA", value: `${data.messages_sent?.daily?.average?.toFixed(0) ?? "-"} / ${sla.sla_messages_sent_daily ?? "-"}`, status: checkSLA(data.messages_sent?.daily?.average, sla.sla_messages_sent_daily) },
+        { label: "Weekly SLA", value: `${data.messages_sent?.weekly?.average?.toFixed(0) ?? "-"} / ${sla.sla_messages_sent_weekly ?? "-"}`, status: checkSLA(data.messages_sent?.weekly?.average, sla.sla_messages_sent_weekly) },
+        { label: "Monthly SLA", value: `${data.messages_sent?.monthly?.average?.toFixed(0) ?? "-"} / ${sla.sla_messages_sent_monthly ?? "-"}`, status: checkSLA(data.messages_sent?.monthly?.average, sla.sla_messages_sent_monthly) },
+      ],
+      showResolve:
+        checkSLA(data.messages_sent?.daily?.average, sla.sla_messages_sent_daily) === "fail" ||
+        checkSLA(data.messages_sent?.weekly?.average, sla.sla_messages_sent_weekly) === "fail" ||
+        checkSLA(data.messages_sent?.monthly?.average, sla.sla_messages_sent_monthly) === "fail",
+    },
+    {
+      key: "tickets_closed",
+      title: "Tickets Closed",
+      tooltip: "Tracks the number of tickets closed against daily, weekly, and monthly targets.",
+      metrics: [
+        { label: "Daily SLA", value: `${data.tickets_closed?.daily?.average?.toFixed(0) ?? "-"} / ${sla.sla_tickets_closed_daily ?? "-"}`, status: checkSLA(data.tickets_closed?.daily?.average, sla.sla_tickets_closed_daily) },
+        { label: "Weekly SLA", value: `${data.tickets_closed?.weekly?.average?.toFixed(0) ?? "-"} / ${sla.sla_tickets_closed_weekly ?? "-"}`, status: checkSLA(data.tickets_closed?.weekly?.average, sla.sla_tickets_closed_weekly) },
+        { label: "Monthly SLA", value: `${data.tickets_closed?.monthly?.average?.toFixed(0) ?? "-"} / ${sla.sla_tickets_closed_monthly ?? "-"}`, status: checkSLA(data.tickets_closed?.monthly?.average, sla.sla_tickets_closed_monthly) },
+      ],
+      showResolve:
+        checkSLA(data.tickets_closed?.daily?.average, sla.sla_tickets_closed_daily) === "fail" ||
+        checkSLA(data.tickets_closed?.weekly?.average, sla.sla_tickets_closed_weekly) === "fail" ||
+        checkSLA(data.tickets_closed?.monthly?.average, sla.sla_tickets_closed_monthly) === "fail",
+    },
+    {
+      key: "first_response_time",
+      title: "First Response Time",
+      tooltip: "Average first response time compared to SLA targets.",
+      metrics: [
+        { label: "Avg. Daily SLA", value: `${fmtTime(data.first_response_time?.daily?.average)} / ${fmtSeconds(sla.sla_first_response)}`, status: checkSLA(data.first_response_time?.daily?.average_seconds_raw, parseSLATime(sla.sla_first_response), false) },
+        { label: "Avg. Weekly SLA", value: `${fmtTime(data.first_response_time?.weekly?.average)} / ${fmtSeconds(sla.sla_first_response)}`, status: checkSLA(data.first_response_time?.weekly?.average_seconds_raw, parseSLATime(sla.sla_first_response), false) },
+        { label: "Avg. Monthly SLA", value: `${fmtTime(data.first_response_time?.monthly?.average)} / ${fmtSeconds(sla.sla_first_response)}`, status: checkSLA(data.first_response_time?.monthly?.average_seconds_raw, parseSLATime(sla.sla_first_response), false) },
+      ],
+      showResolve:
+        checkSLA(data.first_response_time?.daily?.average_seconds_raw, parseSLATime(sla.sla_first_response), false) === "fail" ||
+        checkSLA(data.first_response_time?.weekly?.average_seconds_raw, parseSLATime(sla.sla_first_response), false) === "fail" ||
+        checkSLA(data.first_response_time?.monthly?.average_seconds_raw, parseSLATime(sla.sla_first_response), false) === "fail",
+    },
+    {
+      key: "resolution_time",
+      title: "Resolution Time",
+      tooltip: "Average resolution time compared to SLA targets.",
+      metrics: [
+        { label: "Avg. Daily SLA", value: `${fmtTime(data.resolution_time?.daily?.average)} / ${fmtSeconds(sla.sla_resolution_time)}`, status: checkSLA(data.resolution_time?.daily?.average_seconds_raw, parseSLATime(sla.sla_resolution_time), false) },
+        { label: "Weekly SLA", value: `${fmtTime(data.resolution_time?.weekly?.average)} / ${fmtSeconds(sla.sla_resolution_time)}`, status: checkSLA(data.resolution_time?.weekly?.average_seconds_raw, parseSLATime(sla.sla_resolution_time), false) },
+        { label: "Monthly SLA", value: `${fmtTime(data.resolution_time?.monthly?.average)} / ${fmtSeconds(sla.sla_resolution_time)}`, status: checkSLA(data.resolution_time?.monthly?.average_seconds_raw, parseSLATime(sla.sla_resolution_time), false) },
+      ],
+      showResolve:
+        checkSLA(data.resolution_time?.daily?.average_seconds_raw, parseSLATime(sla.sla_resolution_time), false) === "fail" ||
+        checkSLA(data.resolution_time?.weekly?.average_seconds_raw, parseSLATime(sla.sla_resolution_time), false) === "fail" ||
+        checkSLA(data.resolution_time?.monthly?.average_seconds_raw, parseSLATime(sla.sla_resolution_time), false) === "fail",
+    },
+    {
+      key: "qa_score",
+      title: "QA Score",
+      tooltip: "Quality assurance scores for audited tickets.",
+      metrics: [
+        { label: "Tickets QA'ed", value: `${data.qa_score?.total_tickets_qaed ?? "-"}`, status: checkSLA(data.qa_score?.total_tickets_qaed, sla.sla_tickets_qad) },
+        { label: "Avg. Weekly", value: `${data.qa_score?.weekly_avg_percentage?.toFixed(0) ?? "-"}%`, status: checkSLA(data.qa_score?.weekly_avg_percentage, sla.sla_average_weekly_qa_score) },
+        { label: "Avg. Monthly", value: `${data.qa_score?.monthly_avg_percentage?.toFixed(0) ?? "-"}%`, status: checkSLA(data.qa_score?.monthly_avg_percentage, sla.sla_average_monthly_qa_score) },
+      ],
+      showResolve:
+        checkSLA(data.qa_score?.weekly_avg_percentage, sla.sla_average_weekly_qa_score) === "fail" ||
+        checkSLA(data.qa_score?.monthly_avg_percentage, sla.sla_average_monthly_qa_score) === "fail",
+    },
+    {
+      key: "ticket_monitoring",
+      title: "Ticket Monitoring",
+      tooltip: "Ticket monitoring scores and coverage.",
+      metrics: [
+        { label: "Tickets Monitored", value: `${data.ticket_monitoring?.total_tickets_monitored ?? "-"}`, status: checkSLA(data.ticket_monitoring?.total_tickets_monitored, sla.sla_tickets_monitored) },
+        { label: "Avg. Weekly", value: `${data.ticket_monitoring?.weekly_avg_percentage?.toFixed(0) ?? "-"}%`, status: checkSLA(data.ticket_monitoring?.weekly_avg_percentage, sla.sla_tickets_monitored_average_weekly) },
+        { label: "Avg. Monthly", value: `${data.ticket_monitoring?.monthly_avg_percentage?.toFixed(0) ?? "-"}%`, status: checkSLA(data.ticket_monitoring?.monthly_avg_percentage, sla.sla_tickets_monitored_average_monthly) },
+      ],
+      showResolve:
+        checkSLA(data.ticket_monitoring?.weekly_avg_percentage, sla.sla_tickets_monitored_average_weekly) === "fail" ||
+        checkSLA(data.ticket_monitoring?.monthly_avg_percentage, sla.sla_tickets_monitored_average_monthly) === "fail",
+    },
+  ];
+}
+
+// Parse SLA time to seconds — handles both "MM:SS" strings and raw numbers (seconds)
+function parseSLATime(val) {
+  if (val == null) return null;
+  if (typeof val === "number") return val;
+  if (typeof val === "string" && val.includes(":")) {
+    const parts = val.split(":");
+    if (parts.length !== 2) return null;
+    return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+  }
+  return Number(val) || null;
+}
+
+// Format seconds to "Xm Ys" display string
+function fmtSeconds(val) {
+  if (val == null) return "-";
+  const num = typeof val === "number" ? val : parseSLATime(val);
+  if (num == null) return String(val);
+  const mins = Math.floor(num / 60);
+  const secs = num % 60;
+  if (mins === 0 && secs === 0) return "0m";
+  if (secs === 0) return `${mins}m`;
+  return `${mins}m ${secs}s`;
+}
+
+// Get failed metrics for resolve drawer
+function getFailedMetrics(kpiCard) {
+  return (kpiCard?.metrics || []).filter((m) => m.status === "fail");
+}
 
 export default function PerformanceReview() {
   const dispatch = useDispatch();
   const userDetails = useSelector((state) => state.auth.user);
-  const { isLoading } = useSelector((state) => state.performanceReview);
-  const { clientNameTMF: clientsList } = useSelector(
-    (store) => store?.workforcedashboard
-  );
-  const { agentNames: agentList } = useSelector(
-    (store) => store?.formsManagement
-  );
+  const { isLoading, performanceData, prClients, prAgents, prChannels } =
+    useSelector((state) => state.performanceReview);
 
-  const [selectedAgent, setSelectedAgent] = useState(null);
+  // Filter state
   const [selectedClient, setSelectedClient] = useState(null);
-  const [selectedChannel, setSelectedChannel] = useState("all");
-  const [selectedDate, setSelectedDate] = useState(dayjs());
+  const [selectedAgent, setSelectedAgent] = useState(null);
+  const [selectedAgentData, setSelectedAgentData] = useState(null);
+  const [selectedChannels, setSelectedChannels] = useState(["all"]);
+  const [dateRange, setDateRange] = useState(null);
   const [isLoadingClient, setIsLoadingClient] = useState(false);
   const [isLoadingAgent, setIsLoadingAgent] = useState(false);
+  const [isLoadingChannels, setIsLoadingChannels] = useState(false);
+
+  // Session state
+  const [sessionId, setSessionId] = useState(null);
   const [showKPIs, setShowKPIs] = useState(false);
 
   // Resolve Drawer
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [resolveKPI, setResolveKPI] = useState(null);
+  const [resolveMetricType, setResolveMetricType] = useState(null);
   const [resolveMissed, setResolveMissed] = useState([]);
 
+  // Fetch clients and channels on mount
   useEffect(() => {
-    dispatch(getClientNamesTMF(setIsLoadingClient));
-    dispatch(getAgentName(setIsLoadingAgent));
+    dispatch(getPRClients(setIsLoadingClient));
+    dispatch(getPRChannels(setIsLoadingChannels));
   }, []);
 
-  const handleViewPerformance = () => {
-    if (!selectedAgent) {
-      toast.error("Please select an agent");
-      return;
+  // When client changes, fetch agents for that client
+  useEffect(() => {
+    if (selectedClient) {
+      setSelectedAgent(null);
+      setSelectedAgentData(null);
+      dispatch(getPRAgents(selectedClient, setIsLoadingAgent));
     }
+  }, [selectedClient]);
+
+  const handleAgentChange = (value) => {
+    setSelectedAgent(value);
+    const agent = prAgents?.find((a) => a.hubstaff_id === value);
+    setSelectedAgentData(agent);
+  };
+
+  const handleViewPerformance = () => {
     if (!selectedClient) {
       toast.error("Please select a client");
       return;
     }
+    if (!selectedAgent || !selectedAgentData) {
+      toast.error("Please select an agent");
+      return;
+    }
+    if (!dateRange || !dateRange[0] || !dateRange[1]) {
+      toast.error("Please select a date range");
+      return;
+    }
 
     dispatch(
-      getPerformanceReview(
+      createPerformanceReviewSession(
         {
-          agent_id: selectedAgent,
-          client_id: selectedClient,
-          channel: selectedChannel,
-          date: selectedDate?.format("YYYY-MM-DD"),
+          created_by: userDetails?.owner_id,
+          agent_hubstaff_user_id: selectedAgentData.hubstaff_id,
+          agent_helpdesk_user_id: selectedAgentData.helpdesk_user_id,
+          client_hubstaff_id: selectedClient,
+          review_start_date: dateRange[0].format("YYYY-MM-DD"),
+          review_end_date: dateRange[1].format("YYYY-MM-DD"),
+          channels: selectedChannels,
         },
-        (success) => {
-          if (success) setShowKPIs(true);
+        (success, data) => {
+          if (success && data) {
+            setSessionId(data.id);
+            setShowKPIs(true);
+            dispatch(getCoachingForm(data.id));
+          } else {
+            toast.error("Error creating performance review session");
+          }
         }
       )
     );
   };
 
   const handleClearFilter = () => {
-    setSelectedAgent(null);
     setSelectedClient(null);
-    setSelectedChannel("all");
-    setSelectedDate(dayjs());
+    setSelectedAgent(null);
+    setSelectedAgentData(null);
+    setSelectedChannels(["all"]);
+    setDateRange(null);
     setShowKPIs(false);
+    setSessionId(null);
   };
 
-  const openResolveDrawer = (kpiKey) => {
-    const kpi = MOCK_KPI_DATA[kpiKey];
-    setResolveKPI(kpi?.title);
-    setResolveMissed(kpi?.missedMetrics || []);
+  const openResolveDrawer = (kpiCard) => {
+    setResolveKPI(kpiCard.title);
+    setResolveMetricType(kpiCard.key);
+    setResolveMissed(getFailedMetrics(kpiCard));
     setIsDrawerOpen(true);
   };
 
-  const kpiEntries = Object.entries(MOCK_KPI_DATA);
+  const kpiCards = buildKPICards(performanceData);
+
+  // Build channel options from API
+  const channelOptions = (prChannels || []).map((ch) => ({
+    label: ch === "all" ? "All" : ch.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+    value: ch,
+  }));
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -222,6 +341,8 @@ export default function PerformanceReview() {
         open={isDrawerOpen}
         setOpen={setIsDrawerOpen}
         kpiTitle={resolveKPI}
+        metricType={resolveMetricType}
+        sessionId={sessionId}
         missedMetrics={resolveMissed}
         onSuccess={() => {}}
       />
@@ -230,33 +351,7 @@ export default function PerformanceReview() {
       <div className="px-8 pt-5">
         <div className="bg-white rounded-[16px] border border-[#D7E6E7] p-5">
           <div className="flex items-end gap-4 flex-wrap">
-            {/* Agent */}
-            <div className="flex-1 min-w-[150px]">
-              <label className="block text-[13px] font-semibold text-[#163143] mb-1">
-                Agent<span className="text-red-500">*</span>
-              </label>
-              <Select
-                showSearch
-                placeholder="Select Agent"
-                filterOption={(input, option) =>
-                  (option?.label ?? "")
-                    .toLowerCase()
-                    .includes(input.toLowerCase())
-                }
-                options={agentList?.map((item) => ({
-                  value: item?.user_id,
-                  label: item?.user_name,
-                }))}
-                onChange={(v) => setSelectedAgent(v)}
-                value={selectedAgent}
-                className="w-full custom-select-forms"
-                popupClassName="custom-select-dropdown"
-                style={{ height: "40px" }}
-                loading={isLoadingAgent}
-              />
-            </div>
-
-            {/* Client */}
+            {/* Client (select first) */}
             <div className="flex-1 min-w-[150px]">
               <label className="block text-[13px] font-semibold text-[#163143] mb-1">
                 Client<span className="text-red-500">*</span>
@@ -269,9 +364,9 @@ export default function PerformanceReview() {
                     .toLowerCase()
                     .includes(input.toLowerCase())
                 }
-                options={clientsList?.map((item) => ({
-                  value: item?.client_id,
-                  label: item?.client,
+                options={prClients?.map((item) => ({
+                  value: item?.id,
+                  label: item?.name,
                 }))}
                 onChange={(v) => setSelectedClient(v)}
                 value={selectedClient}
@@ -282,42 +377,71 @@ export default function PerformanceReview() {
               />
             </div>
 
+            {/* Agent (depends on Client) */}
+            <div className="flex-1 min-w-[150px]">
+              <label className="block text-[13px] font-semibold text-[#163143] mb-1">
+                Agent<span className="text-red-500">*</span>
+              </label>
+              <Select
+                showSearch
+                placeholder={
+                  selectedClient
+                    ? "Select Agent"
+                    : "Select a client first"
+                }
+                disabled={!selectedClient}
+                filterOption={(input, option) =>
+                  (option?.label ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+                options={prAgents?.map((item) => ({
+                  value: item?.hubstaff_id,
+                  label: item?.user_name,
+                }))}
+                onChange={handleAgentChange}
+                value={selectedAgent}
+                className="w-full custom-select-forms"
+                popupClassName="custom-select-dropdown"
+                style={{ height: "40px" }}
+                loading={isLoadingAgent}
+              />
+            </div>
+
             {/* Channel */}
             <div className="flex-1 min-w-[120px]">
               <label className="block text-[13px] font-semibold text-[#163143] mb-1">
                 Channel<span className="text-red-500">*</span>
               </label>
               <Select
-                options={CHANNEL_OPTIONS}
-                onChange={(v) => setSelectedChannel(v)}
-                value={selectedChannel}
+                mode="multiple"
+                placeholder="Select Channel"
+                options={channelOptions}
+                onChange={(v) => setSelectedChannels(v)}
+                value={selectedChannels}
                 className="w-full custom-select-forms"
                 popupClassName="custom-select-dropdown"
                 style={{ height: "40px" }}
+                loading={isLoadingChannels}
+                maxTagCount="responsive"
               />
             </div>
 
-            {/* Date */}
-            <div className="min-w-[160px]">
+            {/* Date Range */}
+            <div className="min-w-[250px]">
               <label className="block text-[13px] font-semibold text-[#163143] mb-1">
                 Date<span className="text-red-500">*</span>
               </label>
-              <DatePicker
-                value={selectedDate}
-                onChange={(d) => setSelectedDate(d)}
-                className="w-full schedule-date-picker"
+              <RangePicker
+                value={dateRange}
+                onChange={(dates) => setDateRange(dates)}
+                className="w-full"
                 style={{
                   height: "40px",
                   borderRadius: "24px",
                   border: "1px solid #D7E6E7",
                 }}
                 format="M/D/YYYY"
-                suffixIcon={
-                  <Icon
-                    icon="mdi:calendar-outline"
-                    className="text-[#69C920] text-[18px]"
-                  />
-                }
               />
             </div>
 
@@ -347,61 +471,53 @@ export default function PerformanceReview() {
         <div className="px-8 pt-5">
           <Skeleton className="w-full h-[60vh]" />
         </div>
-      ) : showKPIs ? (
+      ) : showKPIs && kpiCards.length > 0 ? (
         <div className="px-8 pt-5 pb-8 space-y-5">
           {/* Performance Coaching Form Accordion */}
-          <Collapse
-            className="bg-white rounded-[16px] border border-[#D7E6E7]"
-            expandIconPosition="end"
-            items={[
-              {
-                key: "1",
-                label: (
-                  <div className="flex items-center gap-3">
-                    <span className="text-[16px] font-semibold text-[#163143]">
-                      Performance Coaching Form
-                    </span>
-                    <span className="text-[13px] text-[#6B7280] border border-[#D7E6E7] rounded-full px-3 py-[2px]">
-                      Required Questions: 0/4
-                    </span>
-                  </div>
-                ),
-                children: (
-                  <div className="text-[14px] text-[#6B7280]">
-                    Performance coaching form content will be loaded here based
-                    on API integration.
-                  </div>
-                ),
-              },
-            ]}
-          />
+          <div className="bg-white rounded-[16px] border border-[#D7E6E7] p-5">
+            <div className="flex items-center gap-3">
+              <span className="text-[16px] font-semibold text-[#163143]">
+                Performance Coaching Form
+              </span>
+              <span className="text-[13px] text-[#6B7280] border border-[#D7E6E7] rounded-full px-3 py-[2px]">
+                Required Questions: 0/4
+              </span>
+              <Icon
+                icon="mdi:chevron-down"
+                className="ml-auto text-[24px] text-[#163143] cursor-pointer"
+              />
+            </div>
+          </div>
 
           {/* KPI Cards Grid */}
           <div className="grid grid-cols-2 gap-5">
-            {kpiEntries.map(([key, kpi]) => (
+            {kpiCards.map((kpi) => (
               <KPICard
-                key={key}
+                key={kpi.key}
                 title={kpi.title}
                 tooltipText={kpi.tooltip}
                 metrics={kpi.metrics}
                 showResolve={kpi.showResolve}
-                onResolve={() => openResolveDrawer(key)}
+                onResolve={() => openResolveDrawer(kpi)}
               />
             ))}
           </div>
         </div>
       ) : (
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center text-[#9CA3AF]">
-            <Icon
-              icon="mdi:chart-line"
-              className="text-[64px] mx-auto mb-4 text-[#D7E6E7]"
-            />
-            <p className="text-[16px]">
-              Select an agent and click "View Performance" to see KPI data.
-            </p>
+        !showKPIs && (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center text-[#9CA3AF]">
+              <Icon
+                icon="mdi:chart-line"
+                className="text-[64px] mx-auto mb-4 text-[#D7E6E7]"
+              />
+              <p className="text-[16px]">
+                Select a client and agent, then click "View Performance" to see
+                KPI data.
+              </p>
+            </div>
           </div>
-        </div>
+        )
       )}
     </div>
   );

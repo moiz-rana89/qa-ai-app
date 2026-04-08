@@ -241,7 +241,7 @@ const menuList = [
     title: "Performance Review",
     icon: "carbon:dashboard",
     route: "performance-review",
-    roles: ["admin", "dev"],
+    roles: ["admin", "dev", "tl"],
   },
   {
     title: "Quality Assurance",
