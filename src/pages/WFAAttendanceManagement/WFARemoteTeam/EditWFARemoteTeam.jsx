@@ -113,10 +113,11 @@ export default function EditWFARemoteTeam({
       }
       const reasonToUse = selectedReport?.updated_reason_tl || selectedReport?.attendance_reason;
       if (reasonToUse != null) {
+        const found = ATT_REASONS_STATUS?.find(
+          (item) => item.reason == reasonToUse
+        );
         setReason([
-          ATT_REASONS_STATUS?.find(
-            (item) => item.reason == reasonToUse
-          ),
+          found || { reason: reasonToUse, validity: "VALID", description: "" },
         ]);
       } else {
         setReason([]);
