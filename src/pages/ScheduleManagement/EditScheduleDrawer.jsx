@@ -239,8 +239,8 @@ export default function EditScheduleDrawer({
       width={600}
     >
       <div className="flex flex-col gap-6 px-4">
-        {/* Top buttons */}
-        <div className="flex justify-end gap-3">
+        {/* Sticky Top buttons */}
+        <div className="sticky top-0 z-10 bg-white flex justify-end gap-3 pt-4 pb-4 -mx-4 px-4 border-b border-[#EBF3F4]">
           <CustomButton
             text="Cancel"
             textColor="#163143"

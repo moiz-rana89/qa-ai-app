@@ -304,8 +304,8 @@ export default function EditWFAInternalTeam({
         </div>
       ) : (
         <div className="space-y-6">
-          {/* Mark as Resolved Checkbox */}
-          <div className="flex items-center border-b border-[#D7E6E7] w-[100%] pl-6">
+          {/* Sticky Mark as Resolved Checkbox */}
+          <div className="sticky top-0 z-10 bg-white flex items-center border-b border-[#D7E6E7] w-[100%] pl-6 pt-4">
             <div className="flex justify-end gap-2 w-[60%] ml-auto">
               <div className="py-5  px-8 flex justify-end gap-5 items-center">
                 <CustomButton

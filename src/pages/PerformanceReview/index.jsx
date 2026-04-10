@@ -9,6 +9,7 @@ import dayjs from "dayjs";
 
 import KPICard from "./KPICard";
 import ResolveDrawer from "./ResolveDrawer";
+import CoachingForm from "./CoachingForm";
 import Skeleton from "../../components/Skeleton";
 import {
   getPRClients,
@@ -243,6 +244,9 @@ export default function PerformanceReview() {
   const [resolveMetricType, setResolveMetricType] = useState(null);
   const [resolveMissed, setResolveMissed] = useState([]);
 
+  // Coaching form accordion
+  const [coachingFormOpen, setCoachingFormOpen] = useState(false);
+
   // Fetch clients and channels on mount
   useEffect(() => {
     dispatch(getPRClients(setIsLoadingClient));
@@ -475,18 +479,29 @@ export default function PerformanceReview() {
         <div className="px-8 pt-5 pb-8 space-y-5">
           {/* Performance Coaching Form Accordion */}
           <div className="bg-white rounded-[16px] border border-[#D7E6E7] p-5">
-            <div className="flex items-center gap-3">
+            <div
+              className="flex items-center gap-3 cursor-pointer"
+              onClick={() => setCoachingFormOpen(!coachingFormOpen)}
+            >
               <span className="text-[16px] font-semibold text-[#163143]">
                 Performance Coaching Form
               </span>
-              <span className="text-[13px] text-[#6B7280] border border-[#D7E6E7] rounded-full px-3 py-[2px]">
+              <span className="text-[13px] text-[#69C920] border border-[#69C920] rounded-full px-3 py-[2px]">
                 Required Questions: 0/4
               </span>
               <Icon
                 icon="mdi:chevron-down"
-                className="ml-auto text-[24px] text-[#163143] cursor-pointer"
+                className={`ml-auto text-[24px] text-[#163143] transition-transform ${
+                  coachingFormOpen ? "rotate-180" : ""
+                }`}
               />
             </div>
+            {coachingFormOpen && (
+              <CoachingForm
+                sessionId={sessionId}
+                onSaved={() => setCoachingFormOpen(false)}
+              />
+            )}
           </div>
 
           {/* KPI Cards Grid */}
