@@ -97,10 +97,11 @@ export default function EditWFAAttendance({
         setFileInfo();
       }
       if (selectedReport?.attendance_reason != null) {
+        const found = ATT_REASONS_STATUS?.find(
+          (item) => item.reason == selectedReport?.attendance_reason
+        );
         setReason([
-          ATT_REASONS_STATUS?.find(
-            (item) => item.reason == selectedReport?.attendance_reason
-          ),
+          found || { reason: selectedReport.attendance_reason, validity: "VALID", description: "" },
         ]);
       } else {
         setReason([]);

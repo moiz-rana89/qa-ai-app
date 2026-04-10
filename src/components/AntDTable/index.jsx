@@ -156,12 +156,24 @@ const AntDTable = ({
     // }
   };
 
+  // Deduplicate rows by rowKey
+  const uniqueData = React.useMemo(() => {
+    if (!data || !rowKey) return data;
+    const seen = new Set();
+    return data.filter((record) => {
+      const key = record[rowKey];
+      if (key != null && seen.has(key)) return false;
+      if (key != null) seen.add(key);
+      return true;
+    });
+  }, [data, rowKey]);
+
   return (
     <div className="">
       <Table
         rowKey={(record) => record[`${rowKey}`] || record.key}
         columns={finalColumns}
-        dataSource={data}
+        dataSource={uniqueData}
         loading={loading}
         bordered={bordered}
         onChange={handleTableChange}
