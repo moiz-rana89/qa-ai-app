@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Select, DatePicker } from "antd";
+import { Select } from "antd";
 import { Icon } from "@iconify/react";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
@@ -18,8 +18,6 @@ import {
   createPerformanceReviewSession,
   getCoachingForm,
 } from "../../reduxStore/action/performanceReview";
-
-const { RangePicker } = DatePicker;
 
 // Helper: compare metric value to SLA and return "pass" or "fail"
 const checkSLA = (actual, slaTarget, higherIsBetter = true) => {
@@ -230,6 +228,7 @@ export default function PerformanceReview() {
   const [selectedAgentData, setSelectedAgentData] = useState(null);
   const [selectedChannels, setSelectedChannels] = useState(["all"]);
   const [dateRange, setDateRange] = useState(null);
+  const [datePreset, setDatePreset] = useState(null);
   const [isLoadingClient, setIsLoadingClient] = useState(false);
   const [isLoadingAgent, setIsLoadingAgent] = useState(false);
   const [isLoadingChannels, setIsLoadingChannels] = useState(false);
@@ -312,6 +311,7 @@ export default function PerformanceReview() {
     setSelectedAgentData(null);
     setSelectedChannels(["all"]);
     setDateRange(null);
+    setDatePreset(null);
     setShowKPIs(false);
     setSessionId(null);
   };
@@ -431,21 +431,32 @@ export default function PerformanceReview() {
               />
             </div>
 
-            {/* Date Range */}
-            <div className="min-w-[250px]">
+            {/* Date - preset options only */}
+            <div className="min-w-[180px]">
               <label className="block text-[13px] font-semibold text-[#163143] mb-1">
                 Date<span className="text-red-500">*</span>
               </label>
-              <RangePicker
-                value={dateRange}
-                onChange={(dates) => setDateRange(dates)}
-                className="w-full"
-                style={{
-                  height: "40px",
-                  borderRadius: "24px",
-                  border: "1px solid #D7E6E7",
+              <Select
+                placeholder="Select Period"
+                value={datePreset}
+                onChange={(val) => {
+                  setDatePreset(val);
+                  if (val === "daily") {
+                    setDateRange([dayjs(), dayjs()]);
+                  } else if (val === "weekly") {
+                    setDateRange([dayjs().subtract(6, "day"), dayjs()]);
+                  } else if (val === "monthly") {
+                    setDateRange([dayjs().subtract(29, "day"), dayjs()]);
+                  }
                 }}
-                format="M/D/YYYY"
+                options={[
+                  { label: "Daily", value: "daily" },
+                  { label: "Weekly", value: "weekly" },
+                  { label: "Monthly", value: "monthly" },
+                ]}
+                className="w-full custom-select-forms"
+                popupClassName="custom-select-dropdown"
+                style={{ height: "40px" }}
               />
             </div>
 

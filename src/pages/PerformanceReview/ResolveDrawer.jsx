@@ -72,6 +72,7 @@ export default function ResolveDrawer({
   const [agentCommitment, setAgentCommitment] = useState("");
   const [tlOptions, setTlOptions] = useState([""]);
   const [tlOptionDate, setTlOptionDate] = useState(null);
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
   const [startItems, setStartItems] = useState([""]);
   const [stopItems, setStopItems] = useState([""]);
   const [continueItems, setContinueItems] = useState([""]);
@@ -261,27 +262,33 @@ export default function ResolveDrawer({
                   className="flex-1 !border-0 !shadow-none"
                   style={{ height: "40px" }}
                 />
-                <div className="flex items-center gap-1 pr-3 border-l border-[#D7E6E7] pl-3">
+                <div
+                  className="flex items-center gap-1 pr-3 border-l border-[#D7E6E7] pl-3 cursor-pointer relative"
+                  onClick={() => setDatePickerOpen(true)}
+                >
+                  {tlOptionDate && (
+                    <span className="text-[12px] text-[#163143] mr-1">
+                      {tlOptionDate.format("M/D/YY")}
+                    </span>
+                  )}
                   <Icon
                     icon="mdi:calendar-outline"
-                    className="text-[#69C920] text-[18px] cursor-pointer"
-                    onClick={() => {
-                      document
-                        .getElementById(`tl-option-date-${i}`)
-                        ?.querySelector("input")
-                        ?.click();
-                    }}
-                  />
-                  <DatePicker
-                    id={`tl-option-date-${i}`}
-                    value={tlOptionDate}
-                    onChange={(d) => setTlOptionDate(d)}
-                    className="!w-0 !p-0 !border-0 !shadow-none opacity-0 absolute"
-                    style={{ height: 0 }}
+                    className="text-[#69C920] text-[18px]"
                   />
                   <Icon
                     icon="mdi:chevron-down"
                     className="text-[#9CA3AF] text-[16px]"
+                  />
+                  <DatePicker
+                    open={datePickerOpen}
+                    onOpenChange={setDatePickerOpen}
+                    value={tlOptionDate}
+                    onChange={(d) => {
+                      setTlOptionDate(d);
+                      setDatePickerOpen(false);
+                    }}
+                    className="!absolute !opacity-0 !pointer-events-none"
+                    style={{ width: 0, height: 0, top: "100%", right: 0 }}
                   />
                 </div>
               </div>
