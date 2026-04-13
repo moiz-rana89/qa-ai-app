@@ -582,7 +582,7 @@ export const getQAAIReport = (setLoader, toast, params = {}) => {
         }
       };
 
-      addParam("tl_name", params.tl_name);
+      addParam("owner", params.owner);
       addParam("start_date", params.start_date);
       addParam("end_date", params.end_date);
       addParam("admin", params.admin);
