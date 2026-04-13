@@ -18,7 +18,7 @@ export const QAAIReport = () => {
     }
     dispatch(
       getQAAIReport(setLoader, toast, {
-        tl_name: user?.name,
+        owner: [user?.owner_id],
         start_date: date[0],
         end_date: date[1],
         admin: ["admin", "dev", "wfa"].includes(user?.role),
