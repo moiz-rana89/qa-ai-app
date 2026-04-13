@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux";
 import dayjs from "dayjs";
 
 import { CustomButton } from "../../components/Buttons/CustomButton";
+import UnifiedDropdown from "../../components/Dropdown/UnifiedDropdown";
 import {
   createSchedule,
   updateSchedule,
@@ -38,7 +39,7 @@ export default function EditScheduleDrawer({
   const [formData, setFormData] = useState({
     client: null,
     client_id: null,
-    project: null,
+    project: [],
     use_time_zone: "organization",
     minimum_time: "",
     start_time: null,
@@ -67,7 +68,13 @@ export default function EditScheduleDrawer({
       setFormData({
         client: selectedSchedule.client,
         client_id: selectedSchedule.client_id,
-        project: selectedSchedule.project,
+        project: Array.isArray(selectedSchedule.project)
+          ? selectedSchedule.project.map((p) =>
+              typeof p === "string" ? { id: p, name: p } : p
+            )
+          : selectedSchedule.project
+          ? [{ id: selectedSchedule.project, name: selectedSchedule.project }]
+          : [],
         use_time_zone:
           selectedSchedule.use_time_zone || "America/Los_Angeles",
         minimum_time: selectedSchedule.minimum_time
@@ -90,7 +97,7 @@ export default function EditScheduleDrawer({
       setFormData({
         client: null,
         client_id: null,
-        project: null,
+        project: [],
         use_time_zone: "organization",
         minimum_time: "",
         start_time: null,
@@ -184,7 +191,7 @@ export default function EditScheduleDrawer({
       member_name: formData.member_name || selectedSchedule?.member_name,
       client: formData.client,
       client_id: formData.client_id,
-      project: formData.project,
+      project: formData.project?.map((p) => p?.name || p),
       team_lead: selectedSchedule?.team_lead,
       team_lead_id: selectedSchedule?.team_lead_id,
       status: "active",
@@ -316,24 +323,44 @@ export default function EditScheduleDrawer({
           <label className="block text-[14px] font-semibold text-[#163143] mb-2">
             Project<span className="text-red-500">*</span>
           </label>
-          <Select
-            showSearch
+          <UnifiedDropdown
             placeholder="Select Project"
-            filterOption={(input, option) =>
-              (option?.label ?? "")
-                .toLowerCase()
-                .includes(input.toLowerCase())
-            }
-            options={scheduleFilters?.projects?.map((item) => ({
-              value: item?.name,
-              label: item?.name,
-            }))}
-            onChange={(value) => handleChange("project", value)}
-            value={formData.project}
-            className="w-full custom-select-forms"
-            popupClassName="custom-select-dropdown"
-            style={{ height: "44px" }}
+            name="Projects"
+            data={scheduleFilters?.projects || []}
+            selectedList={formData.project || []}
+            setselectedList={(val) => handleChange("project", val)}
+            multiSelect={true}
+            displayKey="name"
+            valueKey="id"
+            searchKeys={["name"]}
+            className="h-[44px] w-[100%] border-[#d9d9d9]"
           />
+          {formData.project?.length > 0 && (
+            <div className="w-full mt-[10px] flex flex-wrap gap-2">
+              {formData.project.map((item, idx) => (
+                <div
+                  key={idx}
+                  onClick={() =>
+                    handleChange(
+                      "project",
+                      formData.project.filter(
+                        (p) => (p?.id || p) !== (item?.id || item)
+                      )
+                    )
+                  }
+                  className="cursor-pointer py-1 bg-[#DBFFDF] rounded-full flex items-center justify-center px-3 text-[14px] text-[#163143]"
+                >
+                  {item?.name || item}
+                  <Icon
+                    color="#163143"
+                    fontSize={20}
+                    className="pl-1"
+                    icon="basil:cross-outline"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Time Zone */}

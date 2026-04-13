@@ -33,8 +33,8 @@ const SCHEDULE_TYPE_OPTIONS = [
 
 const STATUS_OPTIONS = [
   { label: "All", value: "all" },
-  { label: "Active", value: "active" },
-  { label: "Inactive", value: "inactive" },
+  { label: "Active", value: "Active" },
+  { label: "Inactive", value: "Inactive" },
 ];
 
 const MAPPING_STATUS_OPTIONS = [

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Select } from "antd";
+import { Select, DatePicker } from "antd";
 import { Icon } from "@iconify/react";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
@@ -228,7 +228,6 @@ export default function PerformanceReview() {
   const [selectedAgentData, setSelectedAgentData] = useState(null);
   const [selectedChannels, setSelectedChannels] = useState(["all"]);
   const [dateRange, setDateRange] = useState(null);
-  const [datePreset, setDatePreset] = useState(null);
   const [isLoadingClient, setIsLoadingClient] = useState(false);
   const [isLoadingAgent, setIsLoadingAgent] = useState(false);
   const [isLoadingChannels, setIsLoadingChannels] = useState(false);
@@ -280,6 +279,11 @@ export default function PerformanceReview() {
       toast.error("Please select a date range");
       return;
     }
+    const daysDiff = dateRange[1].diff(dateRange[0], "day") + 1;
+    if (daysDiff < 30) {
+      toast.error("Date range must be at least 1 month (30 days)");
+      return;
+    }
 
     dispatch(
       createPerformanceReviewSession(
@@ -311,7 +315,6 @@ export default function PerformanceReview() {
     setSelectedAgentData(null);
     setSelectedChannels(["all"]);
     setDateRange(null);
-    setDatePreset(null);
     setShowKPIs(false);
     setSessionId(null);
   };
@@ -431,32 +434,21 @@ export default function PerformanceReview() {
               />
             </div>
 
-            {/* Date - preset options only */}
-            <div className="min-w-[180px]">
+            {/* Date Range */}
+            <div className="min-w-[280px]">
               <label className="block text-[13px] font-semibold text-[#163143] mb-1">
                 Date<span className="text-red-500">*</span>
               </label>
-              <Select
-                placeholder="Select Period"
-                value={datePreset}
-                onChange={(val) => {
-                  setDatePreset(val);
-                  if (val === "daily") {
-                    setDateRange([dayjs(), dayjs()]);
-                  } else if (val === "weekly") {
-                    setDateRange([dayjs().subtract(6, "day"), dayjs()]);
-                  } else if (val === "monthly") {
-                    setDateRange([dayjs().subtract(29, "day"), dayjs()]);
-                  }
+              <DatePicker.RangePicker
+                value={dateRange}
+                onChange={(dates) => setDateRange(dates)}
+                className="w-full"
+                style={{
+                  height: "40px",
+                  borderRadius: "24px",
+                  border: "1px solid #D7E6E7",
                 }}
-                options={[
-                  { label: "Daily", value: "daily" },
-                  { label: "Weekly", value: "weekly" },
-                  { label: "Monthly", value: "monthly" },
-                ]}
-                className="w-full custom-select-forms"
-                popupClassName="custom-select-dropdown"
-                style={{ height: "40px" }}
+                format="M/D/YYYY"
               />
             </div>
 
