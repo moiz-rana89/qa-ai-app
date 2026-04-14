@@ -197,6 +197,20 @@ export default function CategoryWithQuestion() {
       return;
     }
 
+    if (type === "multiselect") {
+      const count = selectOption.length || 1;
+      const step = totalScore / count;
+      setGradingCriteria(
+        selectOption.length > 0
+          ? selectOption.map((opt, i) => ({
+              score: parseFloat(((i + 1) * step).toFixed(2)),
+              remarks: gradingCriteria[i]?.remarks || "",
+            }))
+          : [{ score: 0, remarks: "" }]
+      );
+      return;
+    }
+
     const criteriaCount = gradingCriteria.length;
 
     if (!criteriaCount) return;
@@ -756,6 +770,18 @@ export default function CategoryWithQuestion() {
                       { score: 0, remarks: "No" },
                       { score: totalScore, remarks: "Yes" },
                     ]);
+                  } else if (value === "multiselect") {
+                    const totalScore = Number(formData.questionPoints) || 0;
+                    const count = selectOption.length || 1;
+                    const step = totalScore / count;
+                    setGradingCriteria(
+                      selectOption.length > 0
+                        ? selectOption.map((opt, i) => ({
+                            score: parseFloat(((i + 1) * step).toFixed(2)),
+                            remarks: "",
+                          }))
+                        : [{ score: 0, remarks: "" }]
+                    );
                   } else {
                     const totalScore = Number(formData.questionPoints) || 0;
                     const step = totalScore / 5;
@@ -786,22 +812,51 @@ export default function CategoryWithQuestion() {
                     const val = e.target.value.trim();
                     if (!val) return;
 
-                    // Add to state array
-                    setSelectOption((prev) => [...prev, val]);
+                    const newOptions = [...selectOption, val];
+                    setSelectOption(newOptions);
 
-                    // Clear input
+                    // Update grading criteria to match option count
+                    const totalScore = Number(formData.questionPoints) || 0;
+                    const count = newOptions.length;
+                    const step = count > 0 ? totalScore / count : 0;
+                    setGradingCriteria(
+                      newOptions.map((opt, i) => ({
+                        score: parseFloat(((i + 1) * step).toFixed(2)),
+                        remarks: gradingCriteria[i]?.remarks || "",
+                      }))
+                    );
+
                     setOptionText("");
                   }}
                   className="w-full custom-select"
                   style={{ height: "44px" }}
                 />
-                <div className="mt-[10px] w-[50%] flex flex-wrap gap-3">
+                <div className="mt-[10px] w-full flex flex-wrap gap-3">
                   {selectOption.length > 0 &&
                     selectOption.map((item) => (
                       <div
-                        onClick={() =>
-                          RemoveFromSelect(item, selectOption, setSelectOption)
-                        }
+                        onClick={() => {
+                          const newOptions = selectOption.filter(
+                            (o) => o !== item
+                          );
+                          setSelectOption(newOptions);
+
+                          // Update grading criteria to match new option count
+                          const totalScore =
+                            Number(formData.questionPoints) || 0;
+                          const count = newOptions.length || 1;
+                          const step = totalScore / count;
+                          setGradingCriteria(
+                            newOptions.length > 0
+                              ? newOptions.map((opt, i) => ({
+                                  score: parseFloat(
+                                    ((i + 1) * step).toFixed(2)
+                                  ),
+                                  remarks: gradingCriteria[i]?.remarks || "",
+                                }))
+                              : [{ score: 0, remarks: "" }]
+                          );
+                        }}
                         className="cursor-pointer py-1  bg-[#DBFFDF] rounded-full flex items-center justify-center px-2 text-[14px] text-[#163143]"
                       >
                         {item}
