@@ -600,8 +600,8 @@ export const ColumnDataScheduleManagement = [
   {
     title: "TP vs. Non-TP",
     width: 140,
-    dataIndex: "app_label",
-    key: "app_label",
+    dataIndex: "member_type",
+    key: "member_type",
     render: (value) => value || "-",
   },
   {
@@ -701,12 +701,12 @@ export const ColumnDataScheduleManagement = [
       <div className="flex items-center justify-center">
         <div
           className={`capitalize rounded-full px-3 py-1 text-[13px] font-medium ${
-            item.status === "active"
+            item.status === "active" || item.status === "Active"
               ? "bg-[#E4FAED] text-[#16A34A]"
               : "bg-[#F3F4F6] text-[#6B7280]"
           }`}
         >
-          {item.status === "active" ? "Active" : "Inactive"}
+          {item.status === "active" || item.status === "Active" ? "Active" : "Inactive"}
         </div>
       </div>
     ),
