@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Slider, Input, Select, Checkbox } from "antd";
+import { Button, Slider, Input, InputNumber, Select, Checkbox } from "antd";
 import { Icon } from "@iconify/react";
 import { apiCalls, exportQuestionnaireJSON } from "../../../lib/api";
 import GenericAntDrawer from "../../../components/GenericAntDrawer";
@@ -968,6 +968,35 @@ export default function CategoryWithQuestion() {
                     );
                   })}
                 </div>
+              ) : formData.questionType === "multiselect" ? (
+                gradingCriteria?.map((item, index) => (
+                  <div className="relative w-full mt-[10px] bg-[#fbfbfb] border border-[#efefef] rounded-[12px] p-4" key={index}>
+                    <div className="flex items-center gap-2 mb-3">
+                      <InputNumber
+                        min={0}
+                        max={formData.questionPoints || 0}
+                        value={item?.score}
+                        onChange={(val) => {
+                          const updated = [...gradingCriteria];
+                          updated[index].score = val || 0;
+                          setGradingCriteria(updated);
+                        }}
+                        className="!w-[120px] !rounded-[8px]"
+                        style={{ height: "36px" }}
+                      />
+                      <span className="text-[14px] font-semibold text-[#163143]">
+                        Points
+                      </span>
+                    </div>
+                    <TextArea
+                      placeholder="Explain how this question should be assessed..."
+                      value={item.remarks}
+                      onChange={(e) => handleRemarkChange(index, e.target.value)}
+                      className="!bg-[#fbfbfb] !border-none !shadow-none !rounded-[12px] overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                      autoSize={{ minRows: 3, maxRows: 5 }}
+                    />
+                  </div>
+                ))
               ) : (
                 gradingCriteria?.map((item, index) => (
                   <div className="relative w-full mt-[10px]" key={index}>

@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { message } from "antd";
+import { message, Modal } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import { refreshTokenAuth } from "../../reduxStore/action/auth";
 
@@ -38,8 +38,23 @@ const dotsStyle = {
 /* =========================
    Component
 ========================= */
+const isPreviewable = (url) => {
+  if (!url) return false;
+  const ext = url.split("?")[0].split(".").pop().toLowerCase();
+  return ["jpg", "jpeg", "png", "gif", "svg", "webp", "bmp", "pdf"].includes(ext);
+};
+
+const isImage = (url) => {
+  if (!url) return false;
+  const ext = url.split("?")[0].split(".").pop().toLowerCase();
+  return ["jpg", "jpeg", "png", "gif", "svg", "webp", "bmp"].includes(ext);
+};
+
 const UploadFile = ({ fileInfo = [], setFileInfo, required, reqNotes }) => {
   const [uploading, setUploading] = useState(false);
+  const [previewFile, setPreviewFile] = useState(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const loadedUrlsRef = useRef(new Set());
   const fileInputRef = useRef(null);
 
   const uploadUrl = `${import.meta.env.VITE_API_URL}/workforce/reports/upload`;
@@ -227,10 +242,20 @@ const UploadFile = ({ fileInfo = [], setFileInfo, required, reqNotes }) => {
       {fileInfo?.length > 0 && (
         <div style={{ marginTop: "12px" }}>
           {fileInfo.map((file) => (
-            <div key={file.name} style={{ display: "flex", gap: "8px" }}>
-              <a href={file.url} target="_blank" rel="noopener noreferrer">
+            <div key={file.name} style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+              <span
+                onClick={() => {
+                  if (isPreviewable(file.url)) {
+                    setPreviewFile(file);
+                    setPreviewLoading(!loadedUrlsRef.current.has(file.url));
+                  } else {
+                    window.open(file.url, "_blank");
+                  }
+                }}
+                style={{ color: "#4285F4", cursor: "pointer", textDecoration: "underline" }}
+              >
                 {file.name}
-              </a>
+              </span>
               <CloseOutlined
                 onClick={() => removeFile(file.name)}
                 style={{ color: "red", cursor: "pointer" }}
@@ -239,6 +264,75 @@ const UploadFile = ({ fileInfo = [], setFileInfo, required, reqNotes }) => {
           ))}
         </div>
       )}
+
+      {/* File Preview Modal */}
+      <Modal
+        open={!!previewFile}
+        onCancel={() => {
+          setPreviewFile(null);
+          setPreviewLoading(false);
+        }}
+        footer={null}
+        width={900}
+        centered
+        title={previewFile?.name}
+        destroyOnClose
+      >
+        {previewLoading && (
+          <div className="flex items-center justify-center py-20">
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-10 h-10 border-4 border-[#D7E6E7] border-t-[#69C920] rounded-full animate-spin" />
+              <span className="text-[14px] text-[#6B7280]">Loading preview...</span>
+            </div>
+          </div>
+        )}
+        {previewFile && isImage(previewFile.url) ? (
+          <img
+            src={previewFile.url}
+            alt={previewFile.name}
+            style={{
+              width: "100%",
+              maxHeight: "75vh",
+              objectFit: "contain",
+              display: previewLoading ? "none" : "block",
+            }}
+            onLoad={() => {
+              loadedUrlsRef.current.add(previewFile.url);
+              setPreviewLoading(false);
+            }}
+            onError={() => setPreviewLoading(false)}
+          />
+        ) : previewFile?.url?.toLowerCase()?.includes(".pdf") ? (
+          <iframe
+            src={previewFile.url}
+            title={previewFile.name}
+            style={{
+              width: "100%",
+              height: "75vh",
+              border: "none",
+              display: previewLoading ? "none" : "block",
+            }}
+            onLoad={() => {
+              loadedUrlsRef.current.add(previewFile.url);
+              setPreviewLoading(false);
+            }}
+          />
+        ) : (
+          <div className="text-center py-10">
+            <p className="text-[#6B7280] mb-4">
+              Preview not available for this file type.
+            </p>
+            <a
+              href={previewFile?.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#4285F4] underline"
+            >
+              Open in new tab
+            </a>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };

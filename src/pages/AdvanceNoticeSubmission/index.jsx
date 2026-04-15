@@ -38,6 +38,7 @@ export default function AdvanceNoticeSubmission({ setOpen }) {
     "Maternity Leave",
     "Paternity Leave",
     "Schedule plotted for Billing Purposes",
+    "Hours not met - Completed Shift",
   ];
   const dispatch = useDispatch();
 

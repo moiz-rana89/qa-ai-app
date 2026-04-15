@@ -81,6 +81,10 @@ export default function NeedHelpModal({ open, onClose }) {
   };
 
   const handleSelectClient = (value) => {
+    if (value === "all") {
+      setFormData({ ...formData, client: "all", clientName: "All Clients" });
+      return;
+    }
     const client = clientsList?.find((item) => item?.client_id == value);
     setFormData({
       ...formData,
@@ -90,6 +94,10 @@ export default function NeedHelpModal({ open, onClose }) {
   };
 
   const handleSelectAgent = (value) => {
+    if (value === "all") {
+      setFormData({ ...formData, agent: "all", agentName: "All Agents" });
+      return;
+    }
     const agent = agentList?.find((item) => item?.user_id == value);
     setFormData({
       ...formData,
@@ -104,6 +112,22 @@ export default function NeedHelpModal({ open, onClose }) {
         status: "error",
         title: "Validation Error",
         description: "Description must be at least 70 characters.",
+      });
+      return;
+    }
+    if (!formData.client) {
+      AntDNotification({
+        status: "error",
+        title: "Validation Error",
+        description: "Please select a client.",
+      });
+      return;
+    }
+    if (!formData.agent) {
+      AntDNotification({
+        status: "error",
+        title: "Validation Error",
+        description: "Please select an agent.",
       });
       return;
     }
@@ -253,7 +277,7 @@ export default function NeedHelpModal({ open, onClose }) {
           {/* Client */}
           <div>
             <label className="block text-[14px] font-semibold text-[#163143] mb-1">
-              Client
+              Client<span className="text-red-500">*</span>
             </label>
             <p className="text-[12px] text-[#6B7280] mb-1">
               {isFeature
@@ -268,10 +292,13 @@ export default function NeedHelpModal({ open, onClose }) {
                   .toLowerCase()
                   .includes(input.toLowerCase())
               }
-              options={clientsList?.map((item) => ({
-                value: item?.client_id,
-                label: item?.client,
-              }))}
+              options={[
+                { value: "all", label: "All Clients" },
+                ...(clientsList?.map((item) => ({
+                  value: item?.client_id,
+                  label: item?.client,
+                })) || []),
+              ]}
               onChange={handleSelectClient}
               value={formData.client}
               className="w-full custom-select-forms"
@@ -284,7 +311,7 @@ export default function NeedHelpModal({ open, onClose }) {
           {/* Agent */}
           <div>
             <label className="block text-[14px] font-semibold text-[#163143] mb-1">
-              Agent
+              Agent<span className="text-red-500">*</span>
             </label>
             <p className="text-[12px] text-[#6B7280] mb-1">
               {isFeature
@@ -299,10 +326,13 @@ export default function NeedHelpModal({ open, onClose }) {
                   .toLowerCase()
                   .includes(input.toLowerCase())
               }
-              options={agentList?.map((item) => ({
-                value: item?.user_id,
-                label: item?.user_name,
-              }))}
+              options={[
+                { value: "all", label: "All Agents" },
+                ...(agentList?.map((item) => ({
+                  value: item?.user_id,
+                  label: item?.user_name,
+                })) || []),
+              ]}
               onChange={handleSelectAgent}
               value={formData.agent}
               className="w-full custom-select-forms"
