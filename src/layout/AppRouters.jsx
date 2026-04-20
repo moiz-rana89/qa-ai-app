@@ -48,7 +48,7 @@ const ROUTE_ROLES = {
   "forms-management": ["admin", "dev", "qa", "qa-dm", "qa-tl", "qas"],
   "qa-settings": ["admin", "dev", "om", "qa", "qa-dm", "qa-tl"],
   "shadowing-form": ["admin", "dev", "qas", "tl", "qa", "qa-dm", "qa-tl"],
-  "evalute-form": ["admin", "dev", "tl", "dtl", "qa", "qa-dm", "qa-tl"],
+  "evalute-form": ["admin", "dev", "tl", "dtl", "qa", "qa-dm", "qa-tl", "qas"],
   "workforce-remote-team-attendance": [
     "dev",
     "csm",
