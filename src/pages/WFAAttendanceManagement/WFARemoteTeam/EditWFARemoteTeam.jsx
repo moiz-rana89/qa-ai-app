@@ -218,6 +218,8 @@ export default function EditWFARemoteTeam({
       toast.error(
         "Please select Mark as Disputed or Mark as Resolved"
       );
+    } else if (isDisputed && (!notes || !notes.trim())) {
+      toast.error("Notes By WFA is required when marking as disputed");
     } else {
       setLoading(true);
       let params = {
