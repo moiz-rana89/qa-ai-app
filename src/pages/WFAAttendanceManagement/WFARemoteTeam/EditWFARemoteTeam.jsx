@@ -603,6 +603,7 @@ export default function EditWFARemoteTeam({
               className="text-[#163143] font-poppins text-[16px] not-italic font-semibold leading-[20.5px]"
             >
               Notes By WFA
+              {isDisputed && <span className="text-red-500 ml-1">*</span>}
             </label>
             {activeTab === "Disputed by WFA" ? (
               <TextArea
