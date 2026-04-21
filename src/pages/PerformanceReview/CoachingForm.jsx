@@ -16,6 +16,7 @@ export default function CoachingForm({ sessionId, onSaved }) {
   const [loading, setLoading] = useState(false);
   const [wentWell, setWentWell] = useState("");
   const [atRisk, setAtRisk] = useState(null);
+  const [offboardRiskDetail, setOffboardRiskDetail] = useState("");
   const [otherNotes, setOtherNotes] = useState("");
   const [fathomUrl, setFathomUrl] = useState("");
   const [certified, setCertified] = useState(false);
@@ -25,12 +26,15 @@ export default function CoachingForm({ sessionId, onSaved }) {
     if (coachingForm) {
       setWentWell(coachingForm.what_went_well || "");
       setAtRisk(
-        coachingForm.at_risk_of_offboarding == null
+        coachingForm.offboard_risk != null
+          ? coachingForm.offboard_risk
+          : coachingForm.at_risk_of_offboarding == null
           ? null
           : coachingForm.at_risk_of_offboarding
           ? "yes"
           : "no"
       );
+      setOffboardRiskDetail(coachingForm.offboard_risk_detail || "");
       setOtherNotes(coachingForm.additional_notes || "");
       setFathomUrl(coachingForm.fathom_url || "");
     }
@@ -54,7 +58,8 @@ export default function CoachingForm({ sessionId, onSaved }) {
     const body = {
       session_id: sessionId,
       what_went_well: wentWell,
-      at_risk_of_offboarding: atRisk === "yes",
+      offboard_risk: atRisk,
+      offboard_risk_detail: offboardRiskDetail,
       additional_notes: otherNotes,
       fathom_url: fathomUrl,
     };
@@ -116,6 +121,13 @@ export default function CoachingForm({ sessionId, onSaved }) {
           className="w-[200px] custom-select-forms"
           popupClassName="custom-select-dropdown"
           style={{ height: "40px" }}
+        />
+        <TextArea
+          placeholder="Provide details about the offboarding risk..."
+          value={offboardRiskDetail}
+          onChange={(e) => setOffboardRiskDetail(e.target.value)}
+          className="!border-[#D7E6E7] !rounded-[12px] !mt-3"
+          autoSize={{ minRows: 3, maxRows: 6 }}
         />
       </div>
 

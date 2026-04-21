@@ -241,6 +241,7 @@ export default function PerformanceReview() {
   const [resolveKPI, setResolveKPI] = useState(null);
   const [resolveMetricType, setResolveMetricType] = useState(null);
   const [resolveMissed, setResolveMissed] = useState([]);
+  const [resolvedKPIs, setResolvedKPIs] = useState(new Set());
 
   // Coaching form accordion
   const [coachingFormOpen, setCoachingFormOpen] = useState(false);
@@ -300,6 +301,7 @@ export default function PerformanceReview() {
           if (success && data) {
             setSessionId(data.id);
             setShowKPIs(true);
+            setResolvedKPIs(new Set());
             dispatch(getCoachingForm(data.id));
           } else {
             toast.error("Error creating performance review session");
@@ -351,7 +353,15 @@ export default function PerformanceReview() {
         metricType={resolveMetricType}
         sessionId={sessionId}
         missedMetrics={resolveMissed}
-        onSuccess={() => {}}
+        onSuccess={() => {
+          if (resolveMetricType) {
+            setResolvedKPIs((prev) => {
+              const next = new Set(prev);
+              next.add(resolveMetricType);
+              return next;
+            });
+          }
+        }}
       />
 
       {/* Filter Bar */}
@@ -517,6 +527,7 @@ export default function PerformanceReview() {
                 metrics={kpi.metrics}
                 showResolve={kpi.showResolve}
                 onResolve={() => openResolveDrawer(kpi)}
+                resolved={resolvedKPIs.has(kpi.key)}
               />
             ))}
           </div>

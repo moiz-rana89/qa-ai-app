@@ -9,6 +9,7 @@ export default function KPICard({
   metrics = [],
   showResolve = false,
   onResolve,
+  resolved = false,
 }) {
   return (
     <div className="bg-white rounded-[16px] border border-[#D7E6E7] p-5">
@@ -73,14 +74,21 @@ export default function KPICard({
         ))}
       </div>
 
-      {/* Resolve Button */}
+      {/* Resolve Button / Resolved Badge */}
       {showResolve && (
-        <button
-          onClick={onResolve}
-          className="mt-4 px-5 py-[6px] rounded-full text-[13px] font-semibold text-white bg-[#69C920] hover:bg-[#5ab61c] transition-all"
-        >
-          Click to Resolve
-        </button>
+        resolved ? (
+          <div className="mt-4 inline-flex items-center gap-2 px-4 py-[6px] rounded-full text-[13px] font-semibold text-[#16A34A] bg-[#E4FAED]">
+            <Icon icon="mdi:check-circle" className="text-[16px]" />
+            Resolved
+          </div>
+        ) : (
+          <button
+            onClick={onResolve}
+            className="mt-4 px-5 py-[6px] rounded-full text-[13px] font-semibold text-white bg-[#69C920] hover:bg-[#5ab61c] transition-all"
+          >
+            Click to Resolve
+          </button>
+        )
       )}
     </div>
   );
