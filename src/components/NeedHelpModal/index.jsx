@@ -81,8 +81,8 @@ export default function NeedHelpModal({ open, onClose }) {
   };
 
   const handleSelectClient = (value) => {
-    if (value === "all") {
-      setFormData({ ...formData, client: "all", clientName: "All Clients" });
+    if (value === 0) {
+      setFormData({ ...formData, client: 0, clientName: "All Clients" });
       return;
     }
     const client = clientsList?.find((item) => item?.client_id == value);
@@ -94,8 +94,8 @@ export default function NeedHelpModal({ open, onClose }) {
   };
 
   const handleSelectAgent = (value) => {
-    if (value === "all") {
-      setFormData({ ...formData, agent: "all", agentName: "All Agents" });
+    if (value === 0) {
+      setFormData({ ...formData, agent: 0, agentName: "All Agents" });
       return;
     }
     const agent = agentList?.find((item) => item?.user_id == value);
@@ -115,7 +115,7 @@ export default function NeedHelpModal({ open, onClose }) {
       });
       return;
     }
-    if (!formData.client) {
+    if (formData.client === null || formData.client === undefined) {
       AntDNotification({
         status: "error",
         title: "Validation Error",
@@ -123,7 +123,7 @@ export default function NeedHelpModal({ open, onClose }) {
       });
       return;
     }
-    if (!formData.agent) {
+    if (formData.agent === null || formData.agent === undefined) {
       AntDNotification({
         status: "error",
         title: "Validation Error",
@@ -293,7 +293,7 @@ export default function NeedHelpModal({ open, onClose }) {
                   .includes(input.toLowerCase())
               }
               options={[
-                { value: "all", label: "All Clients" },
+                { value: 0, label: "All Clients" },
                 ...(clientsList?.map((item) => ({
                   value: item?.client_id,
                   label: item?.client,
@@ -327,7 +327,7 @@ export default function NeedHelpModal({ open, onClose }) {
                   .includes(input.toLowerCase())
               }
               options={[
-                { value: "all", label: "All Agents" },
+                { value: 0, label: "All Agents" },
                 ...(agentList?.map((item) => ({
                   value: item?.user_id,
                   label: item?.user_name,
