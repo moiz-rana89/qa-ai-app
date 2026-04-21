@@ -22,6 +22,11 @@ import {
   setSelectedFormToEvaluate,
 } from "../../reduxStore/action/formsManagement";
 import {
+  getOMFilterData,
+  getCSMFilterData,
+  getAomList,
+} from "../../reduxStore/action/workforcedashboard";
+import {
   formatDateTimePlainEnglish,
   RemoveFromSelect,
   roundTo,
@@ -62,6 +67,12 @@ function EvaluateTickets() {
   );
   const [isLoadingAgent, setIsLoadingAgent] = useState(false);
   const [isLoadingTL, setIsLoadingTL] = useState(false);
+  const [selectedOm, setSelectedOm] = useState([]);
+  const [selectedCsm, setSelectedCsm] = useState([]);
+  const [selectedAom, setSelectedAom] = useState([]);
+  const [isLoadingOm, setIsLoadingOm] = useState(false);
+  const [isLoadingCsm, setIsLoadingCsm] = useState(false);
+  const [isLoadingAom, setIsLoadingAom] = useState(false);
 
   const { isLoading, allFormsTickets } = useSelector((store) => store?.evalute);
   const {
@@ -72,6 +83,9 @@ function EvaluateTickets() {
     agentNames,
     teamLeadNames,
   } = useSelector((store) => store.formsManagement);
+  const { omList, csmList, aomList } = useSelector(
+    (store) => store.workforcedashboard
+  );
 
   const getData = (sorting, pagination, filters) => {
     dispatch(
@@ -83,6 +97,9 @@ function EvaluateTickets() {
     dispatch(getQasName());
     dispatch(getTeamLeadName(setIsLoadingTL));
     dispatch(getTeamMemberFilter(setIsLoadingAgent));
+    dispatch(getOMFilterData(setIsLoadingOm));
+    dispatch(getCSMFilterData(setIsLoadingCsm));
+    dispatch(getAomList(setIsLoadingAom));
   }, []);
   useEffect(() => {
     // if (type) {
@@ -94,6 +111,13 @@ function EvaluateTickets() {
       assigned_to_qas: selectedQas?.map((item) => item.owner),
       agent_id: selectedAgents?.map((item) => item.helpdesk_user_id),
       assigned_to_tl: selectedTL?.map((item) => item.teamlead_id),
+      operations_manager_id: selectedOm?.map((item) =>
+        parseInt(item?.operations_manager_id)
+      ),
+      csm_id: selectedCsm?.map((item) => parseInt(item?.csm_id)),
+      associate_operations_manager_id: selectedAom?.map((item) =>
+        parseInt(item?.id)
+      ),
     });
     // }
   }, [
@@ -103,6 +127,9 @@ function EvaluateTickets() {
     selectedQas,
     selectedAgents,
     selectedTL,
+    selectedOm,
+    selectedCsm,
+    selectedAom,
   ]);
 
   const columns = [
@@ -383,6 +410,57 @@ function EvaluateTickets() {
                   displayKey="teamleads"
                   valueKey="teamlead_id"
                   searchKeys={["teamleads"]}
+                  className="h-[44px] w-[100%] border-[#d9d9d9] bg-white"
+                />
+              </div>
+            )}
+            {userDetails?.role !== "om" && (
+              <div className="flex space-x-0 flex-wrap gap-3 pl-3">
+                <UnifiedDropdown
+                  placeholder="Select OM"
+                  name="OM"
+                  data={omList}
+                  isLoading={isLoadingOm}
+                  selectedList={selectedOm}
+                  setselectedList={setSelectedOm}
+                  multiSelect={true}
+                  displayKey="operations_manager"
+                  valueKey="operations_manager_id"
+                  searchKeys={["operations_manager"]}
+                  className="h-[44px] w-[100%] border-[#d9d9d9] bg-white"
+                />
+              </div>
+            )}
+            {userDetails?.role !== "csm" && (
+              <div className="flex space-x-0 flex-wrap gap-3 pl-3">
+                <UnifiedDropdown
+                  placeholder="Select CSM"
+                  name="CSM"
+                  data={csmList}
+                  isLoading={isLoadingCsm}
+                  selectedList={selectedCsm}
+                  setselectedList={setSelectedCsm}
+                  multiSelect={true}
+                  displayKey="csm"
+                  valueKey="csm_id"
+                  searchKeys={["csm"]}
+                  className="h-[44px] w-[100%] border-[#d9d9d9] bg-white"
+                />
+              </div>
+            )}
+            {userDetails?.role !== "aom" && (
+              <div className="flex space-x-0 flex-wrap gap-3 pl-3">
+                <UnifiedDropdown
+                  placeholder="Select AOM"
+                  name="AOM"
+                  data={aomList}
+                  isLoading={isLoadingAom}
+                  selectedList={selectedAom}
+                  setselectedList={setSelectedAom}
+                  multiSelect={true}
+                  displayKey="name"
+                  valueKey="name"
+                  searchKeys={["name"]}
                   className="h-[44px] w-[100%] border-[#d9d9d9] bg-white"
                 />
               </div>

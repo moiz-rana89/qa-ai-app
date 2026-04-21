@@ -67,17 +67,15 @@ export default function QASettings() {
   useEffect(() => {
     if (!userDetails) return;
     let roleObject = {};
-    // if (
-    //   userDetails?.role === "tl" ||
-    //   userDetails?.role === "dtl" ||
-    //   userDetails?.role === "itl"
-    // ) {
-    //   roleObject = { team_lead_id: [parseInt(userDetails?.owner_id)] };
-    // } else if (userDetails?.role === "om") {
-    //   roleObject = { operations_manager_id: [parseInt(userDetails?.owner_id)] };
-    // } else if (userDetails?.role === "csm") {
-    //   roleObject = { csm_id: [parseInt(userDetails?.owner_id)] };
-    // }
+    if (userDetails?.role === "om") {
+      roleObject = {
+        operations_manager_id: [parseInt(userDetails?.owner_id)],
+      };
+    } else if (userDetails?.role === "aom") {
+      roleObject = {
+        associate_operations_manager_id: [parseInt(userDetails?.owner_id)],
+      };
+    }
 
     const params = {
       accounts: clientsFilter?.map((item) => item?.account),
@@ -183,7 +181,7 @@ export default function QASettings() {
       <div className="w-full overflow-y-scroll pb-[50px] pt-2 space-y-9 scrollbar-hide pl-8">
         <div className="w-[75vw] pb-[50px] pt-2 space-y-9 ml-8">
           <div className="flex items-center w-[100%] mb-[20px]">
-            <span className="text-xl font-semibold">Attendance Alerts</span>
+            <span className="text-xl font-semibold">QA Settings Overview</span>
           </div>
           {isLoading ? (
             <Skeleton className="w-full h-[75vh]" />

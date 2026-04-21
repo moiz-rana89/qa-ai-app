@@ -758,26 +758,12 @@ export const ColumnDataQASettings = [
     fixed: "left",
   },
   {
-    title: "ID",
-    width: 120,
-    dataIndex: "id",
-    key: "id",
-  },
-  {
     title: "Hubspot company Ids",
     width: 160,
     dataIndex: "hubspot_company_ids",
     key: "hubspot_company_ids",
     render: (value) => value ?? "-",
   },
-  {
-    title: "All Client Id",
-    width: 130,
-    dataIndex: "all_client_id",
-    key: "all_client_id",
-    render: (value) => value ?? "-",
-  },
-
   {
     title: "CS Helpdesk",
     width: 130,
@@ -825,10 +811,22 @@ export const ColumnDataQASettings = [
     width: 130,
     dataIndex: "qa_enabled",
     key: "qa_enabled",
-    render: (value) => value ?? "-",
+    render: (value) => (
+      <div className="flex items-center justify-center">
+        <div
+          className={`capitalize rounded-full px-3 py-1 text-[13px] font-medium ${
+            value === true
+              ? "bg-[#E4FAED] text-[#16A34A]"
+              : "bg-[#F3F4F6] text-[#6B7280]"
+          }`}
+        >
+          {value === true ? "Active" : "Inactive"}
+        </div>
+      </div>
+    ),
   },
   {
-    title: "TL ID",
+    title: "Team ID",
     width: 130,
     dataIndex: "team_id",
     key: "team_id",
@@ -839,7 +837,19 @@ export const ColumnDataQASettings = [
     width: 130,
     dataIndex: "updated_view",
     key: "updated_view",
-    render: (value) => value ?? "-",
+    render: (value) => (
+      <div className="flex items-center justify-center">
+        <div
+          className={`capitalize rounded-full px-3 py-1 text-[13px] font-medium ${
+            value === true
+              ? "bg-[#E4FAED] text-[#16A34A]"
+              : "bg-[#F3F4F6] text-[#6B7280]"
+          }`}
+        >
+          {value === true ? "Active" : "Inactive"}
+        </div>
+      </div>
+    ),
   },
   {
     title: "View ID",
@@ -847,14 +857,6 @@ export const ColumnDataQASettings = [
     dataIndex: "view_id",
     key: "view_id",
     render: (value) => value ?? "-",
-  },
-
-  {
-    title: "DB Created At",
-    width: 200,
-    dataIndex: "db_created_at",
-    key: "db_created_at",
-    render: (value) => (value ? formatDateTimeEnglish(value) : "-"),
   },
 ];
 
