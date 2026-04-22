@@ -43,6 +43,11 @@ export const ColumnDataRemoteTeam = [
               ? "bg-[#FFECEC]"
               : item.status === "abandoned" || item.status === "unknown"
               ? "bg-[#FFE8CC]"
+              : item.status === "ontime" ||
+                item.status === "on_time" ||
+                item.status === "on-time" ||
+                item.status === "on time"
+              ? "bg-[#E4FAED]"
               : ""
           }`}
         >
@@ -274,6 +279,11 @@ export const ColumnDataInternalTeam = [
               ? "bg-[#FFECEC]"
               : item.status === "abandoned" || item.status === "unknown"
               ? "bg-[#FFE8CC]"
+              : item.status === "ontime" ||
+                item.status === "on_time" ||
+                item.status === "on-time" ||
+                item.status === "on time"
+              ? "bg-[#E4FAED]"
               : ""
           }`}
         >
@@ -452,6 +462,43 @@ export const ColumnDataInternalTeam = [
     key: "date",
     render: (value) => (value ? formateToLA(value) : "-"),
   },
+  {
+    title: "In Dispute",
+    width: 130,
+    dataIndex: "in_disputed",
+    key: "in_disputed",
+    render: (value) =>
+      value === true ? "Yes" : value === false ? "No" : "-",
+  },
+  {
+    title: "IS WFA Resolved?",
+    width: 150,
+    dataIndex: "resolved_by_wfa",
+    key: "resolved_by_wfa",
+    render: (value) =>
+      value === true ? "Yes" : value === false ? "No" : "-",
+  },
+  {
+    title: "TL Final Reason",
+    width: 180,
+    dataIndex: "updated_reason_tl",
+    key: "updated_reason_tl",
+    render: (value) => value || "-",
+  },
+  {
+    title: "TL Final Notes",
+    width: 200,
+    dataIndex: "updated_notes_tl",
+    key: "updated_notes_tl",
+    render: (value) => value || "-",
+  },
+  {
+    title: "WFA Final Notes",
+    width: 200,
+    dataIndex: "updated_notes_wfa",
+    key: "updated_notes_wfa",
+    render: (value) => value || "-",
+  },
 ];
 
 /* =========================
@@ -499,6 +546,11 @@ export const ColumnDataResolvedByWFA = [
               ? "bg-[#FFECEC]"
               : item.status === "abandoned" || item.status === "unknown"
               ? "bg-[#FFE8CC]"
+              : item.status === "ontime" ||
+                item.status === "on_time" ||
+                item.status === "on-time" ||
+                item.status === "on time"
+              ? "bg-[#E4FAED]"
               : ""
           }`}
         >
@@ -888,6 +940,11 @@ export const ColumnDataRemoteTeamTL = [
               ? "bg-[#FFECEC]"
               : item.status === "abandoned" || item.status === "unknown"
               ? "bg-[#FFE8CC]"
+              : item.status === "ontime" ||
+                item.status === "on_time" ||
+                item.status === "on-time" ||
+                item.status === "on time"
+              ? "bg-[#E4FAED]"
               : ""
           }`}
         >
