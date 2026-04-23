@@ -180,7 +180,7 @@ const ROUTE_ROLES = {
   "wfa-internal-team-attendance": ["dev", "wfa", "admin"],
   "wfa-attendance-reporting": ["dev", "wfa", "admin"],
   "wfa-ontime-reporting": ["dev", "wfa", "admin"],
-  "schedule-management": ["dev", "admin"],
+  "schedule-management": ["dev", "admin", "om", "aom", "tl", "csm"],
   "performance-review": ["dev", "admin", "tl"],
   "bugs-features": ["dev", "admin"],
 };
