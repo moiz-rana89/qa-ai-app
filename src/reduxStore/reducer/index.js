@@ -7,6 +7,7 @@ import workforceReducer from "./workforcedashboard";
 import qaSettingsReducer from "./qaSettings";
 import scheduleManagementReducer from "./scheduleManagement";
 import performanceReviewReducer from "./performanceReview";
+import bugsFeaturesReducer from "./bugsFeatures";
 export default combineReducers(
   Object.assign({
     auth: auth,
@@ -16,5 +17,6 @@ export default combineReducers(
     qaSettings: qaSettingsReducer,
     scheduleManagement: scheduleManagementReducer,
     performanceReview: performanceReviewReducer,
+    bugsFeatures: bugsFeaturesReducer,
   })
 );

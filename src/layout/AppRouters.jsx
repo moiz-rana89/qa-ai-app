@@ -34,6 +34,7 @@ import ScheduleManagement from "../pages/ScheduleManagement";
 import { DownloadClientFormReport } from "../pages/DownloadClientFormReport";
 import { QAAIReport } from "../pages/QAAIReport";
 import PerformanceReview from "../pages/PerformanceReview";
+import BugsFeatures from "../pages/BugsFeatures";
 import AuthProvider from "./AuthProvider";
 // admin download = wfa,om
 const ROUTE_ROLES = {
@@ -181,6 +182,7 @@ const ROUTE_ROLES = {
   "wfa-ontime-reporting": ["dev", "wfa", "admin"],
   "schedule-management": ["dev", "admin"],
   "performance-review": ["dev", "admin", "tl"],
+  "bugs-features": ["dev", "admin"],
 };
 
 function DefaultRedirect() {
@@ -479,6 +481,17 @@ export default function AppRouter() {
                   routeRoles={ROUTE_ROLES}
                 >
                   <PerformanceReview />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/bugs-features"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["bugs-features"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <BugsFeatures />
                 </ProtectedRoute>
               }
             />

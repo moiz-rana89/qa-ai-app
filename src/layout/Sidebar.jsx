@@ -249,6 +249,12 @@ const menuList = [
     roles: ["admin", "dev", "tl"],
   },
   {
+    title: "Bugs & Features",
+    icon: "mdi:bug-outline",
+    route: "bugs-features",
+    roles: ["admin", "dev"],
+  },
+  {
     title: "Quality Assurance",
     icon: "icon-park-outline:success",
     route: "quality-assurance",
