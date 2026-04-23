@@ -23,6 +23,7 @@ import InternalTeamReporting from "../pages/WorkForceTeamDashboard/InternalTeamR
 import WFARemoteTeam from "../pages/WFAAttendanceManagement/WFARemoteTeam";
 import WFAInternalTeam from "../pages/WFAAttendanceManagement/WFAInternalTeam";
 import WFAAttendanceReporting from "../pages/WFAAttendanceManagement/WFAAttendanceReporting";
+import WFAOnTimeReporting from "../pages/WFAAttendanceManagement/WFAOnTimeReporting";
 import { DownloadReport } from "../pages/DownloadReport";
 import { TicketMonitoringForm } from "../pages/TicketMonitoringForm";
 import { PerformanceMonitoringForm } from "../pages/PerformanceMonitoringForm";
@@ -177,6 +178,7 @@ const ROUTE_ROLES = {
   "wfa-remote-team-attendance": ["dev", "wfa", "admin"],
   "wfa-internal-team-attendance": ["dev", "wfa", "admin"],
   "wfa-attendance-reporting": ["dev", "wfa", "admin"],
+  "wfa-ontime-reporting": ["dev", "wfa", "admin"],
   "schedule-management": ["dev", "admin"],
   "performance-review": ["dev", "admin", "tl"],
 };
@@ -353,6 +355,17 @@ export default function AppRouter() {
                   routeRoles={ROUTE_ROLES}
                 >
                   <WFAAttendanceReporting />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/wfa-ontime-reporting"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["wfa-ontime-reporting"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <WFAOnTimeReporting />
                 </ProtectedRoute>
               }
             />

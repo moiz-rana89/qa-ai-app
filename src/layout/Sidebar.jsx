@@ -106,6 +106,11 @@ const menuList = [
         route: "wfa-attendance-reporting",
         roles: ["dev", "wfa"],
       },
+      {
+        title: "OnTime Reporting",
+        route: "wfa-ontime-reporting",
+        roles: ["dev", "wfa"],
+      },
     ],
   },
   {

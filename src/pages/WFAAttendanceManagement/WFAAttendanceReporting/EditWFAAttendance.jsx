@@ -472,6 +472,46 @@ export default function EditWFAAttendance({
               </label>
             </div>
           )}
+          {/* Dispute Info (only when record is in dispute) */}
+          {selectedReport?.in_disputed === true && (
+            <>
+              <div className="space-y-2 px-6">
+                <label className="text-[#163143] font-poppins text-[14px] not-italic font-semibold leading-[20.5px]">
+                  TL Final Reason
+                </label>
+                <Input
+                  className="!border-[#EFEFEF] !bg-[#FBFBFB] !rounded-[16px]"
+                  value={selectedReport?.updated_reason_tl || "-"}
+                  readOnly={true}
+                />
+              </div>
+              <div className="space-y-2 px-6">
+                <label className="text-[#163143] font-poppins text-[14px] not-italic font-semibold leading-[20.5px]">
+                  TL Final Notes
+                </label>
+                <TextArea
+                  className="!mt-[10px] !border-[#EFEFEF] !bg-[#FBFBFB] !rounded-[16px] focus:!shadow-none focus:!border-[#EFEFEF] hover:!border-[#EFEFEF]"
+                  placeholder="-"
+                  autoSize={{ minRows: 3, maxRows: 8 }}
+                  value={selectedReport?.updated_notes_tl || ""}
+                  readOnly={true}
+                />
+              </div>
+              <div className="space-y-2 px-6">
+                <label className="text-[#163143] font-poppins text-[14px] not-italic font-semibold leading-[20.5px]">
+                  WFA Final Notes
+                </label>
+                <TextArea
+                  className="!mt-[10px] !border-[#EFEFEF] !bg-[#FFF7D8] !rounded-[16px] focus:!shadow-none focus:!border-[#EFEFEF] hover:!border-[#EFEFEF]"
+                  placeholder="-"
+                  autoSize={{ minRows: 3, maxRows: 8 }}
+                  value={selectedReport?.updated_notes_wfa || ""}
+                  readOnly={true}
+                />
+              </div>
+            </>
+          )}
+
           {/* Notes */}
           {notesTL && (
             <div className="space-y-2 px-6">

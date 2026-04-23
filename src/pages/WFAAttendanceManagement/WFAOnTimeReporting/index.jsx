@@ -1,4 +1,5 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import dayjs from "dayjs";
 
 import UnifiedDropdown from "../../../components/Dropdown/UnifiedDropdown";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,7 +7,6 @@ import {
   getAgentFilterData,
   getAOMFiltersList,
   getAomList,
-  getAttendanceReports,
   getClientsFilterList,
   getCSMFilterData,
   getDepartmentDirectorList,
@@ -15,9 +15,8 @@ import {
   getMemberFilterData,
   getOMFilterData,
   getOMFiltersList,
+  getOnTimeReports,
   getOPSTLFiltersList,
-  getResolvedByWfaRecords,
-  getSomList,
   getTeamLeadList,
   getTeamListFilterData,
 } from "../../../reduxStore/action/workforcedashboard";
@@ -25,27 +24,44 @@ import { Tab, Tabs } from "../../../components/Tabs/Tabs";
 import {
   ColumnDataInternalTeam,
   ColumnDataRemoteTeam,
-  ColumnDataResolvedByWFA,
 } from "../../../utils/tablesColumns";
 import DownloadCSVButton from "../../../components/Buttons/DownloadCSVButton";
 import Skeleton from "../../../components/Skeleton";
 import AntDTable from "../../../components/AntDTable";
-import EditWFAAttendance from "./EditWFAAttendance";
 import AntDRangePicker from "../../../components/AntDRangePicker";
 
-export default function WFAAttendanceReporting() {
+const EXCLUDED_KEYS = [
+  "attendance_reason",
+  "reason_type",
+  "green_card",
+  "green_card_count",
+  "notes_wfa",
+  "updated_by_wfa",
+  "attachments",
+  "notes",
+  "status_resolved_tl",
+  "updated_by_tl",
+  "db_updated_at_tl",
+  "in_disputed",
+  "resolved_by_wfa",
+  "updated_reason_tl",
+  "updated_notes_tl",
+  "updated_notes_wfa",
+];
+
+const filterColumns = (cols) =>
+  cols.filter((col) => !EXCLUDED_KEYS.includes(col.dataIndex));
+
+export default function WFAOnTimeReporting() {
   const isMounted = useRef(false);
   const isTabEffectInitialMount = useRef(true);
 
   const dispatch = useDispatch();
-  const [isOpen, setIsOpen] = useState(false);
-
   const [clientsFilter, setClientsFilter] = useState();
   const [teamLeadsFilters, setTeamLeadsFilters] = useState();
   const [csmFilters, setCsmFilters] = useState();
   const [agentFilters, setAgentFilters] = useState();
   const [omFilters, setOmFilters] = useState();
-  const [selectedReport, setSelectedReport] = useState();
   const [currentpage, setcurrentpage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sorting, setSorting] = useState({ sort_by: null, sort_order: null });
@@ -62,8 +78,10 @@ export default function WFAAttendanceReporting() {
   const [greenCardFilter, setGreenCardFilter] = useState();
   const [aomFilters, setAomFilters] = useState();
   const [somFilters, setSomFilters] = useState();
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+  const [startDate, setStartDate] = useState(
+    dayjs().subtract(29, "day").format("YYYY-MM-DD")
+  );
+  const [endDate, setEndDate] = useState(dayjs().format("YYYY-MM-DD"));
 
   const [omDropDownFilters, setOmDropDownFilters] = useState();
   const [aomDropDownFilters, setAomDropDownFilters] = useState();
@@ -110,33 +128,29 @@ export default function WFAAttendanceReporting() {
   const userDetails = useSelector((state) => state.auth.user);
 
   const {
-    attendanceRecords,
+    onTimeRecords,
     isLoading,
     departmentList,
     departmentManagerList,
     departmentDirectorList,
     teamLeadList,
     aomList,
-    somList,
     memberFilterData,
     opsTLFilterData,
     omFilterData,
     aomFilterData,
-
     clientsList,
     teamList,
     csmList,
     agentList,
     omList,
-    resolvedByWfaRecords,
   } = useSelector((store) => store.workforcedashboard);
+
   const fetchData = (params) => {
     if (CurrntActiveTab == "Internal Team") {
-      dispatch(getAttendanceReports(params, true));
+      dispatch(getOnTimeReports(params, true));
     } else if (CurrntActiveTab == "Remote Team") {
-      dispatch(getAttendanceReports(params));
-    } else if (CurrntActiveTab == "Dispute History") {
-      dispatch(getResolvedByWfaRecords(params));
+      dispatch(getOnTimeReports(params));
     }
   };
 
@@ -154,7 +168,6 @@ export default function WFAAttendanceReporting() {
     dispatch(getCSMFilterData(setIsLoadingCsm));
     dispatch(getAgentFilterData(setIsLoadingAgent));
     dispatch(getOMFilterData(setIsLoadingOm));
-    // dispatch(getSomList(setIsLoadingDepartment));
   }, []);
 
   useEffect(() => {
@@ -163,7 +176,6 @@ export default function WFAAttendanceReporting() {
       return;
     }
     const params = {
-      // ...filterParams,
       sort_order: "desc",
       sort_by: null,
       page: 1,
@@ -268,6 +280,7 @@ export default function WFAAttendanceReporting() {
     aomDropDownFilters,
     userDetails,
   ]);
+
   useEffect(() => {
     if (!isMounted.current) {
       isMounted.current = true;
@@ -283,55 +296,33 @@ export default function WFAAttendanceReporting() {
     }
   }, [currentpage, pageSize]);
 
-  const handleEditClick = (selected) => {
-    setIsOpen(true);
-    setSelectedReport(selected);
-  };
-
   const handleCSVDownload = () => {
-    const params = {
-      ...filterParams,
-      page: undefined,
-      csv: true,
-    };
+    const params = { ...filterParams, page: undefined, csv: true };
     fetchData(params);
   };
+
   const onChangeDate = (date) => {
     setStartDate(date[0]);
     setEndDate(date[1]);
   };
+
   return (
     <div className="w-full h-full flex flex-col">
       <div className="pt-7 flex items-center pl-8">
-        <span className="text-2xl font-semibold">Attendance Reporting</span>
+        <span className="text-2xl font-semibold">OnTime Reporting</span>
       </div>
 
-      <EditWFAAttendance
-        open={isOpen}
-        setOpen={setIsOpen}
-        selectedReport={selectedReport}
-        role={userDetails?.role}
-        filterParams={filterParams}
-        userName={userDetails?.name}
-        currentpage={currentpage}
-        fetchData={fetchData}
-        CurrntActiveTab={CurrntActiveTab}
-      />
       <div className="flex items-center pb-3 gap-1 pt-5 pl-8">
         <div className="flex w-[75vw]">
           <div className="h-9 gap-1 flex items-center pt-[1px]">
-            {/* <Filter fill="black" className="h-[45%]" /> */}
             <div className="font-semibold pr-2">Filters:</div>
           </div>
           <div className="flex space-x-0 flex-wrap gap-3 pl-3">
-            {/* <AttendanceDateRange
-              setStartDate={setStartDate}
-              setEndDate={setEndDate}
-            /> */}
             <AntDRangePicker
               onChange={onChangeDate}
               startPlaceholder="Start Date"
               endPlaceholder="End Date"
+              defaultValue={[dayjs().subtract(29, "day"), dayjs()]}
             />
             {CurrntActiveTab == "Remote Team" ? (
               <UnifiedDropdown
@@ -538,40 +529,17 @@ export default function WFAAttendanceReporting() {
               />
             )}
 
-            <UnifiedDropdown
-              name="Green Card"
-              className="border-[#d9d9d9] bg-white flex items-center justify-between px-3"
-              data={[
-                { label: "Yes", value: true },
-                { label: "No", value: false },
-              ]}
-              selectedList={greenCardFilter}
-              setselectedList={setGreenCardFilter}
-            />
-            <UnifiedDropdown
-              name="Resolution Type"
-              className="border-[#d9d9d9] bg-white flex items-center justify-between px-3"
-              data={[
-                { label: "Valid", value: "VALID" },
-                { label: "Invalid", value: "INVALID" },
-              ]}
-              selectedList={resolutionTypeFilter}
-              setselectedList={setResolutionTypeFilter}
-              displayKey="label"
-              valueKey="value"
-              searchKeys={["value"]}
-            />
           </div>
         </div>
       </div>
-      <div className=" w-full  overflow-y-scroll">
-        <div className=" w-[75vw]  pb-[50px] pt-2 space-y-9 ml-8  ">
+      <div className="w-full overflow-y-scroll">
+        <div className="w-[75vw] pb-[50px] pt-2 space-y-9 ml-8">
           <Tabs setCurrntActiveTab={setCurrntActiveTab}>
             <Tab data-label={"Remote Team"} labelData={""}>
               <div className="w-full overflow-y-scroll pb-[50px] pt-2 space-y-9 scrollbar-hide">
                 <div className="flex items-center w-[100%] mb-[20px]">
                   <span className="text-xl font-semibold">
-                    {"Attendance Reporting Alerts"}
+                    {"OnTime Reporting Alerts"}
                   </span>
                   <div className="ml-auto mr-[15px]">
                     <DownloadCSVButton onClick={handleCSVDownload} />
@@ -581,65 +549,13 @@ export default function WFAAttendanceReporting() {
                   <Skeleton className="w-full h-[75vh]" />
                 ) : (
                   <AntDTable
-                    columns={[
-                      ...ColumnDataRemoteTeam,
-                      {
-                        title: "Updated by WFA",
-                        width: 150,
-                        dataIndex: "updated_by_wfa",
-                        key: "updated_by_wfa",
-                      },
-                      {
-                        title: "Updated by TL",
-                        width: 150,
-                        dataIndex: "updated_by_tl",
-                        key: "updated_by_tl",
-                      },
-                      {
-                        title: "In Dispute",
-                        width: 130,
-                        dataIndex: "in_disputed",
-                        key: "in_disputed",
-                        render: (value) =>
-                          value === true ? "Yes" : value === false ? "No" : "-",
-                      },
-                      {
-                        title: "IS WFA Resolved?",
-                        width: 150,
-                        dataIndex: "resolved_by_wfa",
-                        key: "resolved_by_wfa",
-                        render: (value) =>
-                          value === true ? "Yes" : value === false ? "No" : "-",
-                      },
-                      {
-                        title: "TL Final Reason",
-                        width: 180,
-                        dataIndex: "updated_reason_tl",
-                        key: "updated_reason_tl",
-                        render: (value) => value || "-",
-                      },
-                      {
-                        title: "TL Final Notes",
-                        width: 200,
-                        dataIndex: "updated_notes_tl",
-                        key: "updated_notes_tl",
-                        render: (value) => value || "-",
-                      },
-                      {
-                        title: "WFA Final Notes",
-                        width: 200,
-                        dataIndex: "updated_notes_wfa",
-                        key: "updated_notes_wfa",
-                        render: (value) => value || "-",
-                      },
-                    ]}
-                    data={attendanceRecords?.data}
+                    columns={filterColumns(ColumnDataRemoteTeam)}
+                    data={onTimeRecords?.data}
                     bordered={true}
-                    total={attendanceRecords?.pagination?.totalRecords}
-                    current={attendanceRecords?.pagination?.currentPage}
-                    pageSize={attendanceRecords?.pagination?.pageSize}
+                    total={onTimeRecords?.pagination?.totalRecords}
+                    current={onTimeRecords?.pagination?.currentPage}
+                    pageSize={onTimeRecords?.pagination?.pageSize}
                     rowKey={"id"}
-                    onEdit={handleEditClick}
                     onPageChange={setcurrentpage}
                     onPageSizeChange={setPageSize}
                     onSortChange={(columnKey, order) => {
@@ -658,45 +574,12 @@ export default function WFAAttendanceReporting() {
                   />
                 )}
               </div>
-              {/* <WorkforceAttendanceTable
-                handleEditClick={handleEditClick}
-                data={attendanceRecords}
-                fetchData={fetchData}
-                isLoading={isLoading}
-                setcurrentpage={setcurrentpage}
-                currentpage={currentpage}
-                pageSize={pageSize}
-                setPageSize={setPageSize}
-                sortBy={sortBy}
-                sortOrder={sortOrder}
-                setsortBy={setsortBy}
-                setsortOrder={setsortOrder}
-                handleCSVDownload={handleCSVDownload}
-                isEdit={true}
-                ColumnData={[
-                  ...ColumnDataRemoteTeam,
-                  {
-                    name: "Updated by WFA",
-                    width: 150,
-                    keyword: "updated_by_wfa",
-                    sorting: true,
-                  },
-                  {
-                    name: "Updated by TL",
-                    width: 150,
-                    keyword: "updated_by_tl",
-                    sorting: true,
-                  },
-                ]}
-                title="Overview"
-                emptyMessage="None of your team members has any unresolved attendance issues at the moment."
-              /> */}
             </Tab>
             <Tab data-label={"Internal Team"} labelData={""}>
               <div className="w-full overflow-y-scroll pb-[50px] pt-2 space-y-9 scrollbar-hide">
                 <div className="flex items-center w-[100%] mb-[20px]">
                   <span className="text-xl font-semibold">
-                    {"Attendance Reporting Alerts"}
+                    {"OnTime Reporting Alerts"}
                   </span>
                   <div className="ml-auto mr-[15px]">
                     <DownloadCSVButton onClick={handleCSVDownload} />
@@ -706,72 +589,12 @@ export default function WFAAttendanceReporting() {
                   <Skeleton className="w-full h-[75vh]" />
                 ) : (
                   <AntDTable
-                    columns={ColumnDataInternalTeam}
-                    data={attendanceRecords?.data}
+                    columns={filterColumns(ColumnDataInternalTeam)}
+                    data={onTimeRecords?.data}
                     bordered={true}
-                    total={attendanceRecords?.pagination?.totalRecords}
-                    current={attendanceRecords?.pagination?.currentPage}
-                    pageSize={attendanceRecords?.pagination?.pageSize}
-                    rowKey={"id"}
-                    onEdit={handleEditClick}
-                    onPageChange={setcurrentpage}
-                    onPageSizeChange={setPageSize}
-                    onSortChange={(columnKey, order) => {
-                      setSorting({ sort_by: columnKey, sort_order: order });
-                      setsortBy(columnKey);
-                      setsortOrder(
-                        order == "ascend"
-                          ? "asc"
-                          : order == "descend"
-                          ? "desc"
-                          : null
-                      );
-                    }}
-                    sorting={sorting}
-                    pagination={true}
-                  />
-                )}
-              </div>
-              {/* <WorkforceAttendanceTable
-                handleEditClick={handleEditClick}
-                data={attendanceRecords}
-                fetchData={fetchData}
-                isLoading={isLoading}
-                setcurrentpage={setcurrentpage}
-                currentpage={currentpage}
-                pageSize={pageSize}
-                setPageSize={setPageSize}
-                sortBy={sortBy}
-                sortOrder={sortOrder}
-                setsortBy={setsortBy}
-                setsortOrder={setsortOrder}
-                handleCSVDownload={handleCSVDownload}
-                isEdit={true}
-                ColumnData={ColumnDataInternalTeam}
-                title="Overview"
-                emptyMessage="None of your team members has any unresolved attendance issues at the moment."
-              /> */}
-            </Tab>
-            <Tab data-label={"Dispute History"} labelData={""}>
-              <div className="w-full overflow-y-scroll pb-[50px] pt-2 space-y-9 scrollbar-hide">
-                <div className="flex items-center w-[100%] mb-[20px]">
-                  <span className="text-xl font-semibold">
-                    {"Dispute History"}
-                  </span>
-                  <div className="ml-auto mr-[15px]">
-                    <DownloadCSVButton onClick={handleCSVDownload} />
-                  </div>
-                </div>
-                {isLoading ? (
-                  <Skeleton className="w-full h-[75vh]" />
-                ) : (
-                  <AntDTable
-                    columns={ColumnDataResolvedByWFA}
-                    data={resolvedByWfaRecords?.data}
-                    bordered={true}
-                    total={resolvedByWfaRecords?.pagination?.totalRecords}
-                    current={resolvedByWfaRecords?.pagination?.currentPage}
-                    pageSize={resolvedByWfaRecords?.pagination?.pageSize}
+                    total={onTimeRecords?.pagination?.totalRecords}
+                    current={onTimeRecords?.pagination?.currentPage}
+                    pageSize={onTimeRecords?.pagination?.pageSize}
                     rowKey={"id"}
                     onPageChange={setcurrentpage}
                     onPageSizeChange={setPageSize}
@@ -793,28 +616,8 @@ export default function WFAAttendanceReporting() {
               </div>
             </Tab>
           </Tabs>
-
-          {/* <TicketsStatisticsTable />
-        <AgentKPISTable/> */}
         </div>
       </div>
-      {/* <div className="w-full  overflow-y-scroll pb-[50px] pt-2 space-y-9 scrollbar-hide pl-8">
-        <WorkforceAttendanceTable
-          handleEditClick={handleEditClick}
-          data={attendanceRecords}
-          fetchData={fetchData}
-          isLoading={isLoading}
-          setcurrentpage={setcurrentpage}
-          currentpage={currentpage}
-          sortBy={sortBy}
-          sortOrder={sortOrder}
-          setsortBy={setsortBy}
-          setsortOrder={setsortOrder}
-          handleCSVDownload={handleCSVDownload}
-          isEdit={true}
-          ColumnData={ColumnData}
-        />
-      </div> */}
     </div>
   );
 }

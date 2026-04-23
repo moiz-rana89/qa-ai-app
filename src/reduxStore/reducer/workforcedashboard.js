@@ -127,6 +127,12 @@ const workforceReducer = createReducer(INITIAL_STATE, {
       resolvedByWfaRecords: action.data,
     };
   },
+  [types.FETCH_ONTIME_REPORTS](state, action) {
+    return {
+      ...state,
+      onTimeRecords: action.data,
+    };
+  },
 });
 
 export default workforceReducer;

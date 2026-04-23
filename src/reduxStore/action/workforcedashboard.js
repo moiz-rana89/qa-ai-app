@@ -994,3 +994,88 @@ export const resolveAttendanceDispute = (params, handleResponse) => {
       });
   };
 };
+
+function setOnTimeRecords(data) {
+  return { type: types.FETCH_ONTIME_REPORTS, data };
+}
+
+export const getOnTimeReports = (params = {}, internal) => {
+  return (dispatch) => {
+    dispatch(setLoaderAction(true));
+
+    const queryParams = {};
+    const addParam = (key, value) => {
+      if (value !== undefined && value !== null && value !== "") {
+        if (Array.isArray(value) && value.length === 0) return;
+        queryParams[key] = value;
+      }
+    };
+
+    addParam("client_name", params.client_name);
+    addParam("department", params.department);
+    addParam("agent_name", params.agent_name);
+    addParam("team_lead_id", params.team_lead_id);
+    addParam("csm_id", params.csm_id);
+    addParam("csm", params.csm);
+    addParam("senior_csm_id", params.senior_csm_id);
+    addParam("operations_manager_id", params.operations_manager_id);
+    addParam("startdate", params.startdate);
+    addParam("enddate", params.enddate);
+    addParam("sort_order", params.sort_order);
+    addParam("sort_by", params.sort_by);
+    addParam("columns_to_drop", params.columns_to_drop);
+    addParam("green_card", params.green_card);
+    addParam("reason_type", params.reason_type);
+    addParam("resolved_tl", params.resolved_tl);
+    addParam("resolved", params.resolved);
+    addParam(
+      "associate_operations_manager_id",
+      params.associate_operations_manager_id
+    );
+    addParam("senior_operations_manager", params.senior_operations_manager);
+    addParam("om_id", params.om_id);
+    addParam("aom_id", params.aom_id);
+    addParam("ops_team_lead_id", params.ops_team_lead_id);
+    addParam("size", params.pageSize);
+
+    if (params.page !== undefined) {
+      queryParams.page = Math.max(1, params.page);
+    }
+    if (params.size !== undefined) {
+      queryParams.size = Math.min(100, Math.max(1, params.size));
+    }
+    addParam("csv", params.csv);
+
+    Api.get(
+      internal
+        ? `/workforce/reports/attendance-ontime-internal-team`
+        : `/workforce/reports/attendance-ontime`,
+      queryParams
+    )
+      .then(({ data, contentType }) => {
+        dispatch(setLoaderAction(false));
+        if (contentType?.includes("text/csv")) {
+          const url = window.URL.createObjectURL(
+            new Blob([data], { type: contentType })
+          );
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute(
+            "download",
+            `ontime_report_${new Date().toISOString().slice(0, 10)}.csv`
+          );
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        } else {
+          dispatch(setOnTimeRecords(data));
+        }
+      })
+      .catch((err) => {
+        dispatch(setOnTimeRecords([]));
+        dispatch(setLoaderAction(false));
+        console.error("Error fetching ontime reports:", err);
+      });
+  };
+};
