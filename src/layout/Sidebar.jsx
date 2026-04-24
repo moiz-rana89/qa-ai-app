@@ -78,11 +78,11 @@ const menuList = [
         route: "advance-notice",
         roles: ["dev", "admin", "tl"],
       },
-      // {
-      //   title: "Schedule Management",
-      //   route: "schedule-management",
-      //   roles: ["dev", "admin"],
-      // },
+      {
+        title: "Schedule Management",
+        route: "schedule-management",
+        roles: ["dev", "admin", "om", "aom", "tl", "csm"],
+      },
     ],
   },
   {
@@ -187,6 +187,23 @@ const menuList = [
         route: "custom-monitoring-form",
         roles: ["admin", "dev", "dtl", "om", "aom"],
       },
+      {
+        title: "Google Form",
+        route: "google-form",
+        roles: [
+          "admin",
+          "dev",
+          "qa-tl",
+          "tl",
+          "om",
+          "csm",
+          "cstm",
+          "som",
+          "aom",
+          "dtl",
+          "qas",
+        ],
+      },
     ],
   },
   {
@@ -241,6 +258,18 @@ const menuList = [
         ],
       },
     ],
+  },
+  {
+    title: "Performance Review",
+    icon: "carbon:dashboard",
+    route: "performance-review",
+    roles: ["admin", "dev", "tl"],
+  },
+  {
+    title: "Bugs & Features",
+    icon: "mdi:bug-outline",
+    route: "bugs-features",
+    roles: ["admin", "dev"],
   },
   {
     title: "Quality Assurance",

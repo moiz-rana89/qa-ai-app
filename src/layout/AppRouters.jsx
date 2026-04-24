@@ -33,6 +33,9 @@ import AdvanceNoticeSubmission from "../pages/AdvanceNoticeSubmission";
 import ScheduleManagement from "../pages/ScheduleManagement";
 import { DownloadClientFormReport } from "../pages/DownloadClientFormReport";
 import { QAAIReport } from "../pages/QAAIReport";
+import PerformanceReview from "../pages/PerformanceReview";
+import BugsFeatures from "../pages/BugsFeatures";
+import GoogleFormEmbed from "../pages/GoogleFormEmbed";
 import AuthProvider from "./AuthProvider";
 // admin download = wfa,om
 const ROUTE_ROLES = {
@@ -178,7 +181,22 @@ const ROUTE_ROLES = {
   "wfa-internal-team-attendance": ["dev", "wfa", "admin"],
   "wfa-attendance-reporting": ["dev", "wfa", "admin"],
   "wfa-ontime-reporting": ["dev", "wfa", "admin"],
-  "schedule-management": ["dev", "admin"],
+  "schedule-management": ["dev", "admin", "om", "aom", "tl", "csm"],
+  "performance-review": ["dev", "admin", "tl"],
+  "bugs-features": ["dev", "admin"],
+  "google-form": [
+    "admin",
+    "dev",
+    "qa-tl",
+    "tl",
+    "om",
+    "csm",
+    "cstm",
+    "som",
+    "aom",
+    "dtl",
+    "qas",
+  ],
 };
 
 function DefaultRedirect() {
@@ -466,6 +484,39 @@ export default function AppRouter() {
                   routeRoles={ROUTE_ROLES}
                 >
                   <ScheduleManagement />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/performance-review"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["performance-review"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <PerformanceReview />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/bugs-features"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["bugs-features"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <BugsFeatures />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/google-form"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["google-form"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <GoogleFormEmbed />
                 </ProtectedRoute>
               }
             />

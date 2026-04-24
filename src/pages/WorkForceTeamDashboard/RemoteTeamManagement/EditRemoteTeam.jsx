@@ -302,7 +302,7 @@ export default function EditRemoteTeam({
       ) : (
         <div className="space-y-6">
           {/* Mark as Resolved Checkbox */}
-          <div className="flex items-center border-b border-[#D7E6E7] w-[100%] pl-[24px]">
+          <div className="sticky top-0 z-10 bg-white flex items-center border-b border-[#D7E6E7] w-[100%] pl-[24px] pt-4">
             <label className="flex items-center">
               <input
                 type="checkbox"

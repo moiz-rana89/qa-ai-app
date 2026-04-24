@@ -33,8 +33,8 @@ const SCHEDULE_TYPE_OPTIONS = [
 
 const STATUS_OPTIONS = [
   { label: "All", value: "all" },
-  { label: "Active", value: "active" },
-  { label: "Inactive", value: "inactive" },
+  { label: "Active", value: "Active" },
+  { label: "Inactive", value: "Inactive" },
 ];
 
 const MAPPING_STATUS_OPTIONS = [
@@ -107,6 +107,29 @@ export default function ScheduleManagement() {
   useEffect(() => {
     if (!userDetails) return;
 
+    let roleObject = {};
+    if (
+      userDetails?.role === "tl" ||
+      userDetails?.role === "dtl" ||
+      userDetails?.role === "itl"
+    ) {
+      roleObject = { team_lead_id: [String(userDetails?.owner_id)] };
+    } else if (userDetails?.role === "om") {
+      roleObject = {
+        operations_manager_id: [String(userDetails?.owner_id)],
+      };
+    } else if (userDetails?.role === "csm") {
+      roleObject = { csm_id: [String(userDetails?.owner_id)] };
+    } else if (userDetails?.role === "aom") {
+      roleObject = {
+        associate_operations_manager_id: [String(userDetails?.owner_id)],
+      };
+    } else if (userDetails?.role === "som") {
+      roleObject = {
+        senior_operations_manager: [String(userDetails?.owner_id)],
+      };
+    }
+
     const params = {
       user_id: membersFilter?.map((item) => String(item?.user_id)),
       client_id: clientsFilter?.map((item) => String(item?.hubstaff_client_id)),
@@ -121,6 +144,7 @@ export default function ScheduleManagement() {
       pageSize: pageSize,
       startdate: startDate,
       enddate: endDate,
+      ...roleObject,
     };
 
     setcurrentpage(1);

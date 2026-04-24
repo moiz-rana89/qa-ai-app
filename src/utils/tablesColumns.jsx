@@ -650,11 +650,22 @@ export const ColumnDataScheduleManagement = [
     fixed: "left",
   },
   {
-    title: "Status of Attendance",
+    title: "TP vs. Non-TP",
     width: 140,
-    dataIndex: "app_label",
-    key: "app_label",
+    dataIndex: "member_type",
+    key: "member_type",
     render: (value) => value || "-",
+  },
+  {
+    title: "Weekdays",
+    width: 180,
+    dataIndex: "weekdays",
+    key: "weekdays",
+    disableSort: true,
+    render: (value) =>
+      Array.isArray(value) && value.length > 0
+        ? value.map((d) => d.charAt(0).toUpperCase() + d.slice(1)).join(", ")
+        : "-",
   },
   {
     title: "Shift",
@@ -742,12 +753,12 @@ export const ColumnDataScheduleManagement = [
       <div className="flex items-center justify-center">
         <div
           className={`capitalize rounded-full px-3 py-1 text-[13px] font-medium ${
-            item.status === "active"
+            item.status === "active" || item.status === "Active"
               ? "bg-[#E4FAED] text-[#16A34A]"
               : "bg-[#F3F4F6] text-[#6B7280]"
           }`}
         >
-          {item.status === "active" ? "Active" : "Inactive"}
+          {item.status === "active" || item.status === "Active" ? "Active" : "Inactive"}
         </div>
       </div>
     ),
