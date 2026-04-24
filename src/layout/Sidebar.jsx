@@ -187,6 +187,23 @@ const menuList = [
         route: "custom-monitoring-form",
         roles: ["admin", "dev", "dtl", "om", "aom"],
       },
+      {
+        title: "Google Form",
+        route: "google-form",
+        roles: [
+          "admin",
+          "dev",
+          "qa-tl",
+          "tl",
+          "om",
+          "csm",
+          "cstm",
+          "som",
+          "aom",
+          "dtl",
+          "qas",
+        ],
+      },
     ],
   },
   {

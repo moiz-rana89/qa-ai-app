@@ -35,6 +35,7 @@ import { DownloadClientFormReport } from "../pages/DownloadClientFormReport";
 import { QAAIReport } from "../pages/QAAIReport";
 import PerformanceReview from "../pages/PerformanceReview";
 import BugsFeatures from "../pages/BugsFeatures";
+import GoogleFormEmbed from "../pages/GoogleFormEmbed";
 import AuthProvider from "./AuthProvider";
 // admin download = wfa,om
 const ROUTE_ROLES = {
@@ -183,6 +184,19 @@ const ROUTE_ROLES = {
   "schedule-management": ["dev", "admin", "om", "aom", "tl", "csm"],
   "performance-review": ["dev", "admin", "tl"],
   "bugs-features": ["dev", "admin"],
+  "google-form": [
+    "admin",
+    "dev",
+    "qa-tl",
+    "tl",
+    "om",
+    "csm",
+    "cstm",
+    "som",
+    "aom",
+    "dtl",
+    "qas",
+  ],
 };
 
 function DefaultRedirect() {
@@ -492,6 +506,17 @@ export default function AppRouter() {
                   routeRoles={ROUTE_ROLES}
                 >
                   <BugsFeatures />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/google-form"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["google-form"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <GoogleFormEmbed />
                 </ProtectedRoute>
               }
             />
