@@ -36,6 +36,7 @@ import { QAAIReport } from "../pages/QAAIReport";
 import PerformanceReview from "../pages/PerformanceReview";
 import BugsFeatures from "../pages/BugsFeatures";
 import GoogleFormEmbed from "../pages/GoogleFormEmbed";
+import AttendanceInfractions from "../pages/AttendanceInfractions";
 import AuthProvider from "./AuthProvider";
 // admin download = wfa,om
 const ROUTE_ROLES = {
@@ -197,6 +198,7 @@ const ROUTE_ROLES = {
     "dtl",
     "qas",
   ],
+  "attendance-infractions": ["admin", "dev", "wfa"],
 };
 
 function DefaultRedirect() {
@@ -517,6 +519,17 @@ export default function AppRouter() {
                   routeRoles={ROUTE_ROLES}
                 >
                   <GoogleFormEmbed />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/attendance-infractions"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["attendance-infractions"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <AttendanceInfractions />
                 </ProtectedRoute>
               }
             />

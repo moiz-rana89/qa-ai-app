@@ -21,6 +21,7 @@ export const getReports = (params = {}, handleResponse) => {
 
     addParam("report_type", params.report_type);
     addParam("resolved_by_eng", params.resolved_by_eng);
+    addParam("decision_by_stakeholder", params.decision_by_stakeholder);
     addParam("submitted_by", params.submitted_by);
     if (params.page !== undefined) {
       queryParams.page = Math.max(1, params.page);
@@ -51,6 +52,17 @@ export const resolveReport = (id, handleResponse) => {
       .catch((err) => {
         handleResponse?.(false, err);
         console.error("Error resolving report:", err);
+      });
+  };
+};
+
+export const stakeholderDecisionReport = (id, decision, handleResponse) => {
+  return () => {
+    Api.patch(`/qa_ai_apis/reports/${id}/decision`, { decision })
+      .then(({ data }) => handleResponse?.(true, data))
+      .catch((err) => {
+        handleResponse?.(false, err);
+        console.error("Error setting stakeholder decision:", err);
       });
   };
 };

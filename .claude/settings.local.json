@@ -6,7 +6,16 @@
       "Bash(xargs ls:*)",
       "Bash(/tmp/wfa_attendance_report.txt:*)",
       "Read(//tmp/**)",
-      "mcp__mcp-registry__search_mcp_registry"
+      "mcp__mcp-registry__search_mcp_registry",
+      "Bash(pandoc --track-changes=all \"C:/Users/ISSM/Downloads/Europass CV 4 Edited.docx\" -o \"/tmp/europass_template.md\")",
+      "Bash(where pandoc *)",
+      "Bash(where soffice *)",
+      "Bash(where libreoffice *)",
+      "Bash(python \"C:/Users/ISSM/AppData/Roaming/Claude/local-agent-mode-sessions/skills-plugin/269f5cdf-778d-43c5-832f-8d757ba1036a/ffcc9eca-67ee-42bc-862d-ccc265e1efc2/skills/docx/scripts/office/unpack.py\" \"C:/Users/ISSM/Downloads/Europass CV 4 Edited.docx\" \"/tmp/europass_unpacked\")",
+      "Bash(python -m pip install defusedxml lxml)",
+      "Bash(python \"C:/Users/ISSM/AppData/Roaming/Claude/local-agent-mode-sessions/skills-plugin/269f5cdf-778d-43c5-832f-8d757ba1036a/ffcc9eca-67ee-42bc-862d-ccc265e1efc2/skills/docx/scripts/office/soffice.py\" --version)",
+      "Read(//c/Program Files/LibreOffice/program/**)",
+      "Read(//c/Program Files \\(x86\\)/LibreOffice/program/**)"
     ]
   }
 }

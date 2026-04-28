@@ -5479,6 +5479,189 @@ export const formTypes = [
       },
     ],
   },
+  {
+    id: "qa-form-gorgias",
+    title: "QA Form",
+    clientId: 400001,
+    clientName: "Gorgias",
+    sections: [
+      {
+        id: "inquiry-resolution",
+        title: "INQUIRY RESOLUTION (50% WEIGHT)",
+        questions: [
+          {
+            id: "A1",
+            label: "Was the customer's core inquiry resolved?",
+            sublabel: "(5 point) (A1)",
+            points: 5,
+            inputType: "select",
+            comments: true,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "1.00", label: "1.00" },
+              { value: "2.00", label: "2.00" },
+              { value: "3.00", label: "3.00" },
+              { value: "4.00", label: "4.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+          },
+          {
+            id: "A2",
+            label:
+              "Was the agent able to follow the proper troubleshooting procedures?",
+            sublabel: "(5 point) (A2)",
+            points: 5,
+            inputType: "select",
+            comments: true,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "1.00", label: "1.00" },
+              { value: "2.00", label: "2.00" },
+              { value: "3.00", label: "3.00" },
+              { value: "4.00", label: "4.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+          },
+          {
+            id: "A3",
+            label:
+              "Was the agent able to utilise forward resolution to reduce future contacts from the customer?",
+            sublabel: "(5 point) (A3)",
+            points: 5,
+            inputType: "select",
+            comments: true,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "1.00", label: "1.00" },
+              { value: "2.00", label: "2.00" },
+              { value: "3.00", label: "3.00" },
+              { value: "4.00", label: "4.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+          },
+        ],
+      },
+      {
+        id: "conversation-tone-flow",
+        title: "CONVERSATION TONE AND FLOW (30% WEIGHT)",
+        questions: [
+          {
+            id: "B1",
+            label:
+              "Were the agent's communication skills good and the conversation tone appropriate?",
+            sublabel: "(5 point) (B1)",
+            points: 5,
+            inputType: "select",
+            comments: true,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "1.00", label: "1.00" },
+              { value: "2.00", label: "2.00" },
+              { value: "3.00", label: "3.00" },
+              { value: "4.00", label: "4.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+          },
+          {
+            id: "B2",
+            label: "Was the agent able to match the conversation flow?",
+            sublabel: "(5 point) (B2)",
+            points: 5,
+            inputType: "select",
+            comments: true,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "1.00", label: "1.00" },
+              { value: "2.00", label: "2.00" },
+              { value: "3.00", label: "3.00" },
+              { value: "4.00", label: "4.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+          },
+        ],
+      },
+      {
+        id: "internal-processes",
+        title: "INTERNAL PROCESSES (19% WEIGHT)",
+        questions: [
+          {
+            id: "C1",
+            label: "Did the agent add the required ticket fields?",
+            sublabel: "(5 point) (C1)",
+            points: 5,
+            inputType: "select",
+            comments: true,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "1.00", label: "1.00" },
+              { value: "2.00", label: "2.00" },
+              { value: "3.00", label: "3.00" },
+              { value: "4.00", label: "4.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+          },
+          {
+            id: "C2",
+            label: "Did the agent follow the proper ticket handling procedure?",
+            sublabel: "(5 point) (C2)",
+            points: 5,
+            inputType: "select",
+            comments: true,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "1.00", label: "1.00" },
+              { value: "2.00", label: "2.00" },
+              { value: "3.00", label: "3.00" },
+              { value: "4.00", label: "4.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+          },
+        ],
+      },
+      {
+        id: "impact-on-customer-perception",
+        title: "IMPACT ON CUSTOMER PERCEPTION (1% WEIGHT/ AUTOFAIL)",
+        questions: [
+          {
+            id: "D1",
+            label:
+              "Did the agent cause a negative impact on how customers perceive Gorgias?",
+            sublabel: "(1 point) (D1)",
+            points: 1,
+            inputType: "select",
+            comments: true,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "1.00", label: "1.00" },
+            ],
+          },
+        ],
+      },
+    ],
+    extraSections: [
+      {
+        id: "summary-notes",
+        title: "SUMMARY NOTES",
+        required: true,
+        questions: [
+          {
+            id: "opportunities",
+            label: "OPPORTUNITIES",
+            sublabel: "",
+            points: 0,
+            inputType: "textarea",
+          },
+          {
+            id: "recommendations",
+            label: "RECOMMENDATIONS",
+            sublabel: "",
+            points: 0,
+            inputType: "textarea",
+          },
+        ],
+      },
+    ],
+  },
 ];
 export function getFormTypeById(id) {
   return formTypes.find((type) => type.id === id);

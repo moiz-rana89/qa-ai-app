@@ -12,6 +12,7 @@ import { AntDNotification } from "../../components/AntDNotification";
 import {
   getReports,
   resolveReport,
+  stakeholderDecisionReport,
 } from "../../reduxStore/action/bugsFeatures";
 
 const REPORT_TYPE_OPTIONS = [
@@ -24,6 +25,12 @@ const STATUS_OPTIONS = [
   { label: "All", value: "all" },
   { label: "Pending", value: "false" },
   { label: "Resolved", value: "true" },
+];
+
+const STAKEHOLDER_OPTIONS = [
+  { label: "All", value: "all" },
+  { label: "Approved", value: "true" },
+  { label: "Denied", value: "false" },
 ];
 
 // Format date as "MMM DD, YYYY"
@@ -60,6 +67,10 @@ export default function BugsFeatures() {
   const location = useLocation();
 
   const { reports, isLoading } = useSelector((state) => state.bugsFeatures);
+  const userDetails = useSelector((state) => state.auth.user);
+  const userRole = userDetails?.role;
+  const canApproveDeny = userRole === "om";
+  const canResolve = userRole === "admin";
 
   // Read initial state from URL
   const urlParams = useMemo(
@@ -75,6 +86,11 @@ export default function BugsFeatures() {
       ? "all"
       : urlParams.get("resolved_by_eng") || "all"
   );
+  const [stakeholder, setStakeholder] = useState(() => {
+    const v = urlParams.get("decision_by_stakeholder");
+    if (v === "true" || v === "false") return v;
+    return "all";
+  });
   const [submittedBy, setSubmittedBy] = useState(
     urlParams.get("submitted_by") || ""
   );
@@ -87,6 +103,7 @@ export default function BugsFeatures() {
   );
 
   const [resolvingId, setResolvingId] = useState(null);
+  const [decidingId, setDecidingId] = useState(null);
 
   // Debounce submittedBy input (300ms)
   useEffect(() => {
@@ -102,6 +119,8 @@ export default function BugsFeatures() {
     if (reportType && reportType !== "All")
       params.set("report_type", reportType);
     if (status && status !== "all") params.set("resolved_by_eng", status);
+    if (stakeholder === "true" || stakeholder === "false")
+      params.set("decision_by_stakeholder", stakeholder);
     if (debouncedSubmittedBy)
       params.set("submitted_by", debouncedSubmittedBy);
     if (currentPage > 1) params.set("page", String(currentPage));
@@ -112,7 +131,14 @@ export default function BugsFeatures() {
       { pathname: location.pathname, search: qs ? `?${qs}` : "" },
       { replace: true }
     );
-  }, [reportType, status, debouncedSubmittedBy, currentPage, pageSize]);
+  }, [
+    reportType,
+    status,
+    stakeholder,
+    debouncedSubmittedBy,
+    currentPage,
+    pageSize,
+  ]);
 
   // Fetch reports when filters/page change
   useEffect(() => {
@@ -122,6 +148,8 @@ export default function BugsFeatures() {
     };
     if (reportType && reportType !== "All") apiParams.report_type = reportType;
     if (status && status !== "all") apiParams.resolved_by_eng = status;
+    if (stakeholder === "true" || stakeholder === "false")
+      apiParams.decision_by_stakeholder = stakeholder;
     if (debouncedSubmittedBy) apiParams.submitted_by = debouncedSubmittedBy;
 
     dispatch(
@@ -135,7 +163,14 @@ export default function BugsFeatures() {
         }
       })
     );
-  }, [reportType, status, debouncedSubmittedBy, currentPage, pageSize]);
+  }, [
+    reportType,
+    status,
+    stakeholder,
+    debouncedSubmittedBy,
+    currentPage,
+    pageSize,
+  ]);
 
   // Reset to page 1 when any filter changes
   const onFilterChange = (setter) => (value) => {
@@ -162,6 +197,8 @@ export default function BugsFeatures() {
             apiParams.report_type = reportType;
           if (status && status !== "all")
             apiParams.resolved_by_eng = status;
+          if (stakeholder === "true" || stakeholder === "false")
+            apiParams.decision_by_stakeholder = stakeholder;
           if (debouncedSubmittedBy)
             apiParams.submitted_by = debouncedSubmittedBy;
           dispatch(getReports(apiParams));
@@ -173,6 +210,39 @@ export default function BugsFeatures() {
           });
         }
         setResolvingId(null);
+      })
+    );
+  };
+
+  const handleStakeholderDecision = (record, decision) => {
+    setDecidingId(record.id);
+    dispatch(
+      stakeholderDecisionReport(record.id, decision, (success, err) => {
+        if (success) {
+          AntDNotification({
+            status: "success",
+            title: decision ? "Approved" : "Denied",
+            description: `Report #${record.id} ${decision ? "approved" : "denied"} by stakeholder.`,
+          });
+          // Refresh table
+          const apiParams = { page: currentPage, size: pageSize };
+          if (reportType && reportType !== "All")
+            apiParams.report_type = reportType;
+          if (status && status !== "all")
+            apiParams.resolved_by_eng = status;
+          if (stakeholder === "true" || stakeholder === "false")
+            apiParams.decision_by_stakeholder = stakeholder;
+          if (debouncedSubmittedBy)
+            apiParams.submitted_by = debouncedSubmittedBy;
+          dispatch(getReports(apiParams));
+        } else {
+          AntDNotification({
+            status: "error",
+            title: "Failed to set stakeholder decision",
+            description: err?.message || "Please try again.",
+          });
+        }
+        setDecidingId(null);
       })
     );
   };
@@ -328,20 +398,67 @@ export default function BugsFeatures() {
       ),
     },
     {
+      title: "Stakeholder",
+      dataIndex: "decision_by_stakeholder",
+      key: "decision_by_stakeholder",
+      width: 130,
+      disableSort: true,
+      render: (value) => (
+        <div className="flex items-center justify-center">
+          <div
+            className={`rounded-full px-3 py-[2px] text-[13px] font-medium ${
+              value === true
+                ? "bg-[#E4FAED] text-[#16A34A]"
+                : value === false
+                ? "bg-[#FFECEC] text-[#DC2626]"
+                : "bg-[#FFF7D8] text-[#D97706]"
+            }`}
+          >
+            {value === true
+              ? "Approved"
+              : value === false
+              ? "Denied"
+              : "Pending"}
+          </div>
+        </div>
+      ),
+    },
+    {
       title: "Action",
       key: "action",
-      width: 160,
+      width: 280,
       disableSort: true,
-      render: (_, record) =>
-        record.resolved_by_eng ? null : (
-          <button
-            onClick={() => handleResolve(record)}
-            disabled={resolvingId === record.id}
-            className="px-3 py-[4px] rounded-full text-[13px] font-semibold text-white bg-[#69C920] hover:bg-[#5ab61c] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {resolvingId === record.id ? "Resolving..." : "Mark Resolved"}
-          </button>
-        ),
+      render: (_, record) => (
+        <div className="flex items-center gap-2 flex-wrap">
+          {canResolve && !record.resolved_by_eng && (
+            <button
+              onClick={() => handleResolve(record)}
+              disabled={resolvingId === record.id}
+              className="px-3 py-[4px] rounded-full text-[13px] font-semibold text-white bg-[#69C920] hover:bg-[#5ab61c] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {resolvingId === record.id ? "Resolving..." : "Mark Resolved"}
+            </button>
+          )}
+          {canApproveDeny && record.decision_by_stakeholder == null && (
+            <>
+              <button
+                onClick={() => handleStakeholderDecision(record, true)}
+                disabled={decidingId === record.id}
+                className="px-3 py-[4px] rounded-full text-[13px] font-semibold text-white bg-[#69C920] hover:bg-[#5ab61c] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Approve
+              </button>
+              <button
+                onClick={() => handleStakeholderDecision(record, false)}
+                disabled={decidingId === record.id}
+                className="px-3 py-[4px] rounded-full text-[13px] font-semibold text-white bg-[#DC2626] hover:bg-[#b91c1c] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Deny
+              </button>
+            </>
+          )}
+        </div>
+      ),
     },
   ];
 
@@ -388,6 +505,21 @@ export default function BugsFeatures() {
                 options={STATUS_OPTIONS}
                 value={status}
                 onChange={onFilterChange(setStatus)}
+                className="w-full custom-select-forms"
+                popupClassName="custom-select-dropdown"
+                style={{ height: "40px" }}
+              />
+            </div>
+
+            {/* Stakeholder Decision */}
+            <div className="min-w-[180px]">
+              <label className="block text-[13px] font-semibold text-[#163143] mb-1">
+                Stakeholder Decision
+              </label>
+              <Select
+                options={STAKEHOLDER_OPTIONS}
+                value={stakeholder}
+                onChange={onFilterChange(setStakeholder)}
                 className="w-full custom-select-forms"
                 popupClassName="custom-select-dropdown"
                 style={{ height: "40px" }}

@@ -8,6 +8,7 @@ import qaSettingsReducer from "./qaSettings";
 import scheduleManagementReducer from "./scheduleManagement";
 import performanceReviewReducer from "./performanceReview";
 import bugsFeaturesReducer from "./bugsFeatures";
+import attendanceInfractionsReducer from "./attendanceInfractions";
 export default combineReducers(
   Object.assign({
     auth: auth,
@@ -18,5 +19,6 @@ export default combineReducers(
     scheduleManagement: scheduleManagementReducer,
     performanceReview: performanceReviewReducer,
     bugsFeatures: bugsFeaturesReducer,
+    attendanceInfractions: attendanceInfractionsReducer,
   })
 );

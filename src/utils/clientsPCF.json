@@ -38,5 +38,9 @@
   {
     "client": "Complement",
     "client_id": 308974
+  },
+  {
+    "client": "Gorgias",
+    "client_id": 400001
   }
 ]
