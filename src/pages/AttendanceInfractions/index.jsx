@@ -14,6 +14,7 @@ import EditInfractionDrawer from "./EditInfractionDrawer";
 import {
   getAttendanceInfractions,
   approveInfraction,
+  runAutomation,
 } from "../../reduxStore/action/attendanceInfractions";
 import { getTeamMemberFilter } from "../../reduxStore/action/formsManagement";
 
@@ -79,13 +80,14 @@ export default function AttendanceInfractions() {
     [location.search]
   );
 
-  // Pending filters (not yet applied)
+  // Filters (live — change triggers fetch immediately)
   const [userFilter, setUserFilter] = useState(() => {
     const v = urlParams.get("user_id");
     return v ? [{ user_id: Number(v) }] : [];
   });
+  // Default to "Active" (archived=false) on first load when no URL param is set
   const [statusFilter, setStatusFilter] = useState(
-    urlParams.get("archived") || "all"
+    urlParams.get("archived") || "false"
   );
   const [approvalFilter, setApprovalFilter] = useState(() => {
     const v = urlParams.get("approved_by_wfa");
@@ -94,19 +96,8 @@ export default function AttendanceInfractions() {
     return "all";
   });
 
-  // Applied filters (sent to API)
-  const [appliedUserId, setAppliedUserId] = useState(
-    urlParams.get("user_id") ? Number(urlParams.get("user_id")) : null
-  );
-  const [appliedStatus, setAppliedStatus] = useState(
-    urlParams.get("archived") || "all"
-  );
-  const [appliedApproval, setAppliedApproval] = useState(() => {
-    const v = urlParams.get("approved_by_wfa");
-    if (v === "true" || v === "false") return v;
-    if (urlParams.has("approval_not_set")) return "not_set";
-    return "all";
-  });
+  // Derived: the user_id that should be sent to the API
+  const userIdForApi = userFilter?.[0]?.user_id || null;
 
   const [page, setPage] = useState(Number(urlParams.get("page")) || 1);
   const [perPage, setPerPage] = useState(
@@ -119,6 +110,7 @@ export default function AttendanceInfractions() {
 
   const [errorMsg, setErrorMsg] = useState("");
   const [approvingId, setApprovingId] = useState(null);
+  const [runningAutomation, setRunningAutomation] = useState(false);
 
   const [editOpen, setEditOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
@@ -128,14 +120,14 @@ export default function AttendanceInfractions() {
     dispatch(getTeamMemberFilter(setIsLoadingAgent));
   }, []);
 
-  // Build URL from applied state
+  // Build URL from current filter state
   useEffect(() => {
     const params = new URLSearchParams();
-    if (appliedUserId) params.set("user_id", String(appliedUserId));
-    if (appliedStatus !== "all") params.set("archived", appliedStatus);
-    if (appliedApproval === "true" || appliedApproval === "false") {
-      params.set("approved_by_wfa", appliedApproval);
-    } else if (appliedApproval === "not_set") {
+    if (userIdForApi) params.set("user_id", String(userIdForApi));
+    if (statusFilter !== "all") params.set("archived", statusFilter);
+    if (approvalFilter === "true" || approvalFilter === "false") {
+      params.set("approved_by_wfa", approvalFilter);
+    } else if (approvalFilter === "not_set") {
       params.set("approval_not_set", "1");
     }
     if (page > 1) params.set("page", String(page));
@@ -149,16 +141,16 @@ export default function AttendanceInfractions() {
       { replace: true }
     );
   }, [
-    appliedUserId,
-    appliedStatus,
-    appliedApproval,
+    userIdForApi,
+    statusFilter,
+    approvalFilter,
     page,
     perPage,
     sortBy,
     sortOrder,
   ]);
 
-  // Fetch data
+  // Fetch data using current filter state
   const fetchData = () => {
     const apiParams = {
       page,
@@ -166,12 +158,12 @@ export default function AttendanceInfractions() {
       sort_by: sortBy,
       sort_order: sortOrder,
     };
-    if (appliedUserId) apiParams.user_id = appliedUserId;
-    if (appliedStatus === "true" || appliedStatus === "false") {
-      apiParams.archived = appliedStatus;
+    if (userIdForApi) apiParams.user_id = userIdForApi;
+    if (statusFilter === "true" || statusFilter === "false") {
+      apiParams.archived = statusFilter;
     }
-    if (appliedApproval === "true" || appliedApproval === "false") {
-      apiParams.approved_by_wfa = appliedApproval;
+    if (approvalFilter === "true" || approvalFilter === "false") {
+      apiParams.approved_by_wfa = approvalFilter;
     }
     // "not_set" => omit param entirely; "all" => omit too
 
@@ -189,22 +181,30 @@ export default function AttendanceInfractions() {
     );
   };
 
+  // Live fetch on filter / pagination / sort changes (and initial mount)
   useEffect(() => {
     fetchData();
   }, [
-    appliedUserId,
-    appliedStatus,
-    appliedApproval,
+    userIdForApi,
+    statusFilter,
+    approvalFilter,
     page,
     perPage,
     sortBy,
     sortOrder,
   ]);
 
-  const handleApplyFilters = () => {
-    setAppliedUserId(userFilter?.[0]?.user_id || null);
-    setAppliedStatus(statusFilter);
-    setAppliedApproval(approvalFilter);
+  // Reset page to 1 whenever a filter changes (so user doesn't land on an empty page)
+  const onUserChange = (next) => {
+    setUserFilter(next);
+    setPage(1);
+  };
+  const onStatusChange = (next) => {
+    setStatusFilter(next);
+    setPage(1);
+  };
+  const onApprovalChange = (next) => {
+    setApprovalFilter(next);
     setPage(1);
   };
 
@@ -212,10 +212,28 @@ export default function AttendanceInfractions() {
     setUserFilter([]);
     setStatusFilter("all");
     setApprovalFilter("all");
-    setAppliedUserId(null);
-    setAppliedStatus("all");
-    setAppliedApproval("all");
     setPage(1);
+  };
+
+  const handleRunAutomation = () => {
+    if (runningAutomation) return;
+    setRunningAutomation(true);
+    dispatch(
+      runAutomation((success, dataOrErr) => {
+        if (success) {
+          toast.success("Automation started successfully");
+          // Refresh the list so any new infractions show up
+          fetchData();
+        } else {
+          const msg =
+            dataOrErr?.data?.detail ||
+            dataOrErr?.message ||
+            "Failed to run automation.";
+          toast.error(typeof msg === "string" ? msg : "Run automation failed");
+        }
+        setRunningAutomation(false);
+      })
+    );
   };
 
   const handleApprove = (record) => {
@@ -266,10 +284,12 @@ export default function AttendanceInfractions() {
     },
     {
       title: "User",
-      dataIndex: "user_id",
-      key: "user_id",
+      dataIndex: "user_name",
+      key: "user_name",
       width: 160,
-      render: (value) => resolveUserName(value),
+      // Prefer the user_name field on the record; fall back to looking up
+      // the agent by user_id if the API didn't include the name inline.
+      render: (value, record) => value || resolveUserName(record?.user_id),
     },
     {
       title: "Reason",
@@ -403,10 +423,25 @@ export default function AttendanceInfractions() {
   return (
     <div className="w-full h-full flex flex-col">
       {/* Header */}
-      <div className="pt-7 pl-8">
+      <div className="pt-7 px-8 flex items-center justify-between">
         <span className="text-2xl font-semibold text-[#163143]">
           Attendance Automation Infractions
         </span>
+        <button
+          onClick={handleRunAutomation}
+          disabled={runningAutomation}
+          className="px-5 py-[8px] rounded-full text-[14px] font-semibold text-white bg-[#69C920] hover:bg-[#5ab61c] transition-all disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
+        >
+          <Icon
+            icon={
+              runningAutomation
+                ? "eos-icons:loading"
+                : "mdi:play-circle-outline"
+            }
+            className="text-[18px]"
+          />
+          {runningAutomation ? "Running..." : "Run Automation"}
+        </button>
       </div>
 
       {/* Edit Drawer */}
@@ -432,7 +467,7 @@ export default function AttendanceInfractions() {
                 data={agentList || []}
                 isLoading={isLoadingAgent}
                 selectedList={userFilter}
-                setselectedList={setUserFilter}
+                setselectedList={onUserChange}
                 multiSelect={false}
                 displayKey="user_name"
                 valueKey="user_id"
@@ -449,7 +484,7 @@ export default function AttendanceInfractions() {
               <Select
                 options={STATUS_OPTIONS}
                 value={statusFilter}
-                onChange={setStatusFilter}
+                onChange={onStatusChange}
                 className="w-full custom-select-forms"
                 popupClassName="custom-select-dropdown"
                 style={{ height: "40px" }}
@@ -464,20 +499,14 @@ export default function AttendanceInfractions() {
               <Select
                 options={APPROVAL_OPTIONS}
                 value={approvalFilter}
-                onChange={setApprovalFilter}
+                onChange={onApprovalChange}
                 className="w-full custom-select-forms"
                 popupClassName="custom-select-dropdown"
                 style={{ height: "40px" }}
               />
             </div>
 
-            {/* Apply / Reset */}
-            <button
-              onClick={handleApplyFilters}
-              className="px-5 py-[8px] rounded-full text-[14px] font-semibold text-white bg-[#69C920] hover:bg-[#5ab61c] transition-all"
-            >
-              Apply Filters
-            </button>
+            {/* Reset */}
             <button
               onClick={handleResetFilters}
               className="px-5 py-[8px] rounded-full text-[14px] font-medium text-[#163143] border border-[#D7E6E7] hover:border-gray-400 transition-all"
