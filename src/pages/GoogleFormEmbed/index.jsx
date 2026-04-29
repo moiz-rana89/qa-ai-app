@@ -2,7 +2,14 @@
 
 import { Icon } from "@iconify/react";
 
+// Short link — friendlier for the "Open in new tab" button.
 const SHARE_URL = "https://forms.gle/JoKyJoQMyEXGnaSc6";
+// Canonical docs.google.com URL with `embedded=true` — required for iframe
+// rendering. The forms.gle short link can't be embedded directly because
+// its X-Frame-Options block iframe loading and the redirect drops query
+// params, so we must use the resolved long URL here.
+const EMBED_URL =
+  "https://docs.google.com/forms/d/e/1FAIpQLSdQ30ee3uTBQPgwKzB5xDj_A_0fi3cGOLZwfXGaYsuWzP3eNQ/viewform?embedded=true";
 
 export default function GoogleFormEmbed() {
   return (
@@ -24,7 +31,7 @@ export default function GoogleFormEmbed() {
       <div className="flex-1 px-8 pb-8">
         <div className="w-full h-full bg-white rounded-[16px] border border-[#D7E6E7] overflow-hidden">
           <iframe
-            src={SHARE_URL}
+            src={EMBED_URL}
             title="Client Bonus Request Form"
             width="100%"
             height="100%"

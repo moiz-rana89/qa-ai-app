@@ -437,7 +437,9 @@ export default function EditWFAInternalTeam({
                 if (e[0]?.validity === "VALID") {
                   setAllowGreenCard(false);
                 }
-                setFileInfo();
+                // WFA: do NOT clear uploaded files on reason change.
+                // WFA users may keep existing attachments and add/remove
+                // individual files via the upload area's X button.
                 setEndDate();
               }}
               fullwidthDropdown={true}

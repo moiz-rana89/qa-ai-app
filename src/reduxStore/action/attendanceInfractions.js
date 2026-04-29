@@ -78,3 +78,14 @@ export const approveInfraction = (id, handleResponse) => {
       });
   };
 };
+
+export const runAutomation = (handleResponse) => {
+  return () => {
+    Api.post(`/workforce/reports/run-automation`, {})
+      .then(({ data }) => handleResponse?.(true, data))
+      .catch((err) => {
+        handleResponse?.(false, err);
+        console.error("Error running automation:", err);
+      });
+  };
+};
