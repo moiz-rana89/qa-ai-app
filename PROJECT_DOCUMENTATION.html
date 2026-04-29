@@ -1,0 +1,1578 @@
+<!DOCTYPE html><html><head><title></title><meta charset="utf-8"><style>* {
+	box-sizing: border-box;
+}
+
+html {
+	font-size: 100%;
+}
+
+body {
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
+		'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+	line-height: 1.6;
+	font-size: 0.6875em; /* 11 pt */
+	color: #111;
+	margin: 0;
+}
+
+body > :first-child {
+	padding-top: 0;
+	margin-top: 0;
+}
+
+body > :last-child {
+	margin-bottom: 0;
+	padding-bottom: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin: 0;
+	padding: 0.5em 0 0.25em;
+}
+
+h5,
+h6 {
+	padding: 0;
+}
+
+h5 {
+	font-size: 1em;
+}
+
+h6 {
+	font-size: 0.875em;
+	text-transform: uppercase;
+}
+
+p {
+	margin: 0.25em 0 1em;
+}
+
+blockquote {
+	margin: 0.5em 0 1em;
+	padding-left: 0.5em;
+	padding-right: 1em;
+	border-left: 4px solid gainsboro;
+	font-style: italic;
+}
+
+ul,
+ol {
+	margin: 0;
+	margin-left: 1em;
+	padding: 0 1.5em 0.5em;
+}
+
+pre {
+	white-space: pre-wrap;
+}
+
+h1 code,
+h2 code,
+h3 code,
+h4 code,
+h5 code,
+h6 code,
+p code,
+li code,
+pre code {
+	background-color: #f8f8f8;
+	padding: 0.1em 0.375em;
+	border: 1px solid #f8f8f8;
+	border-radius: 0.25em;
+	font-family: monospace;
+	font-size: 1.2em;
+}
+
+pre code {
+	display: block;
+	padding: 0.5em;
+}
+
+.page-break {
+	page-break-after: always;
+}
+
+img {
+	max-width: 100%;
+	margin: 1em 0;
+}
+
+table {
+	border-spacing: 0;
+	border-collapse: collapse;
+	display: block;
+	margin: 0 0 1em;
+	width: 100%;
+	overflow: auto;
+}
+
+table th,
+table td {
+	padding: 0.5em 1em;
+	border: 1px solid gainsboro;
+}
+
+table th {
+	font-weight: 600;
+}
+
+table tr {
+	background-color: white;
+	border-top: 1px solid gainsboro;
+}
+
+table tr:nth-child(2n) {
+	background-color: whitesmoke;
+}
+/*# sourceURL=C:\Users\ISSM\AppData\Local\npm-cache\_npx\55158e48eb5c59f7\node_modules\md-to-pdf\markdown.css*/</style><style>pre code.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 1em
+}
+code.hljs {
+  padding: 3px 5px
+}
+/*!
+  Theme: GitHub
+  Description: Light theme as seen on github.com
+  Author: github.com
+  Maintainer: @Hirse
+  Updated: 2021-05-15
+
+  Outdated base version: https://github.com/primer/github-syntax-light
+  Current colors taken from GitHub's CSS
+*/
+.hljs {
+  color: #24292e;
+  background: #ffffff
+}
+.hljs-doctag,
+.hljs-keyword,
+.hljs-meta .hljs-keyword,
+.hljs-template-tag,
+.hljs-template-variable,
+.hljs-type,
+.hljs-variable.language_ {
+  /* prettylights-syntax-keyword */
+  color: #d73a49
+}
+.hljs-title,
+.hljs-title.class_,
+.hljs-title.class_.inherited__,
+.hljs-title.function_ {
+  /* prettylights-syntax-entity */
+  color: #6f42c1
+}
+.hljs-attr,
+.hljs-attribute,
+.hljs-literal,
+.hljs-meta,
+.hljs-number,
+.hljs-operator,
+.hljs-variable,
+.hljs-selector-attr,
+.hljs-selector-class,
+.hljs-selector-id {
+  /* prettylights-syntax-constant */
+  color: #005cc5
+}
+.hljs-regexp,
+.hljs-string,
+.hljs-meta .hljs-string {
+  /* prettylights-syntax-string */
+  color: #032f62
+}
+.hljs-built_in,
+.hljs-symbol {
+  /* prettylights-syntax-variable */
+  color: #e36209
+}
+.hljs-comment,
+.hljs-code,
+.hljs-formula {
+  /* prettylights-syntax-comment */
+  color: #6a737d
+}
+.hljs-name,
+.hljs-quote,
+.hljs-selector-tag,
+.hljs-selector-pseudo {
+  /* prettylights-syntax-entity-tag */
+  color: #22863a
+}
+.hljs-subst {
+  /* prettylights-syntax-storage-modifier-import */
+  color: #24292e
+}
+.hljs-section {
+  /* prettylights-syntax-markup-heading */
+  color: #005cc5;
+  font-weight: bold
+}
+.hljs-bullet {
+  /* prettylights-syntax-markup-list */
+  color: #735c0f
+}
+.hljs-emphasis {
+  /* prettylights-syntax-markup-italic */
+  color: #24292e;
+  font-style: italic
+}
+.hljs-strong {
+  /* prettylights-syntax-markup-bold */
+  color: #24292e;
+  font-weight: bold
+}
+.hljs-addition {
+  /* prettylights-syntax-markup-inserted */
+  color: #22863a;
+  background-color: #f0fff4
+}
+.hljs-deletion {
+  /* prettylights-syntax-markup-deleted */
+  color: #b31d28;
+  background-color: #ffeef0
+}
+.hljs-char.escape_,
+.hljs-link,
+.hljs-params,
+.hljs-property,
+.hljs-punctuation,
+.hljs-tag {
+  /* purposely ignored */
+  
+}/*# sourceURL=C:\Users\ISSM\AppData\Local\npm-cache\_npx\55158e48eb5c59f7\node_modules\highlight.js\styles\github.css*/</style><style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 11pt;
+      line-height: 1.55;
+      color: #1f2937;
+    }
+    h1 {
+      color: #163143;
+      border-bottom: 2px solid #69C920;
+      padding-bottom: 0.3em;
+      margin-top: 0;
+      page-break-after: avoid;
+    }
+    h2 {
+      color: #163143;
+      border-bottom: 1px solid #D7E6E7;
+      padding-bottom: 0.25em;
+      margin-top: 1.6em;
+      page-break-after: avoid;
+    }
+    h3 {
+      color: #163143;
+      margin-top: 1.2em;
+      page-break-after: avoid;
+    }
+    a { color: #2563eb; text-decoration: none; }
+    code {
+      background: #F1F5F5;
+      padding: 0.1em 0.35em;
+      border-radius: 3px;
+      font-size: 0.92em;
+      color: #163143;
+    }
+    pre {
+      background: #F8FAFA;
+      border: 1px solid #D7E6E7;
+      border-radius: 6px;
+      padding: 12px 14px;
+      font-size: 9.5pt;
+      line-height: 1.45;
+      page-break-inside: avoid;
+    }
+    pre code {
+      background: transparent;
+      padding: 0;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 0.6em 0;
+      font-size: 10pt;
+      page-break-inside: avoid;
+    }
+    th, td {
+      border: 1px solid #D7E6E7;
+      padding: 7px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #F1F5F5;
+      color: #163143;
+      font-weight: 600;
+    }
+    tr:nth-child(even) td { background: #FBFCFC; }
+    blockquote {
+      border-left: 3px solid #69C920;
+      background: #F6FBF1;
+      margin: 0.7em 0;
+      padding: 8px 14px;
+      color: #163143;
+      page-break-inside: avoid;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #D7E6E7;
+      margin: 1.6em 0;
+    }
+    ul, ol { padding-left: 1.4em; }
+    li { margin: 0.2em 0; }
+    /* Avoid orphan headings by keeping a heading attached to its first paragraph */
+    h1 + *, h2 + *, h3 + * { page-break-before: avoid; }
+  </style></head>
+	<body class="">
+		<h1 id="talentpop-qa-app--project-documentation">TalentPop QA App — Project Documentation</h1>
+<h2 id="1-project-header">1. Project Header</h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Project Name</strong></td>
+<td>TalentPop QA App (<code>tp-qa-app</code>)</td>
+</tr>
+<tr>
+<td><strong>Department</strong></td>
+<td>Quality Assurance / Workforce Operations</td>
+</tr>
+<tr>
+<td><strong>Engineer(s) Assigned</strong></td>
+<td>Abdul Moiz — <code>abdulmoizrana.ar@gmail.com</code> / <code>moiz@talentpop.co</code></td>
+</tr>
+<tr>
+<td><strong>Stakeholder(s)</strong></td>
+<td>Gensis, Leigh</td>
+</tr>
+<tr>
+<td><strong>Priority</strong></td>
+<td><strong>P0</strong></td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td><strong>Live</strong></td>
+</tr>
+<tr>
+<td><strong>Progress %</strong></td>
+<td>~85% (active feature work ongoing)</td>
+</tr>
+<tr>
+<td><strong>Live URL</strong></td>
+<td><a href="https://talentpopapp.com">https://talentpopapp.com</a></td>
+</tr>
+<tr>
+<td><strong>Staging URL</strong></td>
+<td><a href="https://dev.talentpopapp.com">https://dev.talentpopapp.com</a></td>
+</tr>
+<tr>
+<td><strong>Credentials (dev/staging only)</strong></td>
+<td>Email: <code>moiz@talentpop.co</code> &nbsp;·&nbsp; Password: <code>moiz4321</code> (rotate + move to a password manager — see Section 13)</td>
+</tr>
+<tr>
+<td><strong>GitHub Repo (Frontend)</strong></td>
+<td><a href="https://github.com/moiz-rana89/qa-ai-app.git">https://github.com/moiz-rana89/qa-ai-app.git</a></td>
+</tr>
+<tr>
+<td><strong>GitHub Repo (Backend)</strong></td>
+<td><a href="https://github.com/Talentpop1/qa_ai.git">https://github.com/Talentpop1/qa_ai.git</a></td>
+</tr>
+<tr>
+<td><strong>Last Updated</strong></td>
+<td>2026-04-29</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="2-project-summary">2. Project Summary</h2>
+<p>The TalentPop QA App is the internal web application that powers TalentPop's <strong>Quality Assurance, Workforce Management, and Operations</strong> workflows. It lets QA team leads evaluate agent tickets against configurable scorecards, run client-specific monitoring forms, manage attendance and shift schedules across remote and internal teams, handle attendance dispute resolution between TLs and the WFA team, run performance reviews, and download reports. It exists to consolidate what used to be a sprawl of Google Sheets, Forms, and ad-hoc tools into one role-aware dashboard so each role (TL, OM, AOM, WFA, QA, Admin, etc.) only sees the features they're allowed to use. The app is the operational hub for daily work across the support delivery org and is <strong>classified P0</strong> — outages directly block daily QA, attendance, and scheduling operations.</p>
+<hr>
+<h2 id="3-architecture-overview">3. Architecture Overview</h2>
+<p><strong>Frontend</strong> — Single Page Application written in JavaScript (JSX, no TypeScript). React 19 with Vite (rolldown variant) for dev/build, Tailwind CSS v4 + Ant Design v5 for styling, classic Redux + redux-thunk for state, and react-router-dom v7 for routing. Hosted on AWS (static bundle behind CloudFront / served from S3); domain managed via Route 53.</p>
+<p><strong>Backend</strong> — Separate repo: <a href="https://github.com/Talentpop1/qa_ai.git">https://github.com/Talentpop1/qa_ai.git</a>. Built with <strong>FastAPI (Python)</strong>. Exposes REST endpoints under <code>https://api.talentpopapp.com</code>. The frontend integrates via a thin <code>Api</code> wrapper class (<code>src/reduxStore/lib/api.js</code>) using <code>fetch</code> with <code>credentials: "include"</code> so HttpOnly cookies are sent automatically. On 401, the wrapper auto-calls <code>/refresh</code> once and retries the original request before bouncing to <code>/login</code>.</p>
+<p><strong>Database</strong> — <strong>PostgreSQL on AWS RDS</strong>. Schema is owned by the backend repo; the frontend has no direct DB access. See Section 7 for inferred schema.</p>
+<p><strong>External Services / APIs</strong> —</p>
+<ul>
+<li><strong>Google Forms</strong> — embedded <code>iframe</code> for the <em>Client Bonus Request Form</em></li>
+<li><strong>AWS S3</strong> — file uploads via <code>POST /workforce/reports/upload</code> (response shape includes <code>s3_url</code>)</li>
+<li><strong>Hubstaff</strong> — schedule data is synced via the backend (<code>/schedules/hubstaff-options</code>, <code>mapping_status</code>, <code>acknowledge-sync</code>)</li>
+<li><strong>Internal AI grading service</strong> — referenced as <code>qa_ai_apis</code> and <code>openai/...</code> route prefixes on the backend</li>
+</ul>
+<p><strong>Infrastructure</strong> — Pure static frontend deployed manually to AWS. No Docker, no CI/CD config in this repo (see Section 10).</p>
+<pre><code>              ┌─────────────────────────┐
+              │     React + Vite SPA    │
+              │   (cookie-based auth)   │
+              │      AWS / Route 53     │
+              └────────────┬────────────┘
+                           │ fetch w/ credentials
+                           ▼
+              ┌─────────────────────────┐
+              │  TalentPop Backend API  │
+              │   FastAPI (Python)      │
+              │  api.talentpopapp.com   │
+              └────────────┬────────────┘
+                           │
+            ┌──────────────┼──────────────┐
+            ▼              ▼              ▼
+        ┌────────┐    ┌─────────┐    ┌──────────┐
+        │ Postgres│    │ AWS S3  │    │ Hubstaff │
+        │   RDS   │    │ uploads │    │   etc.   │
+        └─────────┘    └─────────┘    └──────────┘
+</code></pre>
+<hr>
+<h2 id="4-tech-stack">4. Tech Stack</h2>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Tech</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Frontend Framework</strong></td>
+<td>React 19.1.1 + Vite (rolldown-vite 7.1.14)</td>
+</tr>
+<tr>
+<td><strong>Language</strong></td>
+<td>JavaScript / JSX (no TypeScript)</td>
+</tr>
+<tr>
+<td><strong>State Management</strong></td>
+<td>Redux 5 + redux-thunk 3 (classic action-types/reducers pattern via custom <code>createReducer</code> helper)</td>
+</tr>
+<tr>
+<td><strong>Routing</strong></td>
+<td>react-router-dom 7.9.5</td>
+</tr>
+<tr>
+<td><strong>UI Library</strong></td>
+<td>Ant Design 5.28 + custom AntD theme</td>
+</tr>
+<tr>
+<td><strong>Styling</strong></td>
+<td>Tailwind CSS 4.1 (<code>@tailwindcss/vite</code>) + custom CSS</td>
+</tr>
+<tr>
+<td><strong>Icons</strong></td>
+<td><code>@iconify/react</code> 6</td>
+</tr>
+<tr>
+<td><strong>HTTP Client</strong></td>
+<td>Native <code>fetch</code> (Api wrapper class) + <code>axios</code> 1.13 (login flow only)</td>
+</tr>
+<tr>
+<td><strong>Notifications</strong></td>
+<td><code>react-hot-toast</code> 2.6 + custom <code>AntDNotification</code> wrapper</td>
+</tr>
+<tr>
+<td><strong>Crypto</strong></td>
+<td><code>fernet</code> 0.3.3 (used for client-side encryption — see <code>VITE_ENCRYPTION_KEY</code>)</td>
+</tr>
+<tr>
+<td><strong>Date</strong></td>
+<td><code>moment</code> 2.30 (legacy code) and AntD's <code>dayjs</code> (newer code)</td>
+</tr>
+<tr>
+<td><strong>Auth</strong></td>
+<td>Cookie-based (HttpOnly), <code>credentials: "include"</code>, auto-refresh on 401</td>
+</tr>
+<tr>
+<td><strong>Backend</strong></td>
+<td>FastAPI (Python) — <code>https://api.talentpopapp.com</code></td>
+</tr>
+<tr>
+<td><strong>Database</strong></td>
+<td>PostgreSQL on AWS RDS</td>
+</tr>
+<tr>
+<td><strong>Object Storage</strong></td>
+<td>AWS S3 (uploads)</td>
+</tr>
+<tr>
+<td><strong>Hosting (Frontend)</strong></td>
+<td>AWS (S3 + CloudFront, suspected — confirm with infra)</td>
+</tr>
+<tr>
+<td><strong>DNS</strong></td>
+<td>AWS Route 53</td>
+</tr>
+<tr>
+<td><strong>Deployment</strong></td>
+<td>Manual <code>npm run build</code> + upload of <code>dist/</code></td>
+</tr>
+<tr>
+<td><strong>CI/CD</strong></td>
+<td>None today</td>
+</tr>
+<tr>
+<td><strong>Tests</strong></td>
+<td>None today</td>
+</tr>
+<tr>
+<td><strong>External APIs</strong></td>
+<td>Google Forms (iframe embed), Hubstaff (via backend), AWS S3 (via backend)</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="5-key-features-current-state">5. Key Features (Current State)</h2>
+<h3 id="quality-assurance">Quality Assurance</h3>
+<ul>
+<li><strong>Evaluate Tickets</strong> — QA reviewers grade tickets against AI-suggested rubrics; supports filtering by client, agent, channel, and ticket ID.</li>
+<li><strong>Forms Management</strong> — Build and edit QA scorecards: forms → categories → questions, with archive/duplicate/enable-disable controls.</li>
+<li><strong>QA Settings</strong> — Per-client QA configuration (sampling rates, eligible agents, etc.).</li>
+</ul>
+<h3 id="forms-coaching--monitoring">Forms (Coaching &amp; Monitoring)</h3>
+<ul>
+<li><strong>Ticket Monitoring Form</strong> — Standard ticket QA form for agents.</li>
+<li><strong>Performance Coaching Form</strong> — Coaching session capture for performance reviews.</li>
+<li><strong>Other Coaching Types</strong> — Free-form coaching entries outside the standard ticket QA flow.</li>
+<li><strong>Client Specific Forms</strong> — Custom monitoring forms per client (uploaded directly via <code>POST /openai/client_specific_forms</code>).</li>
+<li><strong>Google Form</strong> — Embedded <em>Client Bonus Request Form</em> via iframe (canonical <code>docs.google.com/forms/...?embedded=true</code>).</li>
+</ul>
+<h3 id="reports--downloads">Reports / Downloads</h3>
+<ul>
+<li><strong>Download Ticket OR Performance Report</strong> — CSV exports filtered by client / agent / event type.</li>
+<li><strong>Download Client Specific Report</strong> — Client-form CSV exports.</li>
+<li><strong>QA AI Report</strong> — CSV downloads of AI-graded QA evaluations.</li>
+</ul>
+<h3 id="workforce--attendance">Workforce / Attendance</h3>
+<ul>
+<li><strong>Remote Team Management</strong> — TLs review and resolve attendance alerts for their remote agents (reason picker, notes, attachments, end-date rules).</li>
+<li><strong>Internal Team Management</strong> — Same flow for internal teams with department-level filters.</li>
+<li><strong>Remote Team Reporting</strong> — Read-only attendance reports for remote teams.</li>
+<li><strong>Internal Team Reporting</strong> — Read-only reports for internal teams.</li>
+<li><strong>Advance Notice Submission</strong> — Agents/TLs flag upcoming absences ahead of time.</li>
+<li><strong>Schedule Management</strong> — Hubstaff-synced schedule view; supports filters across user/client/team-lead/project, deactivation, sync acknowledgement, and unmapped-count surfacing. Now also accessible to WFA users (treated like admin — no role-scoped ID filter).</li>
+<li><strong>Attendance Automation Infractions</strong> — Lists rule-engine-detected attendance infractions; supports live filtering, default-to-Active, edit drawer with reason/notes/attachments, <strong>Approve (WFA)</strong>, <strong>Mark Resolved (Admin)</strong>, and <strong>Run Automation</strong> trigger button.</li>
+</ul>
+<h3 id="wfa-specific-attendance-management">WFA-specific Attendance Management</h3>
+<ul>
+<li><strong>WFA Remote Team / Internal Team</strong> — Workforce Admin team's view to dispute or resolve TL submissions; supports keeping uploaded attachments across reason changes.</li>
+<li><strong>WFA Attendance Reporting</strong> — Cross-team WFA reporting view.</li>
+<li><strong>WFA OnTime Reporting</strong> — On-time metrics view.</li>
+</ul>
+<h3 id="bugs--features">Bugs &amp; Features</h3>
+<ul>
+<li>AI-detected bug/feature reports with two action paths: <strong>Mark Resolved</strong> (admin-only) and stakeholder <strong>Approve / Deny</strong> (OM-only).</li>
+<li>Filters: report type, status (resolved/pending), stakeholder decision (approved/denied/pending/all), submitted-by search.</li>
+</ul>
+<h3 id="performance-review">Performance Review</h3>
+<ul>
+<li>Multi-step coaching flow: pick client → agent → channel → fill coaching form → submit resolutions per metric.</li>
+</ul>
+<h3 id="auth--layout">Auth / Layout</h3>
+<ul>
+<li>Cookie-based login with auto-refresh on 401.</li>
+<li>Role-scoped routing — every route is wrapped in <code>ProtectedRoute</code> that checks <code>ROUTE_ROLES[path]</code> against the current user's role.</li>
+<li>Two layouts: <code>MainLayout</code> (sidebar + outlet) and <code>FullWidthLayout</code> (no sidebar, used for <code>/evalute-form</code>).</li>
+</ul>
+<hr>
+<h2 id="6-api-documentation">6. API Documentation</h2>
+<p>All endpoints below are proxied through the <code>Api</code> wrapper class with cookie-based auth. Base URL is <code>${VITE_API_URL}</code> (production: <code>https://api.talentpopapp.com</code>). Every endpoint <strong>requires authentication</strong> unless explicitly marked public.</p>
+<h3 id="auth-actionauthjs--authprovider">Auth (<code>action/auth.js</code> + <code>AuthProvider</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+<th>Description</th>
+<th>Auth</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GET</td>
+<td><code>/me</code></td>
+<td>Returns current user from session cookie</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/login</code></td>
+<td>Form-data login (<code>username</code>, <code>password</code>) → sets cookie + returns <code>access_token</code></td>
+<td>Public</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/logout</code></td>
+<td>Clears the auth cookie</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/refresh</code></td>
+<td>Refreshes session cookie; called automatically on 401</td>
+<td>Cookie</td>
+</tr>
+</tbody></table>
+<h3 id="bugs--features-actionbugsfeaturesjs">Bugs &amp; Features (<code>action/bugsFeatures.js</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+<th>Description</th>
+<th>Auth</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GET</td>
+<td><code>/qa_ai_apis/reports</code></td>
+<td>List bug/feature reports with filtering</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td><code>/qa_ai_apis/reports/{id}/resolve</code></td>
+<td>Mark report resolved (admin)</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td><code>/qa_ai_apis/reports/{id}/decision</code></td>
+<td>Stakeholder approve/deny (OM)</td>
+<td>Cookie</td>
+</tr>
+</tbody></table>
+<h3 id="attendance-infractions-actionattendanceinfractionsjs">Attendance Infractions (<code>action/attendanceInfractions.js</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+<th>Description</th>
+<th>Auth</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GET</td>
+<td><code>/workforce/reports/automations/all</code></td>
+<td>Paginated infraction list w/ filters</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/workforce/reports/automations/{id}</code></td>
+<td>Single infraction by id</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td><code>/workforce/reports/automations/{id}</code></td>
+<td>Update infraction</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td><code>/workforce/reports/automations/{id}/approve-wfa</code></td>
+<td>WFA approval</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/workforce/reports/run-automation</code></td>
+<td>Trigger the infraction automation run</td>
+<td>Cookie</td>
+</tr>
+</tbody></table>
+<h3 id="qa--evaluate-actionevalutejs">QA — Evaluate (<code>action/evalute.js</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+<th>Description</th>
+<th>Auth</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GET</td>
+<td><code>/qa_ai_apis/form-evaluations</code></td>
+<td>List form evaluations</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/qa_ai_apis/{ticket_id}/{client_id}</code></td>
+<td>AI tags + grade JSON for a ticket</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/qa_ai_apis/update-ai-evaluation</code></td>
+<td>Submit ticket evaluation</td>
+<td>Cookie</td>
+</tr>
+</tbody></table>
+<h3 id="qa--settings-actionqasettingsjs">QA — Settings (<code>action/qaSettings.js</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+<th>Description</th>
+<th>Auth</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GET</td>
+<td><code>/api/qa-ai/clients</code></td>
+<td>QA settings list</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/qa-ai/clients/dropdown</code></td>
+<td>Clients dropdown for QA settings</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td><code>/api/qa-ai/clients/{id}</code></td>
+<td>Update client QA settings</td>
+<td>Cookie</td>
+</tr>
+</tbody></table>
+<h3 id="forms-management-actionformsmanagementjs">Forms Management (<code>action/formsManagement.js</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+<th>Description</th>
+<th>Auth</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GET</td>
+<td><code>/qa_ai_new/forms/forms</code></td>
+<td>List forms</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/qa_ai_new/forms/create</code></td>
+<td>Create form</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td><code>/qa_ai_new/forms/edit/{id}</code></td>
+<td>Edit form</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/qa_ai_new/forms/get_client_names</code></td>
+<td>Client names for forms</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/qa_ai_new/forms/get_qas_names</code></td>
+<td>QAS names</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/qa_ai_new/forms/get_form_names_filter</code></td>
+<td>Form-name filter</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td><code>/qa_ai_new/forms/forms/{id}/archive</code></td>
+<td>Archive form</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/qa_ai_new/forms/duplicate/{id}</code></td>
+<td>Duplicate form</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td><code>/qa_ai_new/forms/forms/{id}/status</code></td>
+<td>Enable/disable form</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/qa_ai_new/categories/add</code></td>
+<td>Create category</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td><code>/qa_ai_new/categories/categories/{id}</code></td>
+<td>Update category</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td><code>/qa_ai_new/categories/categories/{id}/archive</code></td>
+<td>Archive category</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/qa_ai_new/categories/forms/{formId}/categories</code></td>
+<td>Categories by form</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/qa_ai_new/questions/add</code></td>
+<td>Create question</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td><code>/qa_ai_new/questions/questions/{id}/archive</code></td>
+<td>Archive question</td>
+<td>Cookie</td>
+</tr>
+</tbody></table>
+<h3 id="reports--downloads-1">Reports / Downloads</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+<th>Description</th>
+<th>Auth</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GET</td>
+<td><code>/openai/client-names</code></td>
+<td>Client names for download</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/openai/agent-names</code></td>
+<td>Agent names for download</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/openai/event-types</code></td>
+<td>Event types for download</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/openai/forms-download</code></td>
+<td>Forms CSV download</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/openai/client-form-client-names</code></td>
+<td>Client names for CSF download</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/openai/client-form-download</code></td>
+<td>Client-form CSV download</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/qa_ai_apis/qa_ai_report_download</code></td>
+<td>QA AI CSV download</td>
+<td>Cookie</td>
+</tr>
+</tbody></table>
+<h3 id="filter-helpers">Filter helpers</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+<th>Description</th>
+<th>Auth</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GET</td>
+<td><code>/get-team-members-filter</code></td>
+<td>Team members filter (legacy)</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/qa_ai_apis/get-team-members-filter</code></td>
+<td>Team members filter (QA scope)</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/reports/get_teamlead_names</code></td>
+<td>Team-lead names</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/reports/get_client_names</code></td>
+<td>Client names</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/reports/get_csm_names</code></td>
+<td>CSM names</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/reports/get_om_names</code></td>
+<td>OM names</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/workforce/reports/get-departments-filter</code></td>
+<td>Departments</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/workforce/reports/get-team-lead-filter</code></td>
+<td>Team leads</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/workforce/reports/get-department-manager-filter</code></td>
+<td>Department managers</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/workforce/reports/get-department-director-filter</code></td>
+<td>Department directors</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/workforce/reports/aom-filter</code></td>
+<td>AOM list</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/workforce/reports/som-filter</code></td>
+<td>SOM list</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/workforce/reports/get_internal_team_member_filter</code></td>
+<td>Internal-team members</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/workforce/reports/get-operations-manager-filter</code></td>
+<td>OM filter</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/workforce/reports/get-associate-operations-manager-filter</code></td>
+<td>AOM filter</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/workforce/reports/get-ops-team-lead-filter</code></td>
+<td>Ops TL filter</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/workforce/reports/get_client_names_ticket_monitoring_form</code></td>
+<td>Client names (TMF)</td>
+<td>Cookie</td>
+</tr>
+</tbody></table>
+<h3 id="workforce-attendance-actionworkforcedashboardjs">Workforce Attendance (<code>action/workforcedashboard.js</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+<th>Description</th>
+<th>Auth</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GET</td>
+<td><code>/workforce/reports/attendance-management-tl</code></td>
+<td>Remote team attendance (TL view)</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/workforce/reports/attendance-management-internal-team-tl</code></td>
+<td>Internal team attendance (TL view)</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/workforce/reports/attendance-management</code></td>
+<td>Attendance (WFA view)</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/workforce/reports/attendance-management-internal-team</code></td>
+<td>Internal attendance (WFA)</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/workforce/reports/attendance-management-resolved</code></td>
+<td>Resolved attendance</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/workforce/reports/attendance-management-internal-team-resolved</code></td>
+<td>Internal resolved</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/workforce/reports/attendance-management-resolved-tl</code></td>
+<td>Resolved (TL)</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/workforce/reports/attendance-management-internal-team-resolved-tl</code></td>
+<td>Internal resolved (TL)</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td><code>/workforce/reports/attendance-management/{id}</code></td>
+<td>Update attendance report</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td><code>/workforce/reports/attendance-management-internal-team/{id}</code></td>
+<td>Update internal attendance</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/workforce/reports/automation</code></td>
+<td>Add automation report / advance notice</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/workforce/reports/attendance/dispute</code></td>
+<td>Dispute attendance (WFA)</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/workforce/reports/attendance/dispute</code></td>
+<td>List disputed attendance</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/workforce/reports/attendance/dispute/resolved</code></td>
+<td>List resolved disputes</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td><code>/workforce/reports/attendance/dispute/reopen/{id}</code></td>
+<td>Reopen dispute</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td><code>/workforce/reports/attendance/dispute/{id}</code></td>
+<td>Resolve dispute</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/workforce/reports/attendance-ontime</code></td>
+<td>On-time reports</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/workforce/reports/attendance-ontime-internal-team</code></td>
+<td>Internal on-time reports</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/workforce/reports/upload</code></td>
+<td>File upload (multi-file, multipart) — used directly by <code>UploadFile</code> component</td>
+<td>Cookie</td>
+</tr>
+</tbody></table>
+<h3 id="schedule-management-actionschedulemanagementjs">Schedule Management (<code>action/scheduleManagement.js</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+<th>Description</th>
+<th>Auth</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GET</td>
+<td><code>/schedules</code></td>
+<td>List schedules with filters</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/schedules/filters</code></td>
+<td>Available schedule filter values</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/schedules/hubstaff-options</code></td>
+<td>Hubstaff option lists</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/schedules/unmapped-count</code></td>
+<td>Count of unmapped schedules</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/schedules/sync-issues-count</code></td>
+<td>Count of sync issues</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/schedules</code></td>
+<td>Create schedule</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td><code>/schedules/{id}</code></td>
+<td>Update schedule</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td><code>/schedules/{id}/mapping</code></td>
+<td>Update schedule mapping</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td><code>/schedules/{id}/deactivate</code></td>
+<td>Deactivate schedule</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td><code>/schedules/{id}/acknowledge-sync</code></td>
+<td>Ack sync issues</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td><code>/schedules/{id}</code></td>
+<td>Delete schedule</td>
+<td>Cookie</td>
+</tr>
+</tbody></table>
+<h3 id="performance-review-actionperformancereviewjs">Performance Review (<code>action/performanceReview.js</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+<th>Description</th>
+<th>Auth</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GET</td>
+<td><code>/quality-assurance/client-names</code></td>
+<td>Clients</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/quality-assurance/agent-names</code></td>
+<td>Agents by client</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/quality-assurance/channels</code></td>
+<td>Channels</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/quality-assurance/performance-review/sessions</code></td>
+<td>Create review session</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/quality-assurance/performance-review-coaching-form/{sessionId}</code></td>
+<td>Get coaching form</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/quality-assurance/performance-review-coaching-form</code></td>
+<td>Save coaching form</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/quality-assurance/performance-review-resolutions</code></td>
+<td>Submit resolutions</td>
+<td>Cookie</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/quality-assurance/performance-review-resolutions/{sessionId}/{metricType}</code></td>
+<td>Fetch resolutions</td>
+<td>Cookie</td>
+</tr>
+</tbody></table>
+<h3 id="custom-monitoring-form">Custom Monitoring Form</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+<th>Description</th>
+<th>Auth</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>POST</td>
+<td><code>/openai/client_specific_forms</code></td>
+<td>Submit a custom-client-form entry (called directly from the page component)</td>
+<td>Cookie</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="7-database-schema-overview">7. Database Schema Overview</h2>
+<p>The DB lives in the backend repo (<a href="https://github.com/Talentpop1/qa_ai.git">https://github.com/Talentpop1/qa_ai.git</a>) on <strong>PostgreSQL / AWS RDS</strong>. Below are the entities inferred from API response shapes and field names used in the UI — confirm with the backend SQLAlchemy models for the canonical schema.</p>
+<table>
+<thead>
+<tr>
+<th>Inferred Table / Model</th>
+<th>Key Fields (inferred)</th>
+<th>Relationships</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>users</code></td>
+<td><code>id</code>, <code>name</code>, <code>email</code>, <code>role</code>, <code>owner_id</code></td>
+<td>role drives access to features</td>
+</tr>
+<tr>
+<td><code>agents</code></td>
+<td><code>user_id</code>, <code>helpdesk_user_id</code>, <code>user_name</code></td>
+<td>belongs to clients/teams</td>
+</tr>
+<tr>
+<td><code>clients</code></td>
+<td><code>id</code>, <code>client_name</code>, <code>hubstaff_client_id</code></td>
+<td>has agents, has forms</td>
+</tr>
+<tr>
+<td><code>forms</code></td>
+<td><code>id</code>, <code>name</code>, <code>status</code>, <code>client_id</code>, <code>qas</code></td>
+<td>has many <code>categories</code></td>
+</tr>
+<tr>
+<td><code>categories</code></td>
+<td><code>id</code>, <code>form_id</code>, <code>name</code></td>
+<td>has many <code>questions</code></td>
+</tr>
+<tr>
+<td><code>questions</code></td>
+<td><code>id</code>, <code>category_id</code>, <code>text</code>, <code>weight</code></td>
+<td>belongs to category</td>
+</tr>
+<tr>
+<td><code>attendance_reports</code></td>
+<td><code>id</code>, <code>user_id</code>, <code>attendance_reason</code>, <code>notes</code>, <code>attachments</code>, <code>start_date</code>, <code>end_date</code>, <code>status_resolved_tl</code>, <code>status_resolved</code>, <code>green_card</code>, <code>team_lead_id</code>, <code>client_id</code></td>
+<td>belongs to user; resolves to dispute</td>
+</tr>
+<tr>
+<td><code>attendance_disputes</code></td>
+<td><code>id</code>, <code>report_id</code>, <code>notes_wfa</code>, <code>updated_reason_tl</code>, <code>file_urls</code>, status flags</td>
+<td>extends attendance</td>
+</tr>
+<tr>
+<td><code>automations</code> / <code>infractions</code></td>
+<td><code>id</code>, <code>user_id</code>, <code>reason</code>, <code>team_lead_note</code>, <code>attachment_url</code>, <code>start_date</code>, <code>end_date</code>, <code>archived</code>, <code>approved_by_wfa</code>, <code>resolved_by_eng</code></td>
+<td>belongs to user</td>
+</tr>
+<tr>
+<td><code>schedules</code></td>
+<td><code>id</code>, <code>user_id</code>, <code>client_id</code>, <code>team_lead_id</code>, <code>project</code>, <code>schedule_type</code>, <code>status</code>, <code>mapping_status</code>, <code>startdate</code>, <code>enddate</code></td>
+<td>Hubstaff-synced</td>
+</tr>
+<tr>
+<td><code>qa_ai_reports</code> / <code>form_evaluations</code></td>
+<td><code>id</code>, <code>ticket_id</code>, <code>client_id</code>, AI grading payload</td>
+<td>belongs to client/agent</td>
+</tr>
+<tr>
+<td><code>bugs_features_reports</code></td>
+<td><code>id</code>, <code>report_type</code>, <code>submitted_by</code>, <code>resolved_by_eng</code>, <code>decision_by_stakeholder</code>, content fields</td>
+<td>bug or feature report</td>
+</tr>
+<tr>
+<td><code>performance_review_sessions</code></td>
+<td><code>id</code>, <code>agent_id</code>, <code>client_id</code>, <code>channel</code>, coaching form fields</td>
+<td>has resolutions per metric</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="8-environment-variables">8. Environment Variables</h2>
+<p>Stored in <code>.env</code> at repo root.</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>What it does</th>
+<th>Example value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>VITE_API_URL</code></td>
+<td>Base URL for the backend API. Used by every <code>Api.*</code> call and by the auth <code>/me</code>, <code>/refresh</code>, <code>/login</code> flows.</td>
+<td><code>https://api.talentpopapp.com</code> (prod) · <code>http://localhost:8000</code> (local)</td>
+</tr>
+<tr>
+<td><code>VITE_ENCRYPTION_KEY</code></td>
+<td>Fernet symmetric key for any client-side encryption (used by the <code>fernet</code> package).</td>
+<td><code>your_fernet_key_here</code> (placeholder)</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>Important:</strong> all <code>VITE_*</code> vars are inlined into the client bundle at build time — they are <strong>not secret</strong> post-build. The Fernet key here is shared client-side; treat any encryption it provides as obfuscation, not security. Real secrets must live on the backend (<code>api.talentpopapp.com</code>).</p>
+</blockquote>
+<hr>
+<h2 id="9-setup-instructions">9. Setup Instructions</h2>
+<h3 id="prerequisites">Prerequisites</h3>
+<ul>
+<li>Node.js <strong>20+</strong> (Vite 7 / rolldown-vite targets modern Node)</li>
+<li>npm 10+</li>
+<li>Access to a running backend (default: <code>https://api.talentpopapp.com</code>)</li>
+<li>Dev/staging account for testing (see Section 1 — Credentials)</li>
+</ul>
+<h3 id="steps">Steps</h3>
+<pre><code class="hljs bash"><span class="hljs-comment"># 1. Clone</span>
+git <span class="hljs-built_in">clone</span> https://github.com/moiz-rana89/qa-ai-app.git tp-qa-app
+<span class="hljs-built_in">cd</span> tp-qa-app
+
+<span class="hljs-comment"># 2. Install</span>
+npm install
+
+<span class="hljs-comment"># 3. Configure env</span>
+<span class="hljs-built_in">cp</span> .<span class="hljs-built_in">env</span> .env.local        <span class="hljs-comment"># or edit .env directly</span>
+<span class="hljs-comment"># Set:</span>
+<span class="hljs-comment">#   VITE_API_URL=&lt;backend base url&gt;          e.g. https://api.talentpopapp.com</span>
+<span class="hljs-comment">#   VITE_ENCRYPTION_KEY=&lt;fernet key&gt;         (ask Abdul Moiz / SecOps)</span>
+
+<span class="hljs-comment"># 4. Start dev server (host-bound for LAN testing)</span>
+npm run dev
+<span class="hljs-comment"># → http://localhost:5173</span>
+
+<span class="hljs-comment"># 5. Lint</span>
+npm run lint
+
+<span class="hljs-comment"># 6. Build for production</span>
+npm run build
+
+<span class="hljs-comment"># 7. Preview production build locally</span>
+npm run preview
+</code></pre>
+<h3 id="tests">Tests</h3>
+<p><strong>No test suite today.</strong> No <code>test</code> script in <code>package.json</code>, no <code>__tests__</code> folders. Adding Vitest + React Testing Library is on the backlog (see Section 11).</p>
+<hr>
+<h2 id="10-deployment-instructions">10. Deployment Instructions</h2>
+<p><strong>Hosting:</strong> AWS (frontend bundle deployed to AWS, suspected S3 + CloudFront — confirm with infra owner).
+<strong>DNS:</strong> Route 53 — <code>talentpopapp.com</code> (production) and <code>dev.talentpopapp.com</code> (staging).
+<strong>Trigger:</strong> <strong>Manual.</strong> No GitHub Actions or other CI is set up.</p>
+<h3 id="manual-deploy-steps-current-process">Manual deploy steps (current process)</h3>
+<pre><code class="hljs bash"><span class="hljs-comment"># 1. From a clean main branch</span>
+git checkout main
+git pull
+
+<span class="hljs-comment"># 2. Install dependencies (if changed)</span>
+npm install
+
+<span class="hljs-comment"># 3. Set the right VITE_API_URL in .env for the target environment</span>
+<span class="hljs-comment">#    - Production:  VITE_API_URL=https://api.talentpopapp.com</span>
+<span class="hljs-comment">#    - Staging:     VITE_API_URL=&lt;staging API URL — confirm&gt;</span>
+
+<span class="hljs-comment"># 4. Build</span>
+npm run build
+
+<span class="hljs-comment"># 5. Upload the dist/ folder to AWS</span>
+<span class="hljs-comment">#    (Specifics depend on infra setup — likely:)</span>
+<span class="hljs-comment">#    aws s3 sync dist/ s3://&lt;bucket-for-env&gt; --delete</span>
+<span class="hljs-comment">#    aws cloudfront create-invalidation --distribution-id &lt;dist-id&gt; --paths "/*"</span>
+</code></pre>
+<blockquote>
+<p><strong>Confirm with infra owner:</strong> exact S3 bucket name, CloudFront distribution ID, who has write access. Add those values here once known.</p>
+</blockquote>
+<h3 id="rollback">Rollback</h3>
+<ul>
+<li>Re-build from a previous known-good commit and re-upload <code>dist/</code>.</li>
+<li>Or, if S3 versioning is enabled, restore prior object versions of the bucket contents.</li>
+</ul>
+<h3 id="backlog">Backlog</h3>
+<ul>
+<li><strong>Move to GitHub Actions</strong> — automate <code>npm ci → npm run build → aws s3 sync → cloudfront invalidate</code> on push to <code>main</code> (prod) and <code>staging</code> (staging).</li>
+</ul>
+<hr>
+<h2 id="11-active-tasks--backlog">11. Active Tasks / Backlog</h2>
+<h3 id="in-progress">In Progress</h3>
+<ul>
+<li><strong>Native (Typeform-style) form builder</strong> for the <em>Client Bonus Request Form</em> — currently embedded as a Google Forms iframe; intent is to build a native form that submits via Google Forms <code>formResponse</code> endpoint or a new backend route. Awaiting field IDs from the form owner.</li>
+</ul>
+<h3 id="to-do">To Do</h3>
+<ul>
+<li><strong>Set up CI/CD</strong> on GitHub Actions (build + deploy pipeline; lint gate; preview deploys for PRs).</li>
+<li><strong>Add automated tests</strong> — start with a small Vitest + React Testing Library suite covering the auth flow, the role-gated <code>ProtectedRoute</code>, and the highest-traffic pages (Evaluate Tickets, Attendance Infractions, Schedule Management).</li>
+<li><strong>Migrate <code>moment</code> → <code>dayjs</code></strong> across all legacy code; remove <code>moment</code> dependency.</li>
+<li><strong>Remove <code>axios</code></strong> by porting the login flow to the <code>Api</code> wrapper.</li>
+<li><strong>Split <code>AppRouters.jsx</code></strong> (currently 565 lines) into a <code>routes/</code> config + a smaller router file.</li>
+<li><strong>Add a top-level error boundary</strong> so a render error in any page doesn't crash the shell.</li>
+<li><strong>Tighten CSP</strong> in <code>index.html</code> (and Google Forms iframe sandbox where possible).</li>
+</ul>
+<h3 id="recently-shipped">Recently Shipped</h3>
+<ul>
+<li><strong>Bugs &amp; Features</strong>: stakeholder approve/deny, role-based action buttons (Mark Resolved → admin, Approve/Deny → OM); OM granted page access.</li>
+<li><strong>Attendance Infractions</strong>: live filters (no Apply button), default status = Active, <code>user_name</code> display, <strong>Run Automation</strong> trigger, redesigned edit drawer (top-bar checkboxes + <code>UploadFile</code> component), OM access added.</li>
+<li><strong>WFA edit drawers</strong>: files persist when reason changes (Remote + Internal); non-WFA drawers retain clear-on-change.</li>
+<li><strong>Schedule Management</strong>: WFA access added, treated like admin (no <code>owner_id</code> filter).</li>
+<li><strong>Google Form embed</strong>: switched to canonical <code>docs.google.com</code> URL with <code>?embedded=true</code>.</li>
+</ul>
+<h3 id="known-bugs">Known Bugs</h3>
+<ul>
+<li><strong>Google Form embed</strong> shows the form's intro screen with a <em>Fill out form</em> button that opens a new tab when clicked from inside the iframe. Root cause: form has a description-only first section + Google's anti-clickjacking <code>target="_top"</code> behavior. Fix is on the form side (move description into header, or add a question to the first section).</li>
+<li><strong>Old non-WFA edit drawers</strong> (<code>EditRemoteTeam.jsx</code>, <code>EditWorkforceTem.jsx</code>) still wipe attachment state on reason change — intentionally left untouched but worth revisiting for consistency.</li>
+</ul>
+<hr>
+<h2 id="12-known-issues--limitations">12. Known Issues &amp; Limitations</h2>
+<ul>
+<li><strong>No test coverage.</strong> No unit, integration, or E2E tests exist. Features ship verified by hand.</li>
+<li><strong>No CI/CD config in repo.</strong> Lint is the only automated check, and it isn't gated. Builds and deploys are 100% manual.</li>
+<li><strong>Mixed date libraries.</strong> Older code uses <code>moment</code> (deprecated), newer code uses <code>dayjs</code>. Migration in backlog.</li>
+<li><strong>Mixed HTTP clients.</strong> Login uses <code>axios</code>, everything else uses native <code>fetch</code> via the <code>Api</code> wrapper. The <code>axios</code> dependency could be removed.</li>
+<li><strong><code>AppRouters.jsx</code> is a 565-line god file</strong> with <code>ROUTE_ROLES</code> + every route inline. Worth splitting.</li>
+<li><strong><code>.env</code> is committed</strong> with placeholders / dev URLs. Production deploys must override <code>VITE_API_URL</code> and <code>VITE_ENCRYPTION_KEY</code> via the build environment.</li>
+<li><strong>Duplicate filter actions</strong> exist in <code>formsManagement.js</code> — multiple variants of team-member filters fetched from different paths. Some are functional duplicates and could be consolidated.</li>
+<li><strong>No error boundary</strong> — a render error in any page crashes the whole shell.</li>
+<li><strong>No CSP / SRI</strong> declared in <code>index.html</code>.</li>
+</ul>
+<hr>
+<h2 id="13-security-notes">13. Security Notes</h2>
+<h3 id="authentication">Authentication</h3>
+<ul>
+<li>Cookie-based session. Backend issues an HttpOnly cookie on <code>POST /login</code>; the frontend never reads it directly. All requests use <code>credentials: "include"</code> so the browser attaches the cookie automatically.</li>
+<li>On 401 from any API call, the <code>Api</code> wrapper automatically calls <code>POST /refresh</code> (de-duped via a shared <code>refreshPromise</code>) and retries the original request once. If refresh fails, the user is redirected to <code>/login</code>.</li>
+<li><code>AuthProvider</code> calls <code>GET /me</code> on mount and falls back to refresh-then-retry on 401.</li>
+</ul>
+<h3 id="authorization-frontend-only-enforcement">Authorization (frontend-only enforcement)</h3>
+<ul>
+<li><code>ROUTE_ROLES</code> (in <code>src/layout/AppRouters.jsx</code>) maps each route to a list of allowed roles.</li>
+<li><code>ProtectedRoute</code> checks the current user's role against the route's allowed roles and redirects to an unauthorized page if they don't match.</li>
+<li><strong>The backend (FastAPI) must independently enforce authorization on every endpoint.</strong> Frontend role gating is for UX only, not security. SecOps should verify role checks exist on every backend route in <code>qa_ai</code> repo.</li>
+</ul>
+<h3 id="secrets-management">Secrets Management</h3>
+<ul>
+<li><code>VITE_API_URL</code> and <code>VITE_ENCRYPTION_KEY</code> come from <code>.env</code> at build time. The <code>.env</code> file in the repo contains placeholders/dev URLs only.</li>
+<li>All <code>VITE_*</code> env vars are <strong>inlined into the client bundle at build time</strong> — they are public post-build. <strong>Never put a true secret here.</strong> The <code>VITE_ENCRYPTION_KEY</code> (Fernet) is a shared client-side key — treat any client-side encryption it does as obfuscation, not security.</li>
+<li>Real API keys live on the backend.</li>
+<li><strong>Dev/staging credentials in this doc</strong> (<code>moiz@talentpop.co</code> / <code>moiz4321</code>) should be moved to a password vault (1Password, Bitwarden, etc.) and replaced here with a reference like <em>"see TalentPop QA App vault entry"</em>. Current password is also weak — rotate to a strong one.</li>
+</ul>
+<h3 id="active-security-findings-action-items">Active Security Findings (action items)</h3>
+<ol>
+<li><strong>Weak dev/staging password</strong> (<code>moiz4321</code>) — rotate to a strong unique password and store in the team password manager.</li>
+<li><strong>No CSP</strong> on <code>index.html</code>. Add a strict Content-Security-Policy header (or <code>&lt;meta&gt;</code> tag) at minimum allowing only <code>self</code>, the API origin, and Google Forms iframe origin.</li>
+</ol>
+<h3 id="cors">CORS</h3>
+<ul>
+<li>Backend (FastAPI) must allow <code>credentials: true</code> and explicit allow-list of <code>https://talentpopapp.com</code> and <code>https://dev.talentpopapp.com</code> (no <code>*</code> with credentials). Verify in the <code>qa_ai</code> repo.</li>
+</ul>
+<h3 id="rate-limiting">Rate Limiting</h3>
+<ul>
+<li>Not implemented at the frontend. Should be enforced at the backend / API gateway (FastAPI middleware or AWS WAF). Confirm with backend team.</li>
+</ul>
+<h3 id="input-validation">Input Validation</h3>
+<ul>
+<li>Frontend does presence and length validation in some places (e.g. 70-char minimum on coaching notes via <code>NotesInput</code>). The backend must independently validate every payload — never trust the client.</li>
+<li>File uploads go to <code>POST /workforce/reports/upload</code> (S3-backed). Backend should: (a) enforce auth, (b) enforce file-size and MIME-type limits, (c) generate the S3 key (don't trust client-supplied filenames), (d) ideally scan for malware. Verify in the <code>qa_ai</code> repo.</li>
+</ul>
+<hr>
+<h2 id="14-contact">14. Contact</h2>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Person</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Built by</strong></td>
+<td>Abdul Moiz</td>
+</tr>
+<tr>
+<td><strong>Assigned engineer</strong></td>
+<td>Abdul Moiz — <code>abdulmoizrana.ar@gmail.com</code> / <code>moiz@talentpop.co</code></td>
+</tr>
+<tr>
+<td><strong>Stakeholders</strong></td>
+<td>Gensis · Leigh</td>
+</tr>
+<tr>
+<td><strong>SecOps escalation</strong></td>
+<td>TalentPop SecOps team</td>
+</tr>
+</tbody></table>
+
+	
+
+</body></html>

@@ -15,7 +15,9 @@
       "Bash(python -m pip install defusedxml lxml)",
       "Bash(python \"C:/Users/ISSM/AppData/Roaming/Claude/local-agent-mode-sessions/skills-plugin/269f5cdf-778d-43c5-832f-8d757ba1036a/ffcc9eca-67ee-42bc-862d-ccc265e1efc2/skills/docx/scripts/office/soffice.py\" --version)",
       "Read(//c/Program Files/LibreOffice/program/**)",
-      "Read(//c/Program Files \\(x86\\)/LibreOffice/program/**)"
+      "Read(//c/Program Files \\(x86\\)/LibreOffice/program/**)",
+      "Bash(npx --yes md-to-pdf WORKFORCE_APP_DOCUMENTATION.md --config-file .docs-pdf-config.cjs)",
+      "Bash(npx --yes md-to-pdf WORKFORCE_APP_DOCUMENTATION_v2.md --config-file .docs-pdf-config-workforce.cjs)"
     ]
   }
 }
