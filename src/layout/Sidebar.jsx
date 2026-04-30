@@ -81,7 +81,7 @@ const menuList = [
       {
         title: "Schedule Management",
         route: "schedule-management",
-        roles: ["dev", "admin", "om", "aom", "tl", "csm"],
+        roles: ["dev", "admin", "om", "aom", "tl", "csm", "itl", "dtl"],
       },
     ],
   },
