@@ -184,7 +184,7 @@ const ROUTE_ROLES = {
   "wfa-ontime-reporting": ["dev", "wfa", "admin"],
   "schedule-management": ["dev", "admin", "om", "aom", "tl", "csm", "wfa"],
   "performance-review": ["dev", "admin", "tl"],
-  "bugs-features": ["dev", "admin", "om"],
+  "bugs-features": ["dev", "admin", "om", "tl", "aom"],
   "google-form": [
     "admin",
     "dev",
