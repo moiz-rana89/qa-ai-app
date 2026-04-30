@@ -89,6 +89,7 @@ export const ATT_REASONS = [
   "Maternity Leave",
   "Minimal: Agent Device Update",
   "Health Issue/Sick Leave - HR Validated",
+  "Health Issue/Sick Leave – Pending HR Verification",
   "Exempted",
   "Power & ISP Interruption",
   "Agent Device Issue",
@@ -313,6 +314,15 @@ A screenshot of the agents claim that their HS stopped working can suffic as an 
     fileReqMessage: `• HR validation or approval
 • Medical certificate or supporting document (if required by HR)
 • Approved sick leave record with matching dates`,
+    isFileReq: true,
+  },
+  {
+    reason: "Health Issue/Sick Leave – Pending HR Verification",
+    validity: "VALID",
+    description:
+      "Used when the Agent is on sick leave and the Medical Certificate has been submitted to HR but is still under validation. No attendance points are generated.",
+    fileReqMessage: `• Proof of communication to HR confirming that the medical certificate is under validation
+• Completed HR Request Form (Medical Certificate Verification Request)`,
     isFileReq: true,
   },
   {
