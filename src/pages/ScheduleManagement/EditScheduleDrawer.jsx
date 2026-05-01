@@ -25,6 +25,46 @@ const RECURRING_OPTIONS = [
   { label: "Until Date", value: "until_date" },
 ];
 
+// Canonical weekday tokens accepted by `PUT /schedules/{id}`.
+// Order is fixed to match the natural Mon→Sun reading order in the UI.
+const WEEKDAY_OPTIONS = [
+  { label: "Mon", value: "Mon" },
+  { label: "Tue", value: "Tue" },
+  { label: "Wed", value: "Wed" },
+  { label: "Thu", value: "Thu" },
+  { label: "Fri", value: "Fri" },
+  { label: "Sat", value: "Sat" },
+  { label: "Sun", value: "Sun" },
+];
+
+// Map full / lowercase / 3-letter variants back to the canonical tokens
+// so legacy records (e.g. ["monday", "TUESDAY"]) load into the picker.
+const WEEKDAY_NORMALIZE = {
+  mon: "Mon", monday: "Mon",
+  tue: "Tue", tues: "Tue", tuesday: "Tue",
+  wed: "Wed", weds: "Wed", wednesday: "Wed",
+  thu: "Thu", thur: "Thu", thurs: "Thu", thursday: "Thu",
+  fri: "Fri", friday: "Fri",
+  sat: "Sat", saturday: "Sat",
+  sun: "Sun", sunday: "Sun",
+};
+
+function normalizeWeekdays(input) {
+  if (!Array.isArray(input)) return [];
+  const seen = new Set();
+  const out = [];
+  for (const d of input) {
+    if (typeof d !== "string") continue;
+    const canonical = WEEKDAY_NORMALIZE[d.toLowerCase().trim()];
+    if (canonical && !seen.has(canonical)) {
+      seen.add(canonical);
+      out.push(canonical);
+    }
+  }
+  // Preserve canonical Mon→Sun ordering for consistent server payloads
+  return WEEKDAY_OPTIONS.map((w) => w.value).filter((w) => seen.has(w));
+}
+
 export default function EditScheduleDrawer({
   open,
   setOpen,
@@ -50,6 +90,7 @@ export default function EditScheduleDrawer({
     schedule_type: "weekly",
     member_name: null,
     user_id: null,
+    weekdays: ["Mon", "Tue", "Wed", "Thu", "Fri"],
   });
 
   useEffect(() => {
@@ -92,6 +133,14 @@ export default function EditScheduleDrawer({
         schedule_type: selectedSchedule.schedule_type || "weekly",
         member_name: selectedSchedule.member_name,
         user_id: selectedSchedule.user_id,
+        weekdays: (() => {
+          const normalized = normalizeWeekdays(selectedSchedule.weekdays);
+          // If the record has no weekdays stored, fall back to Mon-Fri so
+          // the drawer doesn't open with an empty selection.
+          return normalized.length > 0
+            ? normalized
+            : ["Mon", "Tue", "Wed", "Thu", "Fri"];
+        })(),
       });
     } else if (open && mode === "create") {
       setFormData({
@@ -108,6 +157,7 @@ export default function EditScheduleDrawer({
         schedule_type: "weekly",
         member_name: null,
         user_id: null,
+        weekdays: ["Mon", "Tue", "Wed", "Thu", "Fri"],
       });
     }
   }, [open, mode, selectedSchedule]);
@@ -155,6 +205,10 @@ export default function EditScheduleDrawer({
       toast.error("Please select effective from date");
       return;
     }
+    if (!formData.weekdays?.length) {
+      toast.error("Please select at least one weekday");
+      return;
+    }
 
     setLoading(true);
 
@@ -187,7 +241,9 @@ export default function EditScheduleDrawer({
         formData.recurring_option === "forever"
           ? null
           : formData.repeat_until?.format("YYYY-MM-DD"),
-      weekdays: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+      // Re-normalize at send time as a defensive safeguard (drops any
+      // unknown values that might have slipped into state).
+      weekdays: normalizeWeekdays(formData.weekdays),
       member_name: formData.member_name || selectedSchedule?.member_name,
       client: formData.client,
       client_id: formData.client_id,
@@ -456,6 +512,42 @@ export default function EditScheduleDrawer({
                 suffixIcon={<Icon icon="mdi:calendar-outline" className="text-[#69C920] text-[18px]" />}
               />
             </div>
+          </div>
+        </div>
+
+        {/* Weekdays */}
+        <div>
+          <label className="block text-[14px] font-semibold text-[#163143] mb-2">
+            Weekdays<span className="text-red-500">*</span>
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {WEEKDAY_OPTIONS.map((day) => {
+              const isSelected = formData.weekdays?.includes(day.value);
+              return (
+                <button
+                  key={day.value}
+                  type="button"
+                  onClick={() => {
+                    const current = formData.weekdays || [];
+                    const next = isSelected
+                      ? current.filter((d) => d !== day.value)
+                      : [...current, day.value];
+                    // Keep canonical Mon→Sun order so the payload is stable
+                    handleChange("weekdays", normalizeWeekdays(next));
+                  }}
+                  className={`min-w-[52px] h-[36px] px-3 rounded-full text-[13px] font-semibold transition-all border ${
+                    isSelected
+                      ? "bg-[#69C920] text-white border-[#69C920] hover:bg-[#5ab61c]"
+                      : "bg-white text-[#163143] border-[#D7E6E7] hover:border-[#69C920] hover:text-[#69C920]"
+                  }`}
+                >
+                  {day.label}
+                </button>
+              );
+            })}
+          </div>
+          <div className="mt-2 text-[12px] text-[#6B7280]">
+            Select the days this shift applies to.
           </div>
         </div>
 
