@@ -173,6 +173,8 @@ export const EvaluteForm = () => {
         }
         aiJson={gradedJsonWithTags?.ai_graded_json?.categories}
         userJson={formState?.categories}
+        tlScore={gradedJsonWithTags?.tl_score}
+        qasScore={gradedJsonWithTags?.qas_score}
         submit={handleTicketSubmit}
         isLoading={isLoadingSubmitTicket}
       />

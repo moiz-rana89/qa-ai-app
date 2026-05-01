@@ -15,6 +15,8 @@ export default function EvaluteHeader({
   id,
   aiJson,
   userJson,
+  tlScore,
+  qasScore,
   submit,
   isLoading,
 }) {
@@ -31,6 +33,17 @@ export default function EvaluteHeader({
       },
       { totalScore: 0, maxScore: 0 }
     );
+  };
+
+  const resolveYourScore = () => {
+    if (tlScore?.final_score != null && tlScore?.max_score != null) {
+      return { score: tlScore.final_score, max: tlScore.max_score };
+    }
+    if (qasScore?.final_score != null && qasScore?.max_score != null) {
+      return { score: qasScore.final_score, max: qasScore.max_score };
+    }
+    const fallback = calculateScores(aiJson);
+    return { score: fallback.totalScore, max: fallback.maxScore };
   };
 
   return (
@@ -80,8 +93,8 @@ export default function EvaluteHeader({
                 Your Score:
               </div>
               <div className="text-[#69C920] text-[16px] font-semibold mr-8">
-                {roundTo(calculateScores(userJson)?.totalScore, 1)}/
-                {calculateScores(userJson)?.maxScore}
+                {roundTo(resolveYourScore().score, 1)}/
+                {resolveYourScore().max}
               </div>
             </div>
           ) : null}
