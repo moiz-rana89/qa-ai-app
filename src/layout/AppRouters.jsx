@@ -37,6 +37,7 @@ import PerformanceReview from "../pages/PerformanceReview";
 import BugsFeatures from "../pages/BugsFeatures";
 import GoogleFormEmbed from "../pages/GoogleFormEmbed";
 import AttendanceInfractions from "../pages/AttendanceInfractions";
+import HubspotRoster from "../pages/HubspotRoster";
 import AuthProvider from "./AuthProvider";
 // admin download = wfa,om
 const ROUTE_ROLES = {
@@ -199,6 +200,7 @@ const ROUTE_ROLES = {
     "qas",
   ],
   "attendance-infractions": ["admin", "dev", "wfa"],
+  "hubspot-roster": ["admin", "dev"],
 };
 
 function DefaultRedirect() {
@@ -530,6 +532,17 @@ export default function AppRouter() {
                   routeRoles={ROUTE_ROLES}
                 >
                   <AttendanceInfractions />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/hubspot-roster"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["hubspot-roster"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <HubspotRoster />
                 </ProtectedRoute>
               }
             />

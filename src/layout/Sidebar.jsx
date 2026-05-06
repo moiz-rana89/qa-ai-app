@@ -83,6 +83,11 @@ const menuList = [
         route: "schedule-management",
         roles: ["dev", "admin", "om", "aom", "tl", "csm", "itl", "dtl"],
       },
+      {
+        title: "Hubspot Roster",
+        route: "hubspot-roster",
+        roles: ["dev", "admin"],
+      },
     ],
   },
   {
