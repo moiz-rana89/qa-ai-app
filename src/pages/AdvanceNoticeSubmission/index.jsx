@@ -12,6 +12,7 @@ import { addAdvanceAutomationNotice } from "../../reduxStore/action/workforcedas
 import UploadFile from "../../components/UploadFile";
 import { useEffect } from "react";
 import { getAgentName } from "../../reduxStore/action/formsManagement";
+import { getMemberFilterData } from "../../reduxStore/action/workforcedashboard";
 import Skeleton from "../../components/Skeleton";
 import { NotesInput } from "../../components/NotesInput";
 
@@ -20,6 +21,12 @@ const { TextArea } = Input;
 export default function AdvanceNoticeSubmission({ setOpen }) {
   const [loading, setLoading] = useState(false);
   const [isLoadingAgent, setisLoadingAgent] = useState(false);
+  const [isLoadingMember, setIsLoadingMember] = useState(false);
+
+  // Team type the user is submitting an advance notice for.
+  // "remote"   -> loads remote agents via getAgentName
+  // "internal" -> loads internal team members via getMemberFilterData
+  const [teamType, setTeamType] = useState("remote");
 
   const [reason, setReason] = useState([]);
   const [notes, setNotes] = useState("");
@@ -42,13 +49,28 @@ export default function AdvanceNoticeSubmission({ setOpen }) {
   ];
   const dispatch = useDispatch();
 
+  // Fetch the appropriate people-list whenever team type changes
+  // (and once on mount for the default "remote" view).
   useEffect(() => {
-    dispatch(getAgentName(setisLoadingAgent));
-  }, []);
+    if (teamType === "remote") {
+      dispatch(getAgentName(setisLoadingAgent));
+    } else {
+      dispatch(getMemberFilterData(setIsLoadingMember));
+    }
+  }, [teamType]);
 
-  const { agentNames: agentList } = useSelector(
+  const { agentNames: remoteAgentList } = useSelector(
     (store) => store?.formsManagement
   );
+  const { memberFilterData: internalMemberList } = useSelector(
+    (store) => store?.workforcedashboard
+  );
+
+  // The list + loading flag the dropdown should currently render
+  const peopleList =
+    teamType === "remote" ? remoteAgentList : internalMemberList;
+  const peopleLoading =
+    teamType === "remote" ? isLoadingAgent : isLoadingMember;
 
   const handleResponse = (success) => {
     if (success) {
@@ -70,8 +92,12 @@ export default function AdvanceNoticeSubmission({ setOpen }) {
     } else if (notes?.length < 70) {
       toast.error("Notes must be 70 characters long");
       setIsnotes(true);
-    } else if (!agentFilters[0]?.user_id) {
-      toast.error("Please Select Agent");
+    } else if (!agentFilters?.[0]?.user_id) {
+      toast.error(
+        teamType === "remote"
+          ? "Please Select Agent"
+          : "Please Select Member"
+      );
     } else {
       setLoading(true);
 
@@ -82,6 +108,7 @@ export default function AdvanceNoticeSubmission({ setOpen }) {
         team_lead_note: notes,
         attachment_url: fileInfo?.url ? fileInfo?.url : null,
         updated_by: userDetails?.name,
+        team_type: teamType, // "remote" | "internal"
       };
       dispatch(addAdvanceAutomationNotice(paramsAutomation, handleResponse));
     }
@@ -125,19 +152,58 @@ export default function AdvanceNoticeSubmission({ setOpen }) {
             </div>
           ) : (
             <div className="flex flex-col w-[50%] px-4 py-8 justify-center space-y-6">
+              {/* Team Type toggle — Remote vs Internal */}
+              <div className="space-y-2 px-6">
+                <label
+                  className="text-[#163143] font-poppins text-[16px] not-italic font-semibold leading-[20.5px]"
+                >
+                  Team Type<span className="text-red-500 ml-1">*</span>
+                </label>
+                <div className="flex gap-3 mt-[10px]">
+                  {[
+                    { label: "Remote Team", value: "remote" },
+                    { label: "Internal Team", value: "internal" },
+                  ].map((opt) => {
+                    const isSelected = teamType === opt.value;
+                    return (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => {
+                          if (teamType === opt.value) return;
+                          setTeamType(opt.value);
+                          // Clear the previous selection when switching teams
+                          // so a remote-agent ID can't accidentally be sent
+                          // for an internal submission (or vice versa).
+                          setAgentFilters();
+                        }}
+                        className={`min-w-[140px] h-[40px] px-4 rounded-full text-[14px] font-semibold transition-all border ${
+                          isSelected
+                            ? "bg-[#69C920] text-white border-[#69C920] hover:bg-[#5ab61c]"
+                            : "bg-white text-[#163143] border-[#D7E6E7] hover:border-[#69C920] hover:text-[#69C920]"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
               <div className="space-y-2 px-6">
                 <label
                   htmlFor="resolution-reason"
                   className="text-[#163143] font-poppins text-[16px] not-italic font-semibold leading-[20.5px]"
                 >
-                  Select Agent<span className="text-red-500 ml-1">*</span>
+                  {teamType === "remote" ? "Select Agent" : "Select Member"}
+                  <span className="text-red-500 ml-1">*</span>
                 </label>
 
                 <UnifiedDropdown
-                  name="Agents"
+                  name={teamType === "remote" ? "Agents" : "Members"}
                   className="border-[#d9d9d9] mt-[10px] w-full h-[45px] bg-[#FBFBFB]"
-                  data={agentList}
-                  isLoading={isLoadingAgent}
+                  data={peopleList}
+                  isLoading={peopleLoading}
                   selectedList={agentFilters}
                   setselectedList={setAgentFilters}
                   multiSelect={false}
