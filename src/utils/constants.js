@@ -259,7 +259,7 @@ A screenshot of the agents claim that their HS stopped working can suffic as an 
     reason: "PTO",
     validity: "VALID",
     description:
-      "Used when Agent is on PTO (These requests are less than 2 weeks)",
+      "Used when Agent is on PTO",
     fileReqMessage: `Include "Time off Request" screenshot in hubstaff`,
     isFileReq: true,
   },
