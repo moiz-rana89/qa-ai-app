@@ -38,7 +38,9 @@ import BugsFeatures from "../pages/BugsFeatures";
 import GoogleFormEmbed from "../pages/GoogleFormEmbed";
 import AttendanceInfractions from "../pages/AttendanceInfractions";
 import HubspotRoster from "../pages/HubspotRoster";
+import EndorsementReport from "../pages/EndorsementReport";
 import AuthProvider from "./AuthProvider";
+import { ENDORSEMENT_REPORT_EMAILS } from "../utils/accessLists";
 // admin download = wfa,om
 const ROUTE_ROLES = {
   "evaluate-tickets": [
@@ -200,7 +202,19 @@ const ROUTE_ROLES = {
     "qas",
   ],
   "attendance-infractions": ["admin", "dev", "wfa"],
-  "hubspot-roster": ["admin", "dev"],
+  "hubspot-roster": ["admin", "dev", "wfa"],
+  "endorsement-report": [
+    "admin",
+    "dev",
+    "wfa",
+    "om",
+    "som",
+    "aom",
+    "csm",
+    "cstm",
+    "tl",
+    "dtl",
+  ],
 };
 
 function DefaultRedirect() {
@@ -543,6 +557,18 @@ export default function AppRouter() {
                   routeRoles={ROUTE_ROLES}
                 >
                   <HubspotRoster />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/endorsement-report"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["endorsement-report"]}
+                  requiredEmails={ENDORSEMENT_REPORT_EMAILS}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <EndorsementReport />
                 </ProtectedRoute>
               }
             />

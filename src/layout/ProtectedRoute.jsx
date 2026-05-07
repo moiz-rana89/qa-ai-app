@@ -2,7 +2,14 @@ import { useSelector } from "react-redux";
 import { Navigate, useLocation } from "react-router-dom";
 import { getDefaultRouteForRole } from "../utils/roleHelpers";
 
-export default function ProtectedRoute({ children, requiredRoles }) {
+export default function ProtectedRoute({
+  children,
+  requiredRoles,
+  // Optional fine-grained gate. If provided, the user's email must also be
+  // in the list — on top of any role check. Used for pages that are
+  // restricted to specific people (e.g. stakeholder-only views).
+  requiredEmails,
+}) {
   const { isAuthenticated, user, isAuthInitialized } = useSelector(
     (state) => state.auth
   );
@@ -19,6 +26,15 @@ export default function ProtectedRoute({ children, requiredRoles }) {
 
     if (!userRole || !requiredRoles.includes(userRole)) {
       const defaultRoute = getDefaultRouteForRole(userRole);
+      return <Navigate to={defaultRoute} replace />;
+    }
+  }
+
+  if (requiredEmails?.length) {
+    const userEmail = user?.email?.toLowerCase();
+    const allowed = requiredEmails.map((e) => e.toLowerCase());
+    if (!userEmail || !allowed.includes(userEmail)) {
+      const defaultRoute = getDefaultRouteForRole(user?.role);
       return <Navigate to={defaultRoute} replace />;
     }
   }

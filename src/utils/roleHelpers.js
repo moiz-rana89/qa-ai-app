@@ -23,12 +23,28 @@ export const hasAnyRole = (roles) => {
   return userRole ? roles.includes(userRole) : false;
 };
 
-export const filterMenuByRole = (menuList, userRole) => {
+// A menu entry passes the gate if BOTH:
+//   • the user's role is in `roles`, AND
+//   • if `emails` is defined on the entry, the user's email is in that list
+// If `emails` is undefined, only the role check applies (existing behavior).
+const passesAccessGate = (entry, userRole, userEmail) => {
+  if (!entry?.roles?.includes(userRole)) return false;
+  if (entry?.emails?.length) {
+    const lower = userEmail?.toLowerCase();
+    if (!lower) return false;
+    if (!entry.emails.map((e) => e.toLowerCase()).includes(lower)) return false;
+  }
+  return true;
+};
+
+export const filterMenuByRole = (menuList, userRole, userEmail) => {
   return menuList
-    .filter((menu) => menu.roles.includes(userRole))
+    .filter((menu) => passesAccessGate(menu, userRole, userEmail))
     .map((menu) => ({
       ...menu,
-      submenu: menu.submenu?.filter((sub) => sub.roles.includes(userRole)),
+      submenu: menu.submenu?.filter((sub) =>
+        passesAccessGate(sub, userRole, userEmail)
+      ),
     }))
     .filter((menu) => menu.submenu?.length > 0 || !menu.submenu); // Keep items with no submenu
 };

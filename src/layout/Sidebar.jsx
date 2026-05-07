@@ -8,6 +8,7 @@ import logo from "../assets/tp-logo.jpg";
 import { logout, logoutAction } from "../reduxStore/action/auth";
 import { filterMenuByRole } from "../utils/roleHelpers";
 import NeedHelpModal from "../components/NeedHelpModal";
+import { ENDORSEMENT_REPORT_EMAILS } from "../utils/accessLists";
 
 const menuList = [
   {
@@ -83,11 +84,6 @@ const menuList = [
         route: "schedule-management",
         roles: ["dev", "admin", "om", "aom", "tl", "csm", "itl", "dtl"],
       },
-      {
-        title: "Hubspot Roster",
-        route: "hubspot-roster",
-        roles: ["dev", "admin"],
-      },
     ],
   },
   {
@@ -125,6 +121,11 @@ const menuList = [
         title: "Schedule Management",
         route: "schedule-management",
         roles: ["dev", "wfa"],
+      },
+      {
+        title: "Hubspot Roster",
+        route: "hubspot-roster",
+        roles: ["dev", "wfa", "admin"],
       },
     ],
   },
@@ -202,23 +203,23 @@ const menuList = [
         route: "custom-monitoring-form",
         roles: ["admin", "dev", "dtl", "om", "aom"],
       },
-      // {
-      //   title: "Google Form",
-      //   route: "google-form",
-      //   roles: [
-      //     "admin",
-      //     "dev",
-      //     "qa-tl",
-      //     "tl",
-      //     "om",
-      //     "csm",
-      //     "cstm",
-      //     "som",
-      //     "aom",
-      //     "dtl",
-      //     "qas",
-      //   ],
-      // },
+      {
+        title: "Client Bonus Request Form",
+        route: "google-form",
+        roles: [
+          "admin",
+          "dev",
+          "qa-tl",
+          "tl",
+          "om",
+          "csm",
+          "cstm",
+          "som",
+          "aom",
+          "dtl",
+          "qas",
+        ],
+      },
     ],
   },
   {
@@ -271,6 +272,26 @@ const menuList = [
           "om",
           "qas",
         ],
+      },
+      {
+        title: "Endorsement Report",
+        route: "endorsement-report",
+        roles: [
+          "admin",
+          "dev",
+          "wfa",
+          "om",
+          "som",
+          "aom",
+          "csm",
+          "cstm",
+          "tl",
+          "dtl",
+        ],
+        // Additional fine-grained gate — even if the user's role is in the
+        // `roles` list above, the entry is only shown when their email is
+        // in this allowlist.
+        emails: ENDORSEMENT_REPORT_EMAILS,
       },
     ],
   },
@@ -348,12 +369,13 @@ export default function Sidebar() {
 
   const user = useSelector((state) => state.auth.user);
   const role = user?.role;
+  const email = user?.email;
   useEffect(() => {
     if (role) {
-      const filtered = filterMenuByRole(menuList, role);
+      const filtered = filterMenuByRole(menuList, role, email);
       setFilteredMenu(filtered);
     }
-  }, [role]);
+  }, [role, email]);
 
   useEffect(() => {
     filteredMenu.forEach((item, index) => {
