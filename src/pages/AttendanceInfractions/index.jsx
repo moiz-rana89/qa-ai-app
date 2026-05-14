@@ -28,7 +28,6 @@ const APPROVAL_OPTIONS = [
   { label: "All", value: "all" },
   { label: "Approved", value: "true" },
   { label: "Pending", value: "false" },
-  { label: "Not Set", value: "not_set" },
 ];
 
 const formatDateTime = (iso) => {
@@ -92,7 +91,6 @@ export default function AttendanceInfractions() {
   const [approvalFilter, setApprovalFilter] = useState(() => {
     const v = urlParams.get("approved_by_wfa");
     if (v === "true" || v === "false") return v;
-    if (urlParams.has("approval_not_set")) return "not_set";
     return "all";
   });
 
@@ -127,8 +125,6 @@ export default function AttendanceInfractions() {
     if (statusFilter !== "all") params.set("archived", statusFilter);
     if (approvalFilter === "true" || approvalFilter === "false") {
       params.set("approved_by_wfa", approvalFilter);
-    } else if (approvalFilter === "not_set") {
-      params.set("approval_not_set", "1");
     }
     if (page > 1) params.set("page", String(page));
     if (perPage !== 10) params.set("per_page", String(perPage));
@@ -165,7 +161,7 @@ export default function AttendanceInfractions() {
     if (approvalFilter === "true" || approvalFilter === "false") {
       apiParams.approved_by_wfa = approvalFilter;
     }
-    // "not_set" => omit param entirely; "all" => omit too
+    // "all" => omit param entirely
 
     setErrorMsg("");
     dispatch(
