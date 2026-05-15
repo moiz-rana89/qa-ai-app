@@ -159,6 +159,7 @@ export const getResolvedByWfaRecords = (params = {}) => {
     addParam("ops_team_lead_id", params.ops_team_lead_id);
     addParam("senior_operations_manager", params.senior_operations_manager);
     addParam("size", params.pageSize);
+    addParam("table_type", params.table_type);
 
     if (params.page !== undefined) {
       queryParams.page = Math.max(1, params.page);
@@ -174,13 +175,13 @@ export const getResolvedByWfaRecords = (params = {}) => {
         dispatch(setLoaderAction(false));
         if (contentType.includes("text/csv")) {
           const url = window.URL.createObjectURL(
-            new Blob([data], { type: contentType })
+            new Blob([data], { type: contentType }),
           );
           const link = document.createElement("a");
           link.href = url;
           link.setAttribute(
             "download",
-            `resolved_by_wfa_${new Date().toISOString().slice(0, 10)}.csv`
+            `resolved_by_wfa_${new Date().toISOString().slice(0, 10)}.csv`,
           );
           document.body.appendChild(link);
           link.click();
@@ -227,7 +228,7 @@ export const getAttendanceRecords = (params = {}, internal) => {
     addParam("sort_by", params.sort_by);
     addParam(
       "associate_operations_manager_id",
-      params.associate_operations_manager_id
+      params.associate_operations_manager_id,
     );
     addParam("om_id", params.om_id);
     addParam("aom_id", params.aom_id);
@@ -247,20 +248,20 @@ export const getAttendanceRecords = (params = {}, internal) => {
       internal
         ? `/workforce/reports/attendance-management-internal-team-tl`
         : `/workforce/reports/attendance-management-tl`,
-      queryParams
+      queryParams,
     )
       .then(({ data, contentType }) => {
         dispatch(setLoaderAction(false));
 
         if (contentType.includes("text/csv")) {
           const url = window.URL.createObjectURL(
-            new Blob([data], { type: contentType })
+            new Blob([data], { type: contentType }),
           );
           const link = document.createElement("a");
           link.href = url;
           link.setAttribute(
             "download",
-            `attendance_report_${new Date().toISOString().slice(0, 10)}.csv`
+            `attendance_report_${new Date().toISOString().slice(0, 10)}.csv`,
           );
           document.body.appendChild(link);
           link.click();
@@ -308,7 +309,7 @@ export const getAttendanceRecordsWFA = (params = {}, internal) => {
     addParam("sort_by", params.sort_by);
     addParam(
       "associate_operations_manager_id",
-      params.associate_operations_manager_id
+      params.associate_operations_manager_id,
     );
     addParam("senior_operations_manager", params.senior_operations_manager);
 
@@ -330,20 +331,20 @@ export const getAttendanceRecordsWFA = (params = {}, internal) => {
       internal
         ? `/workforce/reports/attendance-management-internal-team`
         : `/workforce/reports/attendance-management`,
-      queryParams
+      queryParams,
     )
       .then(({ data, contentType }) => {
         dispatch(setLoaderAction(false));
 
         if (contentType.includes("text/csv")) {
           const url = window.URL.createObjectURL(
-            new Blob([data], { type: contentType })
+            new Blob([data], { type: contentType }),
           );
           const link = document.createElement("a");
           link.href = url;
           link.setAttribute(
             "download",
-            `attendance_report_${new Date().toISOString().slice(0, 10)}.csv`
+            `attendance_report_${new Date().toISOString().slice(0, 10)}.csv`,
           );
           document.body.appendChild(link);
           link.click();
@@ -396,7 +397,7 @@ export const getAttendanceReports = (params = {}, internal) => {
     addParam("resolved", params.resolved);
     addParam(
       "associate_operations_manager_id",
-      params.associate_operations_manager_id
+      params.associate_operations_manager_id,
     );
     addParam("senior_operations_manager", params.senior_operations_manager);
     addParam("om_id", params.om_id);
@@ -417,20 +418,20 @@ export const getAttendanceReports = (params = {}, internal) => {
       internal
         ? `/workforce/reports/attendance-management-internal-team-resolved`
         : `/workforce/reports/attendance-management-resolved`,
-      queryParams
+      queryParams,
     )
       .then(({ data, contentType }) => {
         dispatch(setLoaderAction(false));
 
         if (contentType.includes("text/csv")) {
           const url = window.URL.createObjectURL(
-            new Blob([data], { type: contentType })
+            new Blob([data], { type: contentType }),
           );
           const link = document.createElement("a");
           link.href = url;
           link.setAttribute(
             "download",
-            `attendance_report_${new Date().toISOString().slice(0, 10)}.csv`
+            `attendance_report_${new Date().toISOString().slice(0, 10)}.csv`,
           );
           document.body.appendChild(link);
           link.click();
@@ -483,7 +484,7 @@ export const getAttendanceReportsTL = (params = {}, internal) => {
     addParam("resolved", params.resolved);
     addParam(
       "associate_operations_manager_id",
-      params.associate_operations_manager_id
+      params.associate_operations_manager_id,
     );
 
     addParam("om_id", params.om_id);
@@ -505,20 +506,20 @@ export const getAttendanceReportsTL = (params = {}, internal) => {
       internal
         ? `/workforce/reports/attendance-management-internal-team-resolved-tl`
         : `/workforce/reports/attendance-management-resolved-tl`,
-      queryParams
+      queryParams,
     )
       .then(({ data, contentType }) => {
         dispatch(setLoaderAction(false));
 
         if (contentType.includes("text/csv")) {
           const url = window.URL.createObjectURL(
-            new Blob([data], { type: contentType })
+            new Blob([data], { type: contentType }),
           );
           const link = document.createElement("a");
           link.href = url;
           link.setAttribute(
             "download",
-            `attendance_report_${new Date().toISOString().slice(0, 10)}.csv`
+            `attendance_report_${new Date().toISOString().slice(0, 10)}.csv`,
           );
           document.body.appendChild(link);
           link.click();
@@ -593,7 +594,7 @@ export const updateAttendnceInternalReport = (params, handleResponse) => {
     // dispatch(setLoaderAction(true));
     Api.patch(
       `/workforce/reports/attendance-management-internal-team/${params?.id}`,
-      params
+      params,
     )
       .then((resp) => {
         // dispatch(setLoaderAction(false));
@@ -613,7 +614,7 @@ export const updateInternalAttendnceReport = (params, handleResponse) => {
     // dispatch(setLoaderAction(true));
     Api.patch(
       `/workforce/reports/attendance-management-internal-team/${params?.id}`,
-      params
+      params,
     )
       .then((resp) => {
         // dispatch(setLoaderAction(false));
@@ -871,7 +872,7 @@ export const disputeAttendnceReportbyWFA = (params, handleResponse) => {
   return (dispatch) => {
     // dispatch(setLoaderAction(true));
     Api.post(
-      `/workforce/reports/attendance/dispute?table_type=${params?.table_type}&id=${params?.id}&notes_wfa=${params?.notes_wfa}&reason=${params?.reason}`
+      `/workforce/reports/attendance/dispute?table_type=${params?.table_type}&id=${params?.id}&notes_wfa=${params?.notes_wfa}&reason=${params?.reason}`,
     )
       .then((resp) => {
         // dispatch(setLoaderAction(false));
@@ -941,6 +942,8 @@ export const getDisputedAttendanceRecords = (params = {}) => {
     addParam("role", params.role);
     // addParam("role", "wfa");
     addParam("tl_name", params.tl_name);
+    addParam("table_type", params.table_type);
+
     if (params.page !== undefined) {
       queryParams.page = Math.max(1, params.page);
     }
@@ -956,13 +959,13 @@ export const getDisputedAttendanceRecords = (params = {}) => {
 
         if (contentType.includes("text/csv")) {
           const url = window.URL.createObjectURL(
-            new Blob([data], { type: contentType })
+            new Blob([data], { type: contentType }),
           );
           const link = document.createElement("a");
           link.href = url;
           link.setAttribute(
             "download",
-            `attendance_report_${new Date().toISOString().slice(0, 10)}.csv`
+            `attendance_report_${new Date().toISOString().slice(0, 10)}.csv`,
           );
           document.body.appendChild(link);
           link.click();
@@ -1030,7 +1033,7 @@ export const getOnTimeReports = (params = {}, internal) => {
     addParam("resolved", params.resolved);
     addParam(
       "associate_operations_manager_id",
-      params.associate_operations_manager_id
+      params.associate_operations_manager_id,
     );
     addParam("senior_operations_manager", params.senior_operations_manager);
     addParam("om_id", params.om_id);
@@ -1050,19 +1053,19 @@ export const getOnTimeReports = (params = {}, internal) => {
       internal
         ? `/workforce/reports/attendance-ontime-internal-team`
         : `/workforce/reports/attendance-ontime`,
-      queryParams
+      queryParams,
     )
       .then(({ data, contentType }) => {
         dispatch(setLoaderAction(false));
         if (contentType?.includes("text/csv")) {
           const url = window.URL.createObjectURL(
-            new Blob([data], { type: contentType })
+            new Blob([data], { type: contentType }),
           );
           const link = document.createElement("a");
           link.href = url;
           link.setAttribute(
             "download",
-            `ontime_report_${new Date().toISOString().slice(0, 10)}.csv`
+            `ontime_report_${new Date().toISOString().slice(0, 10)}.csv`,
           );
           document.body.appendChild(link);
           link.click();

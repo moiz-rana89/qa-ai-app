@@ -111,10 +111,11 @@ export default function EditWFARemoteTeam({
       } else {
         setFileInfo();
       }
-      const reasonToUse = selectedReport?.updated_reason_tl || selectedReport?.attendance_reason;
+      const reasonToUse =
+        selectedReport?.updated_reason_tl || selectedReport?.attendance_reason;
       if (reasonToUse != null) {
         const found = ATT_REASONS_STATUS?.find(
-          (item) => item.reason == reasonToUse
+          (item) => item.reason == reasonToUse,
         );
         setReason([
           found || { reason: reasonToUse, validity: "VALID", description: "" },
@@ -179,7 +180,7 @@ export default function EditWFARemoteTeam({
       (!endDate?.ds || !fileInfo?.length > 0)
     ) {
       toast.error(
-        "You must provide End Date and Upload Attachment before proceeding."
+        "You must provide End Date and Upload Attachment before proceeding.",
       );
     } else if (
       handleReasonRules(reason[0]?.reason) &&
@@ -200,7 +201,7 @@ export default function EditWFARemoteTeam({
       toast.error("End date must be within 90 days.");
     } else if (!authCheck) {
       toast.error(
-        "Please confirm that you have reviewed the infraction and provided the required notes or documentation."
+        "Please confirm that you have reviewed the infraction and provided the required notes or documentation.",
       );
     } else if (
       isDisputed &&
@@ -208,16 +209,14 @@ export default function EditWFARemoteTeam({
       activeTab != "Dispute Resolved by TL"
     ) {
       toast.error(
-        "Please Mark this as resolved if you want to add this in dispute"
+        "Please Mark this as resolved if you want to add this in dispute",
       );
     } else if (
       !isDisputed &&
       !isDisputeResolved &&
       activeTab == "Dispute Resolved by TL"
     ) {
-      toast.error(
-        "Please select Mark as Disputed or Mark as Resolved"
-      );
+      toast.error("Please select Mark as Disputed or Mark as Resolved");
     } else if (isDisputed && (!notes || !notes.trim())) {
       toast.error("Notes By WFA is required when marking as disputed");
     } else {
@@ -266,15 +265,15 @@ export default function EditWFARemoteTeam({
       };
       if (isDisputed && activeTab == "Resolved by TL") {
         dispatch(
-          disputeAttendnceReportbyWFA(paramsDispute, handleResponseDispute)
+          disputeAttendnceReportbyWFA(paramsDispute, handleResponseDispute),
         );
       }
       if (isDisputed && activeTab == "Dispute Resolved by TL") {
         dispatch(
           disputeReopenAttendnceReportbyWFA(
             paramsDispute,
-            handleResponseDisputeReopen
-          )
+            handleResponseDisputeReopen,
+          ),
         );
         return;
       }
@@ -287,8 +286,8 @@ export default function EditWFARemoteTeam({
               updated_notes_wfa: notes,
               reason: reason[0]?.reason,
             },
-            handleResponseDisputeResolve
-          )
+            handleResponseDisputeResolve,
+          ),
         );
         return;
       }
@@ -462,7 +461,7 @@ export default function EditWFARemoteTeam({
                 onChange={(e) => {
                   if (selectedReport?.green_card_count >= 2) {
                     toast.error(
-                      "Green card limit reached. This agent has already received two or more green cards in the last 30 days"
+                      "Green card limit reached. This agent has already received two or more green cards in the last 30 days",
                     );
                     return;
                   }
@@ -565,7 +564,7 @@ export default function EditWFARemoteTeam({
                   onChange={(e) => {
                     if (selectedReport?.green_card_count >= 2) {
                       toast.error(
-                        "Green card limit reached. This agent has already received two or more green cards in the last 30 days"
+                        "Green card limit reached. This agent has already received two or more green cards in the last 30 days",
                       );
                       return;
                     }

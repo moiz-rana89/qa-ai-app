@@ -84,14 +84,15 @@ export default function WFARemoteTeam() {
       dispatch(
         getAttendanceReportsTL({
           ...params,
-        })
+        }),
       );
     } else if (CurrntActiveTab == "Dispute Resolved by TL") {
       dispatch(
         getDisputedAttendanceRecords({
           ...params,
           role: userDetails?.role,
-        })
+          table_type: "remote",
+        }),
       );
     }
   };
@@ -137,18 +138,18 @@ export default function WFARemoteTeam() {
       client_name: clientsFilter?.map((item) => item?.client),
       agent_name: agentFilters?.map((item) => item?.user_name),
       team_lead_id: teamLeadsFilters?.map((item) =>
-        parseInt(item?.teamlead_id)
+        parseInt(item?.teamlead_id),
       ),
       operations_manager_id: omFilters?.map((item) =>
-        parseInt(item?.operations_manager_id)
+        parseInt(item?.operations_manager_id),
       ),
       csm_id: csmFilters?.map((item) => parseInt(item?.csm_id)),
       associate_operations_manager_id: aomFilters?.map((item) =>
-        parseInt(item?.id)
+        parseInt(item?.id),
       ),
       senior_operations_manager: somFilters?.map((item) => parseInt(item?.id)),
       ops_team_lead_id: opsDropDownFilters?.map((item) =>
-        parseInt(item?.ops_team_lead_id)
+        parseInt(item?.ops_team_lead_id),
       ),
       sort_order: sortOrder,
       sort_by: sortBy,
@@ -381,8 +382,8 @@ export default function WFARemoteTeam() {
                         order == "ascend"
                           ? "asc"
                           : order == "descend"
-                          ? "desc"
-                          : null
+                            ? "desc"
+                            : null,
                       );
                     }}
                     sorting={sorting}
@@ -422,8 +423,8 @@ export default function WFARemoteTeam() {
                         order == "ascend"
                           ? "asc"
                           : order == "descend"
-                          ? "desc"
-                          : null
+                            ? "desc"
+                            : null,
                       );
                     }}
                     sorting={sorting}
@@ -464,8 +465,8 @@ export default function WFARemoteTeam() {
                         order == "ascend"
                           ? "asc"
                           : order == "descend"
-                          ? "desc"
-                          : null
+                            ? "desc"
+                            : null,
                       );
                     }}
                     sorting={sorting}

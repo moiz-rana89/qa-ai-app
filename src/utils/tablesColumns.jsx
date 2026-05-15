@@ -526,6 +526,29 @@ export const ColumnDataResolvedByWFA = [
     key: "team_lead",
   },
   {
+    title: "Member Type",
+    width: 130,
+    dataIndex: "table_type",
+    key: "table_type",
+    render: (value) => {
+      if (!value) return "-";
+      const v = String(value).toLowerCase();
+      return (
+        <span
+          className={`capitalize inline-flex items-center justify-center rounded-full px-3 py-1 text-[12px] font-medium ${
+            v === "remote"
+              ? "bg-[#E4FAED] text-[#1F8B3F]"
+              : v === "internal"
+              ? "bg-[#E0EEFB] text-[#1A56DB]"
+              : "bg-[#F1F5F5] text-[#163143]"
+          }`}
+        >
+          {value}
+        </span>
+      );
+    },
+  },
+  {
     title: "Date",
     width: 120,
     dataIndex: "date",

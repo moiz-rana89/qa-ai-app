@@ -54,6 +54,9 @@ export default function WFAAttendanceReporting() {
   const [sortBy, setsortBy] = useState("");
   const [sortOrder, setsortOrder] = useState("desc");
   const [resolutionTypeFilter, setResolutionTypeFilter] = useState();
+  // Dispute History only — filter dispute records by member team type
+  // (sent to API as `table_type`).
+  const [tableTypeFilter, setTableTypeFilter] = useState();
   const [isLoadingDepartment, setIsLoadingDepartment] = useState(false);
   const [departmentFilter, setDepartmentFilter] = useState();
   const [teamLeadsInternalFilters, setTeamLeadsInternalFilters] = useState();
@@ -96,6 +99,7 @@ export default function WFAAttendanceReporting() {
     setsortBy("");
     setsortOrder("desc");
     setResolutionTypeFilter();
+    setTableTypeFilter();
     setcurrentpage(1);
     setTeamLeadsInternalFilters();
     setDepartmentManagerFilter();
@@ -194,21 +198,23 @@ export default function WFAAttendanceReporting() {
       client_name: clientsFilter?.map((item) => item?.client),
       agent_name: agentFilters?.map((item) => item?.user_name),
       team_lead_id: teamLeadsFilters?.map((item) =>
-        parseInt(item?.teamlead_id)
+        parseInt(item?.teamlead_id),
       ),
       operations_manager_id: omFilters?.map((item) =>
-        parseInt(item?.operations_manager_id)
+        parseInt(item?.operations_manager_id),
       ),
       csm_id: csmFilters?.map((item) => parseInt(item?.csm_id)),
       associate_operations_manager_id: aomFilters?.map((item) =>
-        parseInt(item?.id)
+        parseInt(item?.id),
       ),
       senior_operations_manager: somFilters?.map((item) => parseInt(item?.id)),
       ops_team_lead_id: opsDropDownFilters?.map((item) =>
-        parseInt(item?.ops_team_lead_id)
+        parseInt(item?.ops_team_lead_id),
       ),
       reason_type: resolutionTypeFilter?.[0]?.value,
       green_card: greenCardFilter?.[0]?.value,
+      // Dispute History only — sent for /workforce/reports/attendance/dispute/resolved
+      table_type: tableTypeFilter?.[0]?.value,
       sort_order: sortOrder,
       sort_by: sortBy,
       page: 1,
@@ -225,19 +231,19 @@ export default function WFAAttendanceReporting() {
         client_name: null,
         csm_id: null,
         team_lead_id: teamLeadsInternalFilters?.map((item) =>
-          parseInt(item?.team_lead_id)
+          parseInt(item?.team_lead_id),
         ),
         operations_manager_id: departmentManagerFilter?.map((item) =>
-          parseInt(item?.department_manager_id)
+          parseInt(item?.department_manager_id),
         ),
         csm: departmentDirectorFilter?.map(
-          (item) => item?.department_director_id
+          (item) => item?.department_director_id,
         ),
         om_id: omDropDownFilters?.map((item) =>
-          parseInt(item?.operations_manager_id)
+          parseInt(item?.operations_manager_id),
         ),
         aom_id: aomDropDownFilters?.map((item) =>
-          parseInt(item?.associate_operations_manager)
+          parseInt(item?.associate_operations_manager),
         ),
       };
       fetchData(dynamicParms);
@@ -261,6 +267,7 @@ export default function WFAAttendanceReporting() {
     teamLeadsInternalFilters,
     greenCardFilter,
     resolutionTypeFilter,
+    tableTypeFilter,
     startDate,
     endDate,
     omDropDownFilters,
@@ -561,6 +568,21 @@ export default function WFAAttendanceReporting() {
               valueKey="value"
               searchKeys={["value"]}
             />
+            {CurrntActiveTab === "Dispute History" && (
+              <UnifiedDropdown
+                name="Member Type"
+                className="border-[#d9d9d9] bg-white flex items-center justify-between px-3"
+                data={[
+                  { label: "Remote", value: "remote" },
+                  { label: "Internal", value: "internal" },
+                ]}
+                selectedList={tableTypeFilter}
+                setselectedList={setTableTypeFilter}
+                displayKey="label"
+                valueKey="value"
+                searchKeys={["value"]}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -649,8 +671,8 @@ export default function WFAAttendanceReporting() {
                         order == "ascend"
                           ? "asc"
                           : order == "descend"
-                          ? "desc"
-                          : null
+                            ? "desc"
+                            : null,
                       );
                     }}
                     sorting={sorting}
@@ -723,8 +745,8 @@ export default function WFAAttendanceReporting() {
                         order == "ascend"
                           ? "asc"
                           : order == "descend"
-                          ? "desc"
-                          : null
+                            ? "desc"
+                            : null,
                       );
                     }}
                     sorting={sorting}
@@ -782,8 +804,8 @@ export default function WFAAttendanceReporting() {
                         order == "ascend"
                           ? "asc"
                           : order == "descend"
-                          ? "desc"
-                          : null
+                            ? "desc"
+                            : null,
                       );
                     }}
                     sorting={sorting}
