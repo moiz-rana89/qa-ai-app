@@ -929,12 +929,21 @@ export const getDisputedAttendanceRecords = (params = {}) => {
     addParam("csm_id", params.csm_id);
     addParam("department_director_id", params.csm);
     addParam("senior_csm_id", params.senior_csm_id);
-    addParam("operations_manager_id", params.om_id);
+    // Accept BOTH the full and short OM / AOM param names so this action
+    // works whether the caller sends `operations_manager_id` (WFA Remote /
+    // Internal Team pages) or `om_id` (Internal-team WFA flow). Same for AOM.
+    addParam(
+      "operations_manager_id",
+      params.operations_manager_id ?? params.om_id,
+    );
     addParam("startdate", params.startdate);
     addParam("enddate", params.enddate);
     addParam("sort_order", params.sort_order);
     addParam("sort_by", params.sort_by);
-    addParam("associate_operations_manager_id", params.aom_id);
+    addParam(
+      "associate_operations_manager_id",
+      params.associate_operations_manager_id ?? params.aom_id,
+    );
 
     addParam("ops_team_lead_id", params.ops_team_lead_id);
     addParam("senior_operations_manager", params.senior_operations_manager);
