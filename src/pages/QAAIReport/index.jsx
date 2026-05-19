@@ -21,7 +21,7 @@ export const QAAIReport = () => {
         owner: [user?.owner_id],
         start_date: date[0],
         end_date: date[1],
-        admin: ["admin", "dev", "wfa", "qa-dm"].includes(user?.role),
+        admin: ["admin", "dev", "wfa", "qa-dm", "qa-tl"].includes(user?.role),
       })
     );
   };
