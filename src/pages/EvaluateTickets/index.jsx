@@ -497,18 +497,16 @@ function EvaluateTickets() {
           pageSize={allFormsTickets?.pagination?.pageSize}
           rowKey={"id"}
           onPageChange={(page) => {
-            setPagination({
-              ...pagination,
-              page: page,
-            });
+            // Functional updater — AntDTable fires onPageChange and
+            // onPageSizeChange in the same tick on size changes; without
+            // this they each spread a stale `pagination` and the second
+            // setState wins, clobbering the new size.
+            setPagination((prev) => ({ ...prev, page }));
           }}
           onPageSizeChange={(size) => {
-            if (size != pagination.size) {
-              setPagination({
-                ...pagination,
-                size: size,
-              });
-            }
+            setPagination((prev) =>
+              prev.size !== size ? { ...prev, size, page: 1 } : prev
+            );
           }}
           onSortChange={(columnKey, order) => {
             setSorting({ sort_by: columnKey, sort_order: order });
