@@ -51,14 +51,21 @@ export default function AttendanceOverviewSection({ filters }) {
   });
   const [loading, setLoading] = useState(false);
 
-  // HubSpot APR Score is enriched per-agent from a separate (slow) endpoint
-  // — one HubSpot API call per agent on the backend. We fetch it after the
-  // main attendance table loads so the page isn't blocked. Keyed by user_id.
-  // Value shape:
-  //   { user_name, client_name, hubspot_contact_id, average_grade_apr_score }
-  //   OR { error: "..." } when the per-agent lookup failed.
+  // HubSpot APR Score is fetched on-demand per agent (the endpoint is slow
+  // — one HubSpot API call per agent on the backend). Each row starts blank
+  // with an eye icon; clicking it fires the lookup for just that agent.
+  //
+  // `hubspotMap`         — cache of completed lookups, keyed by user_id.
+  //                        Value shape:
+  //                          { user_name, client_name, hubspot_contact_id,
+  //                            average_grade_apr_score }
+  //                        OR { error: "..." } when the per-agent lookup
+  //                        failed (still cached so we don't refetch on
+  //                        re-click — user can refetch by changing filters).
+  // `hubspotLoadingIds`  — Set of user_ids currently in flight, used to
+  //                        show a per-row spinner.
   const [hubspotMap, setHubspotMap] = useState({});
-  const [hubspotLoading, setHubspotLoading] = useState(false);
+  const [hubspotLoadingIds, setHubspotLoadingIds] = useState(new Set());
 
   // Stable key for the filter object so useEffect can watch it without
   // false positives from object identity churn.
@@ -103,53 +110,61 @@ export default function AttendanceOverviewSection({ filters }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterKey, page, size, sorting.sort_by, sorting.sort_order]);
 
-  // ── HubSpot APR enrichment ────────────────────────────────────────────
-  // Fires after the main table response arrives. Don't call the endpoint
-  // if the agent list is empty (spec requirement — endpoint requires at
-  // least one agent_id). Each `rows` reference change re-runs this so
-  // pagination / sort / filter changes that produce a new agent set get
-  // fresh HubSpot data.
+  // ── HubSpot APR enrichment (on-demand per row) ────────────────────────
+  // Clear any cached APR scores whenever the underlying agent set changes
+  // (new filters, new page, new sort). Without this, switching pages
+  // would keep stale entries from the previous page's agents in the map.
   useEffect(() => {
-    if (!rows.length) {
-      setHubspotMap({});
-      setHubspotLoading(false);
-      return;
-    }
-    const agentIds = [
-      ...new Set(rows.map((r) => r.user_id).filter(Boolean)),
-    ];
-    if (agentIds.length === 0) {
-      setHubspotMap({});
-      setHubspotLoading(false);
-      return;
-    }
-
-    setHubspotLoading(true);
-    // Clear stale data so the previous page's APR scores don't linger
-    // while the new fetch is in flight.
     setHubspotMap({});
+    setHubspotLoadingIds(new Set());
+  }, [filterKey, page, size, sorting.sort_by, sorting.sort_order]);
+
+  // Fetch APR score for a single agent on click. Marks the row as loading,
+  // caches the result (success or error) so subsequent clicks are no-ops
+  // until the row set changes.
+  const fetchAprForAgent = (userId) => {
+    if (userId == null) return;
+    if (hubspotLoadingIds.has(userId)) return;
+    if (hubspotMap[userId]) return; // already cached (success or error)
+
+    setHubspotLoadingIds((prev) => {
+      const next = new Set(prev);
+      next.add(userId);
+      return next;
+    });
 
     dispatch(
       getEndorsementHubspotProperties(
-        { agent_id: agentIds },
+        { agent_id: [userId] },
         (success, data) => {
           if (success) {
-            const map = {};
-            (data?.data || []).forEach((item) => {
-              if (item?.user_id != null) {
-                map[item.user_id] = item;
-              }
-            });
-            setHubspotMap(map);
+            const item = (data?.data || []).find(
+              (x) => String(x?.user_id) === String(userId)
+            );
+            setHubspotMap((prev) => ({
+              ...prev,
+              [userId]: item || { error: "No data returned for this agent." },
+            }));
           } else {
-            setHubspotMap({});
+            setHubspotMap((prev) => ({
+              ...prev,
+              [userId]: {
+                error:
+                  data?.data?.detail ||
+                  data?.message ||
+                  "Failed to load APR score.",
+              },
+            }));
           }
-          setHubspotLoading(false);
+          setHubspotLoadingIds((prev) => {
+            const next = new Set(prev);
+            next.delete(userId);
+            return next;
+          });
         }
       )
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rows]);
+  };
 
   const columns = [
     {
@@ -245,25 +260,29 @@ export default function AttendanceOverviewSection({ filters }) {
       title: "Average Grade (APR Score)",
       dataIndex: "average_grade_apr_score",
       key: "average_grade_apr_score",
-      width: 180,
+      width: 200,
       align: "center",
       // Sort is server-driven on this endpoint and APR comes from a
       // separate slow API — keep it non-sortable to avoid sending an
       // unsupported sort_by value to the attendance backend.
       disableSort: true,
       render: (_, r) => {
-        // Still loading the secondary HubSpot fetch — show a thin
-        // inline shimmer so the rest of the row stays visible.
-        if (hubspotLoading) {
+        const userId = r.user_id;
+        const isLoading = hubspotLoadingIds.has(userId);
+        const entry = hubspotMap[userId];
+
+        // Per-row spinner while this agent's lookup is in flight.
+        if (isLoading) {
           return (
-            <div className="inline-block w-[60px] h-[14px] rounded-full bg-[#F1F5F5] animate-pulse" />
+            <span className="inline-flex items-center gap-1 text-[#69C920] text-[13px] font-medium">
+              <Icon icon="eos-icons:loading" className="text-[16px]" />
+              Loading…
+            </span>
           );
         }
-        const entry = hubspotMap[r.user_id];
-        if (!entry) {
-          return <span className="text-[#9CA3AF]">—</span>;
-        }
-        if (entry.error) {
+
+        // Cached error response for this agent — red dash with tooltip.
+        if (entry?.error) {
           return (
             <Tooltip title={entry.error} placement="left">
               <span className="text-[#C81E1E] cursor-help inline-flex items-center gap-1">
@@ -272,18 +291,50 @@ export default function AttendanceOverviewSection({ filters }) {
             </Tooltip>
           );
         }
-        const raw = entry.average_grade_apr_score;
-        if (raw == null || raw === "") {
-          return <span className="text-[#9CA3AF]">—</span>;
+
+        // Cached success response — show the parsed numeric score.
+        if (entry) {
+          const raw = entry.average_grade_apr_score;
+          if (raw == null || raw === "") {
+            return <span className="text-[#9CA3AF]">—</span>;
+          }
+          const num = parseFloat(raw);
+          if (Number.isNaN(num)) {
+            return <span className="text-[#9CA3AF]">—</span>;
+          }
+          return (
+            <span className="font-semibold tabular-nums text-[#163143]">
+              {num.toFixed(2)}
+            </span>
+          );
         }
-        const num = parseFloat(raw);
-        if (Number.isNaN(num)) {
-          return <span className="text-[#9CA3AF]">—</span>;
-        }
+
+        // Default state — eye icon button to fetch on demand.
+        // Disabled when the row has no user_id we can lookup with.
+        const canFetch = userId != null;
         return (
-          <span className="font-semibold tabular-nums text-[#163143]">
-            {num.toFixed(2)}
-          </span>
+          <Tooltip
+            title={canFetch ? "View APR Score" : "No agent id on this row"}
+            placement="left"
+          >
+            <button
+              type="button"
+              onClick={() => canFetch && fetchAprForAgent(userId)}
+              disabled={!canFetch}
+              className={`inline-flex items-center justify-center w-[32px] h-[32px] rounded-full border border-[#D7E6E7] bg-white transition-colors ${
+                canFetch
+                  ? "hover:bg-[#F1F5F5] hover:border-[#69C920] cursor-pointer"
+                  : "opacity-40 cursor-not-allowed"
+              }`}
+              aria-label="View APR Score"
+            >
+              <Icon
+                icon="mdi:eye-outline"
+                className={canFetch ? "text-[#69C920]" : "text-[#9CA3AF]"}
+                fontSize={18}
+              />
+            </button>
+          </Tooltip>
         );
       },
     },
