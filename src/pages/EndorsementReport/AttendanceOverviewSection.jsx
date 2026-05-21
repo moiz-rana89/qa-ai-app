@@ -3,10 +3,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import toast from "react-hot-toast";
+import { Tooltip } from "antd";
+import { Icon } from "@iconify/react";
 
 import AntDTable from "../../components/AntDTable";
 import Skeleton from "../../components/Skeleton";
-import { getEndorsementAttendanceOverview } from "../../reduxStore/action/endorsementReport";
+import {
+  getEndorsementAttendanceOverview,
+  getEndorsementHubspotProperties,
+} from "../../reduxStore/action/endorsementReport";
 
 // Color tokens for the attendance status cells
 const STATUS_STYLES = {
@@ -45,6 +50,15 @@ export default function AttendanceOverviewSection({ filters }) {
     sort_order: "ascend",
   });
   const [loading, setLoading] = useState(false);
+
+  // HubSpot APR Score is enriched per-agent from a separate (slow) endpoint
+  // — one HubSpot API call per agent on the backend. We fetch it after the
+  // main attendance table loads so the page isn't blocked. Keyed by user_id.
+  // Value shape:
+  //   { user_name, client_name, hubspot_contact_id, average_grade_apr_score }
+  //   OR { error: "..." } when the per-agent lookup failed.
+  const [hubspotMap, setHubspotMap] = useState({});
+  const [hubspotLoading, setHubspotLoading] = useState(false);
 
   // Stable key for the filter object so useEffect can watch it without
   // false positives from object identity churn.
@@ -88,6 +102,54 @@ export default function AttendanceOverviewSection({ filters }) {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterKey, page, size, sorting.sort_by, sorting.sort_order]);
+
+  // ── HubSpot APR enrichment ────────────────────────────────────────────
+  // Fires after the main table response arrives. Don't call the endpoint
+  // if the agent list is empty (spec requirement — endpoint requires at
+  // least one agent_id). Each `rows` reference change re-runs this so
+  // pagination / sort / filter changes that produce a new agent set get
+  // fresh HubSpot data.
+  useEffect(() => {
+    if (!rows.length) {
+      setHubspotMap({});
+      setHubspotLoading(false);
+      return;
+    }
+    const agentIds = [
+      ...new Set(rows.map((r) => r.user_id).filter(Boolean)),
+    ];
+    if (agentIds.length === 0) {
+      setHubspotMap({});
+      setHubspotLoading(false);
+      return;
+    }
+
+    setHubspotLoading(true);
+    // Clear stale data so the previous page's APR scores don't linger
+    // while the new fetch is in flight.
+    setHubspotMap({});
+
+    dispatch(
+      getEndorsementHubspotProperties(
+        { agent_id: agentIds },
+        (success, data) => {
+          if (success) {
+            const map = {};
+            (data?.data || []).forEach((item) => {
+              if (item?.user_id != null) {
+                map[item.user_id] = item;
+              }
+            });
+            setHubspotMap(map);
+          } else {
+            setHubspotMap({});
+          }
+          setHubspotLoading(false);
+        }
+      )
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rows]);
 
   const columns = [
     {
@@ -178,6 +240,52 @@ export default function AttendanceOverviewSection({ filters }) {
       render: (v) => (
         <span className="font-semibold text-[#163143]">{v ?? 0}</span>
       ),
+    },
+    {
+      title: "Average Grade (APR Score)",
+      dataIndex: "average_grade_apr_score",
+      key: "average_grade_apr_score",
+      width: 180,
+      align: "center",
+      // Sort is server-driven on this endpoint and APR comes from a
+      // separate slow API — keep it non-sortable to avoid sending an
+      // unsupported sort_by value to the attendance backend.
+      disableSort: true,
+      render: (_, r) => {
+        // Still loading the secondary HubSpot fetch — show a thin
+        // inline shimmer so the rest of the row stays visible.
+        if (hubspotLoading) {
+          return (
+            <div className="inline-block w-[60px] h-[14px] rounded-full bg-[#F1F5F5] animate-pulse" />
+          );
+        }
+        const entry = hubspotMap[r.user_id];
+        if (!entry) {
+          return <span className="text-[#9CA3AF]">—</span>;
+        }
+        if (entry.error) {
+          return (
+            <Tooltip title={entry.error} placement="left">
+              <span className="text-[#C81E1E] cursor-help inline-flex items-center gap-1">
+                <Icon icon="mdi:alert-circle-outline" /> —
+              </span>
+            </Tooltip>
+          );
+        }
+        const raw = entry.average_grade_apr_score;
+        if (raw == null || raw === "") {
+          return <span className="text-[#9CA3AF]">—</span>;
+        }
+        const num = parseFloat(raw);
+        if (Number.isNaN(num)) {
+          return <span className="text-[#9CA3AF]">—</span>;
+        }
+        return (
+          <span className="font-semibold tabular-nums text-[#163143]">
+            {num.toFixed(2)}
+          </span>
+        );
+      },
     },
   ];
 
