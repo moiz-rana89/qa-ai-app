@@ -39,6 +39,7 @@ import GoogleFormEmbed from "../pages/GoogleFormEmbed";
 import AttendanceInfractions from "../pages/AttendanceInfractions";
 import HubspotRoster from "../pages/HubspotRoster";
 import EndorsementReport from "../pages/EndorsementReport";
+import OnboardFromHubspot from "../pages/OnboardFromHubspot";
 import AuthProvider from "./AuthProvider";
 import { ENDORSEMENT_REPORT_EMAILS } from "../utils/accessLists";
 // admin download = wfa,om
@@ -206,6 +207,7 @@ const ROUTE_ROLES = {
   ],
   "attendance-infractions": ["admin", "dev", "wfa"],
   "hubspot-roster": ["admin", "dev", "wfa"],
+  "onboard-from-hubspot": ["admin", "dev"],
   "endorsement-report": [
     "admin",
     "dev",
@@ -560,6 +562,17 @@ export default function AppRouter() {
                   routeRoles={ROUTE_ROLES}
                 >
                   <HubspotRoster />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/onboard-from-hubspot"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["onboard-from-hubspot"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <OnboardFromHubspot />
                 </ProtectedRoute>
               }
             />

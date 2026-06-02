@@ -366,6 +366,19 @@ const menuList = [
       },
     ],
   },
+  {
+    title: "Users",
+    icon: "mdi:account-cog-outline",
+    route: "users",
+    roles: ["admin", "dev"],
+    submenu: [
+      {
+        title: "Onboard from HubSpot",
+        route: "onboard-from-hubspot",
+        roles: ["admin", "dev"],
+      },
+    ],
+  },
 ];
 
 export default function Sidebar() {
