@@ -1,5 +1,5 @@
 import { Icon } from "@iconify/react";
-import { DatePicker } from "antd";
+import { DatePicker, Input } from "antd";
 import { useEffect } from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -36,6 +36,11 @@ function EvaluateTickets() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [pagination, setPagination] = useState({ page: 1, size: 10 });
+  // Ticket ID free-text filter — sent to API as `ticket_id`.
+  // `ticketIdInput` is the live typed value; `ticketIdFilter` is the
+  // debounced/committed value the fetch effect actually watches.
+  const [ticketIdInput, setTicketIdInput] = useState("");
+  const [ticketIdFilter, setTicketIdFilter] = useState("");
   const [open, setOpen] = useState(false);
   const [selectedRow, setselectedRow] = useState([]);
   const [sorting, setSorting] = useState({ sort_by: null, sort_order: null });
@@ -101,6 +106,22 @@ function EvaluateTickets() {
     dispatch(getCSMFilterData(setIsLoadingCsm));
     dispatch(getAomList(setIsLoadingAom));
   }, []);
+
+  // Debounce Ticket ID input → committed filter. 400ms feels responsive
+  // without firing on every keystroke when someone pastes/types an id.
+  // Also resets pagination to page 1 so a narrowed filter doesn't strand
+  // the user on an empty page.
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      const trimmed = ticketIdInput.trim();
+      if (trimmed !== ticketIdFilter) {
+        setTicketIdFilter(trimmed);
+        setPagination((prev) => ({ ...prev, page: 1 }));
+      }
+    }, 400);
+    return () => clearTimeout(handle);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ticketIdInput]);
   useEffect(() => {
     // if (type) {
     // let selectedQasLocal = [...selectedQas];
@@ -118,6 +139,8 @@ function EvaluateTickets() {
       associate_operations_manager_id: selectedAom?.map((item) =>
         parseInt(item?.id)
       ),
+      // Empty string is filtered out by the Api wrapper — no need to guard here.
+      ticket_id: ticketIdFilter || undefined,
     });
     // }
   }, [
@@ -130,6 +153,7 @@ function EvaluateTickets() {
     selectedOm,
     selectedCsm,
     selectedAom,
+    ticketIdFilter,
   ]);
 
   const columns = [
@@ -333,6 +357,26 @@ function EvaluateTickets() {
               <AntDRangePicker onChange={onChange} />
             </div>
             <div className="flex space-x-0 flex-wrap gap-3 pl-3">
+              <Input
+                placeholder="Ticket ID"
+                value={ticketIdInput}
+                onChange={(e) => setTicketIdInput(e.target.value)}
+                allowClear
+                prefix={
+                  <Icon
+                    icon="mdi:ticket-outline"
+                    className="text-[#69C920]"
+                    fontSize={16}
+                  />
+                }
+                style={{
+                  height: 44,
+                  borderRadius: 32,
+                  width: 180,
+                  background: "white",
+                  borderColor: "#d9d9d9",
+                }}
+              />
               <UnifiedDropdown
                 placeholder="Select Client for this form"
                 name="Clients"
