@@ -315,12 +315,12 @@ const menuList = [
   //   route: "performance-review",
   //   roles: ["admin", "dev", "tl"],
   // },
-  // {
-  //   title: "Bugs & Features",
-  //   icon: "mdi:bug-outline",
-  //   route: "bugs-features",
-  //   roles: ["admin", "dev", "om"],
-  // },
+  {
+    title: "Bugs & Features",
+    icon: "mdi:bug-outline",
+    route: "bugs-features",
+    roles: ["admin", "dev", "om", "qa-dm"],
+  },
   {
     title: "Quality Assurance",
     icon: "icon-park-outline:success",

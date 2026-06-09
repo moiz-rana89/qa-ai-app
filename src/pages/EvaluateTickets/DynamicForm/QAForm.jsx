@@ -5,7 +5,13 @@ import { Tabs } from "antd";
 import CategorySection from "./CategorySection";
 import { TicketDetails } from "./TicketDetails";
 
-const QAForm = ({ initialData, onStateChange, details }) => {
+const QAForm = ({
+  initialData,
+  onStateChange,
+  details,
+  customerConcern,
+  setCustomerConcern,
+}) => {
   const [formData, setFormData] = useState(initialData);
 
   const initializeState = (data) => {
@@ -122,7 +128,11 @@ const QAForm = ({ initialData, onStateChange, details }) => {
       label: "Ticket Details",
       children: (
         <div className="p-4  h-[84vh] overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          <TicketDetails details={details} />
+          <TicketDetails
+            details={details}
+            customerConcern={customerConcern}
+            setCustomerConcern={setCustomerConcern}
+          />
         </div>
       ),
     },

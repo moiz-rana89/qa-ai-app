@@ -22,6 +22,10 @@ export const EvaluteForm = () => {
   const navigate = useNavigate();
 
   const [formState, setFormState] = useState({});
+  // Customer concern — short free-text the QAS / TL fills in to capture
+  // what the customer was actually upset about. Prefilled from the API
+  // when present and sent on submit (null when blank → don't overwrite).
+  const [customerConcern, setCustomerConcern] = useState("");
   const { selectedFormToEvaluate } = useSelector(
     (store) => store.formsManagement
   );
@@ -51,6 +55,9 @@ export const EvaluteForm = () => {
   }, [total]);
   useEffect(() => {
     setFormState(currentItem?.graded_form_json);
+    // Reset customer concern between tickets — the new value will be set
+    // from the API response once it arrives (see effect below).
+    setCustomerConcern("");
     // call the tags and ai_graded_json api here
 
     dispatch(
@@ -60,6 +67,14 @@ export const EvaluteForm = () => {
       )
     );
   }, [currentItem]);
+
+  // Prefill customer concern when the API response lands. Falls back to
+  // empty string if the field is null/missing on the record.
+  useEffect(() => {
+    if (gradedJsonWithTags) {
+      setCustomerConcern(gradedJsonWithTags?.customer_concern ?? "");
+    }
+  }, [gradedJsonWithTags]);
 
   // useEffect(() => {
   //   if (gradedJsonWithTags) {
@@ -153,6 +168,10 @@ export const EvaluteForm = () => {
             categories: formState?.categories,
             ticket_id: currentItem?.ticket_id,
           },
+          // null = backend keeps the previously stored value (no overwrite
+          // with a blank submission). Send the trimmed string when the
+          // QAS / TL has actually written something.
+          customer_concern: customerConcern.trim() || null,
         },
         handleTicketSubmitSuccess
       )
@@ -218,6 +237,8 @@ export const EvaluteForm = () => {
               <QAForm
                 initialData={gradedJsonWithTags?.ai_graded_json}
                 details={gradedJsonWithTags}
+                customerConcern={customerConcern}
+                setCustomerConcern={setCustomerConcern}
                 onStateChange={handleStateChange}
               />
             )}
