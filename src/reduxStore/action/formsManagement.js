@@ -245,6 +245,30 @@ export const createQuestion = (formsBody, handle) => {
   };
 };
 
+// PATCH a single question with only the fields the user changed.
+// `body` should already contain only the diff — see updateQuestionWithDiff
+// in CategoryWithQuestion.jsx for the helper that builds it.
+// The callback receives (success, dataOrError):
+//   success=true  → dataOrError is the JSON body
+//                   (e.g. { question_id, status: "Question updated" }
+//                    or { status: "no changes" })
+//   success=false → dataOrError is the Error object thrown by Api.xhr;
+//                   inspect `.response?.status` for 404 / 409 / 422 etc.
+export const updateQuestionAction = (questionId, body, handle) => {
+  return (dispatch) => {
+    dispatch(setLoaderQuestionAction(true));
+    Api.patch(`/qa_ai_new/questions/questions/${questionId}`, body)
+      .then((resp) => {
+        dispatch(setLoaderQuestionAction(false));
+        handle?.(true, resp?.data);
+      })
+      .catch((error) => {
+        dispatch(setLoaderQuestionAction(false));
+        handle?.(false, error);
+      });
+  };
+};
+
 export const getCategoryByForm = (formId) => {
   return (dispatch) => {
     try {

@@ -15,6 +15,7 @@ import {
   deleteQuestionAction,
   getCategoryByForm,
   updateCategory,
+  updateQuestionAction,
 } from "../../../reduxStore/action/formsManagement";
 import { useEffect } from "react";
 import Skeleton from "../../../components/Skeleton";
@@ -114,6 +115,11 @@ export default function CategoryWithQuestion() {
   ]);
   const [isCatDelOpen, setIsCatDelOpen] = useState(false);
   const [isQuestionDelOpen, setIsQuestionDelOpen] = useState(false);
+  // Snapshot of the question's API-shaped fields at drawer-open time.
+  // Used to compute a diff on save so we only PATCH what changed.
+  const [originalQuestion, setOriginalQuestion] = useState(null);
+  // Inline error for the question-text field (set on 409 duplicate-question).
+  const [questionTextError, setQuestionTextError] = useState("");
 
   const {
     activeForms,
@@ -273,6 +279,7 @@ export default function CategoryWithQuestion() {
   const openEditQuestionDrawer = (categoryId, question) => {
     setSelectedCategoryId(categoryId);
     setSelectedQuestionId(question.id);
+    setQuestionTextError("");
     setFormData({
       questionText: question.text,
       questionPoints: question.points,
@@ -282,12 +289,23 @@ export default function CategoryWithQuestion() {
       questionType: question.questionType || "text",
     });
 
-    setGradingCriteria(
-      question?.questions_criteria?.criteria
-        ? question?.questions_criteria?.criteria
-        : question?.grading_criteria
-    );
+    const incomingCriteria = question?.questions_criteria?.criteria
+      ? question?.questions_criteria?.criteria
+      : question?.grading_criteria;
+    setGradingCriteria(incomingCriteria);
     setSelectOption(question?.select_options);
+
+    // Snapshot the question in API-shaped form so we can diff on save.
+    setOriginalQuestion({
+      question_text: question.text ?? "",
+      question_type: question.questionType ?? "text",
+      max_points: question.points ?? 0,
+      optional: !!question.isOptional,
+      comments_notes: !!question.allowNotes,
+      select_options: question?.select_options ?? [],
+      grading_criteria: incomingCriteria ?? null,
+    });
+
     setDrawerType("editQuestion");
     setDrawerOpen(true);
   };
@@ -479,59 +497,157 @@ export default function CategoryWithQuestion() {
           )
         );
       } else if (drawerType === "editQuestion") {
-        // Call API to update question
-        const questionData = {
-          text: formData.questionText,
-          points: formData.questionPoints,
-          code: formData.questionCode,
-          isOptional: formData.isOptional,
-          allowNotes: formData.allowNotes,
-          questionType: formData.questionType,
+        // Build the candidate payload in API-shape, then diff against the
+        // snapshot captured when the drawer opened. Only changed keys are
+        // PATCHed — untouched fields must NOT round-trip to the backend.
+        const candidate = {
+          question_text: (formData.questionText ?? "").toString(),
+          question_type: formData.questionType ?? "text",
+          max_points: Number(formData.questionPoints) || 0,
+          optional: !!formData.isOptional,
+          comments_notes: !!formData.allowNotes,
+          select_options: Array.isArray(selectOption) ? selectOption : [],
+          grading_criteria: gradingCriteria ?? null,
         };
 
-        await apiCalls.updateQuestion(
-          selectedCategoryId,
-          selectedQuestionId,
-          questionData
-        );
-
-        const updatedCategories = categories.map((cat) => {
-          if (cat.id === selectedCategoryId) {
-            const oldQuestion = cat.questions.find(
-              (q) => q.id === selectedQuestionId
-            );
-            const pointsDifference =
-              formData.questionPoints - oldQuestion.points;
-
-            return {
-              ...cat,
-              questions: cat.questions.map((q) =>
-                q.id === selectedQuestionId
-                  ? {
-                      ...q,
-                      text: formData.questionText,
-                      points: formData.questionPoints,
-                      code: formData.questionCode,
-                      isOptional: formData.isOptional,
-                      allowNotes: formData.allowNotes,
-                      questionType: formData.questionType,
-                    }
-                  : q
-              ),
-              totalScore: cat.totalScore + pointsDifference,
-            };
+        // Backend only stores select_options for select-type questions —
+        // don't bother diffing it when the type doesn't use it.
+        const fieldsToCompare = Object.keys(candidate).filter((k) => {
+          if (k === "select_options" && candidate.question_type !== "select") {
+            return false;
           }
-          return cat;
+          return true;
         });
 
-        setCategories(updatedCategories);
-
-        AntDNotification({
-          status: "success",
-          title: "Updated!",
-          description: "Question updated successfully",
-          duration: 3,
+        const changes = {};
+        const original = originalQuestion || {};
+        fieldsToCompare.forEach((key) => {
+          // JSON.stringify gives us deep equality on the simple shapes we
+          // deal with here (strings, numbers, booleans, arrays of
+          // strings, plain criteria objects). Good enough — and avoids
+          // pulling in lodash for one comparison.
+          if (JSON.stringify(candidate[key]) !== JSON.stringify(original[key])) {
+            changes[key] = candidate[key];
+          }
         });
+
+        if (Object.keys(changes).length === 0) {
+          AntDNotification({
+            status: "info",
+            title: "No changes",
+            description: "Nothing was modified.",
+            duration: 3,
+          });
+          setDrawerOpen(false);
+          setFormData({});
+          setOriginalQuestion(null);
+          return;
+        }
+
+        // Wrap the thunk in a promise so we can await it inside this try.
+        await new Promise((resolve) => {
+          dispatch(
+            updateQuestionAction(selectedQuestionId, changes, (success, data) => {
+              if (success) {
+                // Could be { status: "no changes" } if the backend determined
+                // nothing actually moved — treat as success either way.
+                AntDNotification({
+                  status: "success",
+                  title: "Updated!",
+                  description:
+                    data?.status === "no changes"
+                      ? "No changes were detected by the server."
+                      : "Question updated successfully",
+                  duration: 3,
+                });
+
+                // Patch local state with the candidate values for the keys
+                // we sent — gives instant visual feedback without a full
+                // form refetch. Recompute totalScore if max_points changed.
+                setCategories((prev) =>
+                  prev.map((cat) => {
+                    if (cat.id !== selectedCategoryId) return cat;
+                    const oldQuestion = cat.questions.find(
+                      (q) => q.id === selectedQuestionId
+                    );
+                    const pointsDifference =
+                      changes.max_points !== undefined
+                        ? candidate.max_points - (oldQuestion?.points || 0)
+                        : 0;
+                    return {
+                      ...cat,
+                      questions: cat.questions.map((q) =>
+                        q.id !== selectedQuestionId
+                          ? q
+                          : {
+                              ...q,
+                              text: candidate.question_text,
+                              points: candidate.max_points,
+                              isOptional: candidate.optional,
+                              allowNotes: candidate.comments_notes,
+                              questionType: candidate.question_type,
+                              select_options: candidate.select_options,
+                              questions_criteria:
+                                changes.grading_criteria !== undefined
+                                  ? { criteria: candidate.grading_criteria }
+                                  : q.questions_criteria,
+                            }
+                      ),
+                      totalScore: (cat.totalScore || 0) + pointsDifference,
+                    };
+                  })
+                );
+
+                setDrawerOpen(false);
+                setFormData({});
+                setOriginalQuestion(null);
+                setQuestionTextError("");
+              } else {
+                // Map per-spec status codes onto the right surface.
+                const status = data?.response?.status;
+                const detail = data?.data?.detail || data?.message;
+                if (status === 409) {
+                  setQuestionTextError(
+                    detail ||
+                      "A question with this text already exists in this category."
+                  );
+                } else if (status === 404) {
+                  AntDNotification({
+                    status: "error",
+                    title: "Question not found",
+                    description:
+                      detail || "This question was archived or deleted.",
+                    duration: 4,
+                  });
+                  // Refetch the form so the stale question disappears.
+                  if (activeForms?.form_id) {
+                    dispatch(getCategoryByForm(activeForms.form_id));
+                  }
+                  setDrawerOpen(false);
+                } else if (status === 422) {
+                  AntDNotification({
+                    status: "error",
+                    title: "Validation error",
+                    description:
+                      typeof detail === "string"
+                        ? detail
+                        : "Please check the form fields.",
+                    duration: 4,
+                  });
+                } else {
+                  AntDNotification({
+                    status: "error",
+                    title: "Update failed",
+                    description: detail || "Please try again.",
+                    duration: 4,
+                  });
+                }
+              }
+              resolve();
+            })
+          );
+        });
+        return; // skip the generic setFormData({}) tail below
       }
       setFormData({});
     } catch (error) {
@@ -628,6 +744,10 @@ export default function CategoryWithQuestion() {
       { score: 0, remarks: "" },
       { score: 0, remarks: "" },
     ]);
+    // Clear edit-mode state so reopening the drawer doesn't carry over
+    // a stale snapshot or a previous duplicate-question error.
+    setOriginalQuestion(null);
+    setQuestionTextError("");
   };
 
   const exportJSON = () => {
@@ -700,7 +820,8 @@ export default function CategoryWithQuestion() {
             >
               Cancel
             </button>
-            {drawerType != "editQuestion" && (
+            {/* "Save and Add Another" is only for the add-new flow. */}
+            {drawerType !== "editQuestion" && (
               <button
                 type="submit"
                 onClick={handleDrawerSubmit}
@@ -710,20 +831,20 @@ export default function CategoryWithQuestion() {
                 {isAddingQuestion ? "Processing..." : "Save and Add Another"}
               </button>
             )}
-            {drawerType != "editQuestion" && (
-              <button
-                type="submit"
-                onClick={handleDrawerSubmit}
-                disabled={isLoading}
-                className={`w-[130px] min-h-[32px] text-[14px] font-sm rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#61BF19] focus:ring-offset-2 ${
-                  isLoading
-                    ? "bg-gray-400 cursor-not-allowed text-white"
-                    : "bg-[#69C920] hover:bg-[#5CB518] text-white"
-                }`}
-              >
-                {isAddingQuestion ? "Processing..." : "Save"}
-              </button>
-            )}
+            {/* Save button — shown for both add and edit. In edit mode it
+                PATCHes only the changed fields via updateQuestionAction. */}
+            <button
+              type="submit"
+              onClick={handleDrawerSubmit}
+              disabled={isLoading || isAddingQuestion}
+              className={`w-[130px] min-h-[32px] text-[14px] font-sm rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#61BF19] focus:ring-offset-2 ${
+                isLoading || isAddingQuestion
+                  ? "bg-gray-400 cursor-not-allowed text-white"
+                  : "bg-[#69C920] hover:bg-[#5CB518] text-white"
+              }`}
+            >
+              {isLoading || isAddingQuestion ? "Processing..." : "Save"}
+            </button>
           </div>
           <div className="mt-5 mx-5 mb-5 space-y-6 text-[#163143] font-[400]">
             <div className="">
@@ -880,12 +1001,19 @@ export default function CategoryWithQuestion() {
               <TextArea
                 placeholder="Enter your question"
                 value={formData.questionText || ""}
-                onChange={(e) =>
-                  handleFormChange("questionText", e.target.value)
-                }
+                onChange={(e) => {
+                  handleFormChange("questionText", e.target.value);
+                  if (questionTextError) setQuestionTextError("");
+                }}
+                status={questionTextError ? "error" : ""}
                 className="!bg-[#fbfbfb] !border-[#efefef] !rounded-[12px]"
                 autoSize={{ minRows: 3, maxRows: 5 }}
               />
+              {questionTextError && (
+                <div className="text-[#C81E1E] text-[12px] mt-1">
+                  {questionTextError}
+                </div>
+              )}
             </div>
             {/* <div>
               <label className="block text-[14px] font-semibold mb-3">
