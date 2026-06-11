@@ -1344,7 +1344,11 @@ export default function CategoryWithQuestion() {
                       }}
                       type="text"
                       icon={
-                        <Icon icon={"mdi:eye"} fontSize={16} color="#69C920" />
+                        <Icon
+                          icon={"mdi:pencil-outline"}
+                          fontSize={16}
+                          color="#69C920"
+                        />
                       }
                       onClick={() =>
                         openEditQuestionDrawer(category.id, question)
