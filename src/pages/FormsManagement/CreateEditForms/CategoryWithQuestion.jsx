@@ -289,11 +289,31 @@ export default function CategoryWithQuestion() {
       questionType: question.questionType || "text",
     });
 
-    const incomingCriteria = question?.questions_criteria?.criteria
-      ? question?.questions_criteria?.criteria
-      : question?.grading_criteria;
+    // Normalize criteria across all known shapes the backend has used:
+    //   - New shape:    questions_criteria: [ { score, remarks, ... }, ... ]   ← array directly
+    //   - Legacy shape: questions_criteria: { criteria: [ ... ] }
+    //   - Add flow:     grading_criteria:   [ ... ]
+    // Falls back to a 5-row empty grid so the render path (which spreads
+    // gradingCriteria with `[...gradingCriteria]`) never crashes.
+    const rawCriteria = question?.questions_criteria;
+    let incomingCriteria;
+    if (Array.isArray(rawCriteria)) {
+      incomingCriteria = rawCriteria;
+    } else if (Array.isArray(rawCriteria?.criteria)) {
+      incomingCriteria = rawCriteria.criteria;
+    } else if (Array.isArray(question?.grading_criteria)) {
+      incomingCriteria = question.grading_criteria;
+    } else {
+      incomingCriteria = [
+        { score: 0, remarks: "" },
+        { score: 0, remarks: "" },
+        { score: 0, remarks: "" },
+        { score: 0, remarks: "" },
+        { score: 0, remarks: "" },
+      ];
+    }
     setGradingCriteria(incomingCriteria);
-    setSelectOption(question?.select_options);
+    setSelectOption(question?.select_options ?? []);
 
     // Snapshot the question in API-shaped form so we can diff on save.
     setOriginalQuestion({
@@ -303,7 +323,9 @@ export default function CategoryWithQuestion() {
       optional: !!question.isOptional,
       comments_notes: !!question.allowNotes,
       select_options: question?.select_options ?? [],
-      grading_criteria: incomingCriteria ?? null,
+      // Snapshot the same normalized array so the JSON.stringify diff
+      // compares apples to apples on save.
+      grading_criteria: incomingCriteria,
     });
 
     setDrawerType("editQuestion");
