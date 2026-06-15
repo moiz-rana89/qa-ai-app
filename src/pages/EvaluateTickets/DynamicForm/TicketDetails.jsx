@@ -93,6 +93,22 @@ export const TicketDetails = ({
           />
         </div>
 
+        {/* Channel — read-only. Comes from the prefill payload as
+            `details.channel` (e.g. "email", "chat", "phone"). */}
+        <div className="w-[100%]">
+          <label className="block text-[14px] font-semibold mb-3">
+            Channel:
+          </label>
+          <Input
+            type="text"
+            disabled
+            value={details.channel || ""}
+            style={{ color: "#163143" }}
+            placeholder="—"
+            className="min-h-[44px] p-[13px_53px_13px_14px] font-poppins text-[#163143] bg-[#FFFFFF] border border-[#D7E6E7] rounded-full placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#69C920] focus:border-[#69C920] hover:border-[#69C920] transition-all duration-200 capitalize"
+          />
+        </div>
+
         {/* Customer Concern — editable free-text textarea. Sent on submit
             as `customer_concern`; empty value submits as null so the
             backend doesn't overwrite a previously stored concern. */}
