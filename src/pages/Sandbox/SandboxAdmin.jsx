@@ -10,19 +10,21 @@ import dayjs from "dayjs";
 import AntDTable from "../../components/AntDTable";
 import Skeleton from "../../components/Skeleton";
 import SandboxBanner from "../../components/SandboxBanner";
+import SandboxClientPicker from "../../components/SandboxClientPicker";
 import { CustomButton } from "../../components/Buttons/CustomButton";
 import {
   getSandboxTickets,
   toggleSandboxTicket,
 } from "../../reduxStore/action/sandbox";
+import { extractApiError } from "../../utils/helperFunctions";
 
-// Admin / curator page — toggle is_sandbox on tickets.
-// Lists the currently-flagged sandbox tickets. To flag a NEW ticket the
-// curator types the ticket ID in the "Flag a ticket" form at top (we don't
-// have a "list every ticket ever" endpoint, so flagging is search-by-id).
+// Admin / curator page — toggle is_sandbox on tickets per client.
+// Lists currently-flagged sandbox tickets for the picked client. To flag a
+// NEW ticket the curator types the ticket ID in the form at the top.
 export default function SandboxAdmin() {
   const dispatch = useDispatch();
 
+  const [clientId, setClientId] = useState(null);
   const [rows, setRows] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, size: 20, total: 0 });
   const [loading, setLoading] = useState(false);
@@ -32,10 +34,16 @@ export default function SandboxAdmin() {
   const [newTicketId, setNewTicketId] = useState("");
   const [flagging, setFlagging] = useState(false);
 
-  const fetchData = (page = pagination.page, size = pagination.size) => {
+  const fetchData = (
+    cid = clientId,
+    page = pagination.page,
+    size = pagination.size
+  ) => {
+    if (cid == null) return;
     setLoading(true);
     dispatch(
       getSandboxTickets(
+        cid,
         { source: "gorgias", page, per_page: size },
         (success, data) => {
           if (success) {
@@ -46,10 +54,9 @@ export default function SandboxAdmin() {
               total: data?.total || 0,
             });
           } else {
+            setRows([]);
             toast.error(
-              data?.data?.detail ||
-                data?.message ||
-                "Failed to load sandbox tickets."
+              extractApiError(data, "Failed to load sandbox tickets.")
             );
           }
           setLoading(false);
@@ -59,12 +66,21 @@ export default function SandboxAdmin() {
   };
 
   useEffect(() => {
-    fetchData(1, pagination.size);
+    if (clientId != null) {
+      setPagination((prev) => ({ ...prev, page: 1 }));
+      fetchData(clientId, 1, pagination.size);
+    } else {
+      setRows([]);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [clientId]);
 
   const handleToggle = (ticketId, nextValue) => {
     if (togglingIds.has(ticketId)) return;
+    if (clientId == null) {
+      toast.error("Pick a client first.");
+      return;
+    }
     setTogglingIds((prev) => {
       const next = new Set(prev);
       next.add(ticketId);
@@ -72,6 +88,7 @@ export default function SandboxAdmin() {
     });
     dispatch(
       toggleSandboxTicket(
+        clientId,
         ticketId,
         { is_sandbox: nextValue, source: "gorgias" },
         (success, data) => {
@@ -86,13 +103,10 @@ export default function SandboxAdmin() {
                 ? `Ticket ${ticketId} added to sandbox.`
                 : `Ticket ${ticketId} removed from sandbox.`
             );
-            // Refetch so the list reflects the change
-            fetchData(pagination.page, pagination.size);
+            fetchData(clientId, pagination.page, pagination.size);
           } else {
             toast.error(
-              data?.data?.detail ||
-                data?.message ||
-                "Failed to update sandbox flag."
+              extractApiError(data, "Failed to update sandbox flag.")
             );
           }
         }
@@ -101,6 +115,10 @@ export default function SandboxAdmin() {
   };
 
   const handleFlagNew = () => {
+    if (clientId == null) {
+      toast.error("Pick a client first.");
+      return;
+    }
     const id = newTicketId.trim();
     if (!id) {
       toast.error("Ticket ID is required.");
@@ -109,6 +127,7 @@ export default function SandboxAdmin() {
     setFlagging(true);
     dispatch(
       toggleSandboxTicket(
+        clientId,
         id,
         { is_sandbox: true, source: "gorgias" },
         (success, data) => {
@@ -116,12 +135,10 @@ export default function SandboxAdmin() {
           if (success) {
             toast.success(`Ticket ${id} added to sandbox.`);
             setNewTicketId("");
-            fetchData(1, pagination.size);
+            fetchData(clientId, 1, pagination.size);
           } else {
             toast.error(
-              data?.data?.detail ||
-                data?.message ||
-                "Failed to add ticket to sandbox."
+              extractApiError(data, "Failed to add ticket to sandbox.")
             );
           }
         }
@@ -196,6 +213,8 @@ export default function SandboxAdmin() {
         </span>
       </div>
 
+      <SandboxClientPicker value={clientId} onChange={setClientId} />
+
       {/* Flag a new ticket */}
       <div className="mx-8 mt-4 bg-white rounded-[16px] border border-[#D7E6E7] p-5">
         <div className="text-[14px] font-semibold text-[#163143] mb-2">
@@ -207,7 +226,7 @@ export default function SandboxAdmin() {
             onChange={(e) => setNewTicketId(e.target.value)}
             onPressEnter={handleFlagNew}
             placeholder="Ticket ID (e.g. 99001)"
-            disabled={flagging}
+            disabled={flagging || clientId == null}
             style={{ height: 44, borderRadius: 24, maxWidth: 240 }}
           />
           <CustomButton
@@ -220,8 +239,9 @@ export default function SandboxAdmin() {
           />
         </div>
         <div className="text-[12px] text-[#7F8A92] mt-2">
-          Adds the ticket to the sandbox list trainees can practice on.
-          Toggle off below to remove a ticket.
+          {clientId == null
+            ? "Pick a client above first."
+            : "Adds the ticket to the sandbox list trainees can practice on. Toggle off below to remove a ticket."}
         </div>
       </div>
 
@@ -230,7 +250,15 @@ export default function SandboxAdmin() {
         <div className="text-[16px] font-semibold text-[#163143] mb-3">
           Currently flagged tickets
         </div>
-        {loading && rows.length === 0 ? (
+        {clientId == null ? (
+          <div className="text-center py-12 text-[#7F8A92] bg-white rounded-[16px] border border-[#D7E6E7]">
+            <Icon
+              icon="mdi:filter-outline"
+              className="text-[42px] mx-auto mb-2 text-[#D7E6E7]"
+            />
+            Select a client above to load flagged tickets.
+          </div>
+        ) : loading && rows.length === 0 ? (
           <Skeleton className="w-full h-[40vh]" />
         ) : rows.length > 0 ? (
           <AntDTable
@@ -243,13 +271,13 @@ export default function SandboxAdmin() {
             pageSize={pagination.size}
             onPageChange={(p) => {
               setPagination((prev) => ({ ...prev, page: p }));
-              fetchData(p, pagination.size);
+              fetchData(clientId, p, pagination.size);
             }}
             onPageSizeChange={(s) => {
               setPagination((prev) =>
                 prev.size !== s ? { ...prev, size: s, page: 1 } : prev
               );
-              fetchData(1, s);
+              fetchData(clientId, 1, s);
             }}
             pagination={true}
             sorting={{ sort_by: null, sort_order: null }}
@@ -260,7 +288,7 @@ export default function SandboxAdmin() {
               icon="mdi:flag-off-outline"
               className="text-[42px] mx-auto mb-2 text-[#D7E6E7]"
             />
-            No tickets are flagged for the sandbox yet.
+            No tickets are flagged for this client yet.
           </div>
         )}
       </div>

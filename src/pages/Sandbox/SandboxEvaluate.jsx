@@ -8,8 +8,10 @@ import { Modal, Input } from "antd";
 import toast from "react-hot-toast";
 
 import SandboxBanner from "../../components/SandboxBanner";
+import SandboxClientPicker from "../../components/SandboxClientPicker";
 import { CustomButton } from "../../components/Buttons/CustomButton";
 import { submitSandboxEvaluation } from "../../reduxStore/action/sandbox";
+import { extractApiError } from "../../utils/helperFunctions";
 
 // Sandbox evaluation page. Submitting calls the dedicated sandbox endpoint
 // which AI-grades the ticket and returns a preview score — nothing is
@@ -37,10 +39,18 @@ export default function SandboxEvaluate() {
     queryParams.get("ticket_id") || ""
   );
   const [formId, setFormId] = useState(queryParams.get("form_id") || "");
+  const [clientId, setClientId] = useState(() => {
+    const qsClient = queryParams.get("client_id");
+    return qsClient ? Number(qsClient) : null;
+  });
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState(null);
 
   const handleSubmit = () => {
+    if (clientId == null) {
+      toast.error("Pick a client first.");
+      return;
+    }
     if (!ticketId.trim()) {
       toast.error("Ticket ID is required.");
       return;
@@ -52,6 +62,7 @@ export default function SandboxEvaluate() {
     setSubmitting(true);
     dispatch(
       submitSandboxEvaluation(
+        clientId,
         {
           ticket_id: ticketId.trim(),
           source: "gorgias",
@@ -62,7 +73,8 @@ export default function SandboxEvaluate() {
             setResult(data);
           } else {
             const status = data?.response?.status;
-            const detail = data?.data?.detail || data?.message;
+            // extractApiError handles string OR 422 array detail safely.
+            const detail = extractApiError(data, "");
             if (status === 404) {
               toast.error(
                 "Ticket not found. It may not have been reconstructed yet."
@@ -99,6 +111,8 @@ export default function SandboxEvaluate() {
           QA Sandbox — Practice Evaluation
         </span>
       </div>
+
+      <SandboxClientPicker value={clientId} onChange={setClientId} />
 
       <div className="mx-8 mt-6 mb-8 bg-white rounded-[16px] border border-[#D7E6E7] p-8 max-w-[640px]">
         <p className="text-[#7F8A92] text-[14px] mb-6">

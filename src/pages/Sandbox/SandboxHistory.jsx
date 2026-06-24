@@ -9,42 +9,58 @@ import dayjs from "dayjs";
 import AntDTable from "../../components/AntDTable";
 import Skeleton from "../../components/Skeleton";
 import SandboxBanner from "../../components/SandboxBanner";
+import SandboxClientPicker from "../../components/SandboxClientPicker";
 import { getSandboxEvaluations } from "../../reduxStore/action/sandbox";
+import { extractApiError } from "../../utils/helperFunctions";
 
 export default function SandboxHistory() {
   const dispatch = useDispatch();
 
+  const [clientId, setClientId] = useState(null);
   const [rows, setRows] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, size: 20, total: 0 });
   const [loading, setLoading] = useState(false);
 
-  const fetchData = (page = pagination.page, size = pagination.size) => {
+  const fetchData = (
+    cid = clientId,
+    page = pagination.page,
+    size = pagination.size
+  ) => {
+    if (cid == null) return;
     setLoading(true);
     dispatch(
-      getSandboxEvaluations({ page, per_page: size }, (success, data) => {
-        if (success) {
-          setRows(data?.data || []);
-          setPagination({
-            page: data?.page || 1,
-            size: data?.per_page || size,
-            total: data?.total || 0,
-          });
-        } else {
-          toast.error(
-            data?.data?.detail ||
-              data?.message ||
-              "Failed to load sandbox history."
-          );
+      getSandboxEvaluations(
+        cid,
+        { page, per_page: size },
+        (success, data) => {
+          if (success) {
+            setRows(data?.data || []);
+            setPagination({
+              page: data?.page || 1,
+              size: data?.per_page || size,
+              total: data?.total || 0,
+            });
+          } else {
+            setRows([]);
+            toast.error(
+              extractApiError(data, "Failed to load sandbox history.")
+            );
+          }
+          setLoading(false);
         }
-        setLoading(false);
-      })
+      )
     );
   };
 
   useEffect(() => {
-    fetchData(1, pagination.size);
+    if (clientId != null) {
+      setPagination((prev) => ({ ...prev, page: 1 }));
+      fetchData(clientId, 1, pagination.size);
+    } else {
+      setRows([]);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [clientId]);
 
   const renderPct = (pct) => {
     if (pct == null) return "—";
@@ -131,8 +147,17 @@ export default function SandboxHistory() {
           QA Sandbox — My Practice History
         </span>
       </div>
+      <SandboxClientPicker value={clientId} onChange={setClientId} />
       <div className="px-8 mt-4 pb-8">
-        {loading && rows.length === 0 ? (
+        {clientId == null ? (
+          <div className="text-center py-16 text-[#7F8A92] bg-white rounded-[16px] border border-[#D7E6E7]">
+            <Icon
+              icon="mdi:filter-outline"
+              className="text-[42px] mx-auto mb-2 text-[#D7E6E7]"
+            />
+            Select a client above to load your sandbox history.
+          </div>
+        ) : loading && rows.length === 0 ? (
           <Skeleton className="w-full h-[50vh]" />
         ) : rows.length > 0 ? (
           <AntDTable
@@ -145,13 +170,13 @@ export default function SandboxHistory() {
             pageSize={pagination.size}
             onPageChange={(p) => {
               setPagination((prev) => ({ ...prev, page: p }));
-              fetchData(p, pagination.size);
+              fetchData(clientId, p, pagination.size);
             }}
             onPageSizeChange={(s) => {
               setPagination((prev) =>
                 prev.size !== s ? { ...prev, size: s, page: 1 } : prev
               );
-              fetchData(1, s);
+              fetchData(clientId, 1, s);
             }}
             pagination={true}
             sorting={{ sort_by: null, sort_order: null }}
@@ -162,8 +187,8 @@ export default function SandboxHistory() {
               icon="mdi:history"
               className="text-[42px] mx-auto mb-2 text-[#D7E6E7]"
             />
-            No practice attempts yet. Pick a ticket from the Sandbox
-            Tickets list to start practicing.
+            No practice attempts yet for this client. Pick a ticket from
+            the Sandbox Tickets list to start practicing.
           </div>
         )}
       </div>
