@@ -8,6 +8,7 @@ import { AntDNotification } from "../../components/AntDNotification";
 import AntDRangePicker from "../../components/AntDRangePicker/index";
 import AntDTable from "../../components/AntDTable";
 import MainPageButton from "../../components/Buttons/MainPageButton";
+import AssignTicketsModal from "../../components/AssignTicketsModal";
 import UnifiedDropdown from "../../components/Dropdown/UnifiedDropdown";
 import GenericAntDeleteModal from "../../components/GenericAntDeleteModal";
 import GenericAntDrawer from "../../components/GenericAntDrawer";
@@ -36,6 +37,8 @@ function EvaluateTickets() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [pagination, setPagination] = useState({ page: 1, size: 10 });
+  // Assign Tickets modal — gated to admin / dev / tl per spec.
+  const [assignOpen, setAssignOpen] = useState(false);
   // Ticket ID free-text filter — sent to API as `ticket_id`.
   // `ticketIdInput` is the live typed value; `ticketIdFilter` is the
   // debounced/committed value the fetch effect actually watches.
@@ -513,11 +516,25 @@ function EvaluateTickets() {
         </div>
         <div className="flex items-center">
           <span className="text-xl font-semibold">{"Evaluate Tickets"}</span>
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-3">
+            {/* Assign Tickets — admin / dev / tl only.
+                API enforces too; this just keeps the UI clean for others. */}
+            {["admin", "dev", "tl"].includes(userDetails?.role) && (
+              <button
+                onClick={() => setAssignOpen(true)}
+                className="inline-flex items-center gap-2 min-h-[40px] px-5 text-[14px] font-medium rounded-full border border-[#69C920] text-[#163143] bg-white hover:bg-[#F1F5F5] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#61BF19] focus:ring-offset-2"
+              >
+                <Icon
+                  icon="mdi:ticket-account"
+                  className="text-[#69C920] text-[18px]"
+                />
+                <span className="font-poppins">Assign Tickets</span>
+              </button>
+            )}
             <button
               onClick={handleEvalute}
               disabled={!selectedRow?.length > 0}
-              className={`w-[160px] min-h-[40px] ml-auto text-[14px] font-sm rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#61BF19] focus:ring-offset-2 ${
+              className={`w-[160px] min-h-[40px] text-[14px] font-sm rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#61BF19] focus:ring-offset-2 ${
                 !selectedRow?.length > 0
                   ? "bg-gray-400 cursor-not-allowed text-white"
                   : "bg-[#69C920] hover:bg-[#5CB518] text-white"
@@ -566,6 +583,12 @@ function EvaluateTickets() {
           }}
         />
       )}
+
+      <AssignTicketsModal
+        open={assignOpen}
+        onClose={() => setAssignOpen(false)}
+        clients={clientNames}
+      />
     </div>
   );
 }

@@ -40,6 +40,10 @@ import AttendanceInfractions from "../pages/AttendanceInfractions";
 import HubspotRoster from "../pages/HubspotRoster";
 import EndorsementReport from "../pages/EndorsementReport";
 import OnboardFromHubspot from "../pages/OnboardFromHubspot";
+import SandboxTickets from "../pages/Sandbox/SandboxTickets";
+import SandboxEvaluate from "../pages/Sandbox/SandboxEvaluate";
+import SandboxHistory from "../pages/Sandbox/SandboxHistory";
+import SandboxAdmin from "../pages/Sandbox/SandboxAdmin";
 import AuthProvider from "./AuthProvider";
 import { ENDORSEMENT_REPORT_EMAILS } from "../utils/accessLists";
 // admin download = wfa,om
@@ -220,6 +224,39 @@ const ROUTE_ROLES = {
     "tl",
     "dtl",
   ],
+  // QA Sandbox — trainee-facing pages broadly available to QA-touching roles.
+  "sandbox-tickets": [
+    "admin",
+    "dev",
+    "qa",
+    "qa-tl",
+    "qa-dm",
+    "qas",
+    "tl",
+    "dtl",
+  ],
+  "sandbox-evaluate": [
+    "admin",
+    "dev",
+    "qa",
+    "qa-tl",
+    "qa-dm",
+    "qas",
+    "tl",
+    "dtl",
+  ],
+  "sandbox-history": [
+    "admin",
+    "dev",
+    "qa",
+    "qa-tl",
+    "qa-dm",
+    "qas",
+    "tl",
+    "dtl",
+  ],
+  // Admin sub-page — gated tighter (curator action).
+  "sandbox-admin": ["admin", "dev", "qa-dm", "qa-tl"],
 };
 
 function DefaultRedirect() {
@@ -585,6 +622,52 @@ export default function AppRouter() {
                   routeRoles={ROUTE_ROLES}
                 >
                   <EndorsementReport />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* QA Sandbox routes */}
+            <Route
+              path="/sandbox-tickets"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["sandbox-tickets"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <SandboxTickets />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/sandbox-evaluate"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["sandbox-evaluate"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <SandboxEvaluate />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/sandbox-history"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["sandbox-history"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <SandboxHistory />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/sandbox-admin"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["sandbox-admin"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <SandboxAdmin />
                 </ProtectedRoute>
               }
             />

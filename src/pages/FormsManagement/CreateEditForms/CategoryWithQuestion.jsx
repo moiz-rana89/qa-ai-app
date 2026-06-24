@@ -21,6 +21,7 @@ import { useEffect } from "react";
 import Skeleton from "../../../components/Skeleton";
 import { QUESTION_SCORE, QUESTION_TYPE } from "../../../utils/formsConstant";
 import GenericAntDeleteModal from "../../../components/GenericAntDeleteModal";
+import RubricAssistantDrawer from "../../../components/RubricAssistantDrawer";
 
 const { TextArea } = Input;
 
@@ -120,6 +121,26 @@ export default function CategoryWithQuestion() {
   const [originalQuestion, setOriginalQuestion] = useState(null);
   // Inline error for the question-text field (set on 409 duplicate-question).
   const [questionTextError, setQuestionTextError] = useState("");
+  // AI Rubric Assistant — opens with whatever form/category/question is
+  // currently being edited so the user doesn't have to pick context manually.
+  const [aiOpen, setAiOpen] = useState(false);
+  const [aiContext, setAiContext] = useState({});
+  const [aiContextLabel, setAiContextLabel] = useState("");
+
+  // Open the Rubric Assistant with the broadest context that makes sense.
+  // Caller can override with category/question for narrower scope.
+  const openAiAssistant = ({ categoryId, questionId, label } = {}) => {
+    setAiContext({
+      form_id: activeForms?.form_id,
+      category_id: categoryId,
+      question_id: questionId,
+    });
+    setAiContextLabel(
+      label ||
+        `Form: ${activeForms?.form_name || activeForms?.form_id || "—"}`
+    );
+    setAiOpen(true);
+  };
 
   const {
     activeForms,
@@ -1199,6 +1220,22 @@ export default function CategoryWithQuestion() {
           />
           <span>Add Category</span>
         </div>
+
+        {/* AI Rubric Assistant — opens chat drawer pre-scoped to this form */}
+        <div
+          onClick={() => openAiAssistant()}
+          className="group flex items-center border border-[#D7E6E7] px-[16px] py-[1px] rounded-[30px] text-[14px] text-[#163143] cursor-pointer hover:border-[#69C920] hover:bg-[#69C920] hover:text-[#fff] transition-all duration-200 ml-auto"
+        >
+          <Icon
+            fontSize={20}
+            className="pr-1 text-[#69C920] group-hover:text-white transition-all duration-200"
+            icon="mdi:robot-outline"
+          />
+          <span>Ask AI</span>
+          <span className="ml-2 text-[10px] uppercase tracking-wide font-semibold bg-[#FFF7D8] text-[#7A5A00] px-2 py-[1px] rounded-full group-hover:bg-white group-hover:text-[#7A5A00]">
+            Beta
+          </span>
+        </div>
         {/* <button
           onClick={exportJSON}
           className="ml-auto flex items-center border border-[#D7E6E7] px-[16px] py-[1px] rounded-[30px] text-[14px] text-[#163143] hover:border-[#0066cc] hover:text-[#0066cc] transition-all duration-200"
@@ -1415,6 +1452,13 @@ export default function CategoryWithQuestion() {
       >
         {renderDrawerContent()}
       </GenericAntDrawer>
+
+      <RubricAssistantDrawer
+        open={aiOpen}
+        onClose={() => setAiOpen(false)}
+        context={aiContext}
+        contextLabel={aiContextLabel}
+      />
     </div>
   );
 }
