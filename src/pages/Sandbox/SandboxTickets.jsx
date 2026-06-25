@@ -10,7 +10,6 @@ import dayjs from "dayjs";
 import AntDTable from "../../components/AntDTable";
 import Skeleton from "../../components/Skeleton";
 import SandboxBanner from "../../components/SandboxBanner";
-import SandboxClientPicker from "../../components/SandboxClientPicker";
 import { getSandboxTickets } from "../../reduxStore/action/sandbox";
 import { extractApiError } from "../../utils/helperFunctions";
 
@@ -18,21 +17,14 @@ export default function SandboxTickets() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [clientId, setClientId] = useState(null);
   const [rows, setRows] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, size: 20, total: 0 });
   const [loading, setLoading] = useState(false);
 
-  const fetchData = (
-    cid = clientId,
-    page = pagination.page,
-    size = pagination.size
-  ) => {
-    if (cid == null) return;
+  const fetchData = (page = pagination.page, size = pagination.size) => {
     setLoading(true);
     dispatch(
       getSandboxTickets(
-        cid,
         { source: "gorgias", page, per_page: size },
         (success, data) => {
           if (success) {
@@ -54,16 +46,10 @@ export default function SandboxTickets() {
     );
   };
 
-  // Fetch whenever the picked client changes — reset to page 1.
   useEffect(() => {
-    if (clientId != null) {
-      setPagination((prev) => ({ ...prev, page: 1 }));
-      fetchData(clientId, 1, pagination.size);
-    } else {
-      setRows([]);
-    }
+    fetchData(1, pagination.size);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clientId]);
+  }, []);
 
   const columns = [
     {
@@ -128,9 +114,7 @@ export default function SandboxTickets() {
           type="button"
           onClick={() =>
             navigate(
-              `/sandbox-evaluate?client_id=${encodeURIComponent(
-                clientId
-              )}&ticket_id=${encodeURIComponent(
+              `/sandbox-evaluate?ticket_id=${encodeURIComponent(
                 r.ticket_id
               )}&form_id=${encodeURIComponent(r.form_id ?? "")}`
             )
@@ -151,17 +135,8 @@ export default function SandboxTickets() {
           QA Sandbox — Curated Tickets
         </span>
       </div>
-      <SandboxClientPicker value={clientId} onChange={setClientId} />
       <div className="px-8 mt-4 pb-8">
-        {clientId == null ? (
-          <div className="text-center py-16 text-[#7F8A92] bg-white rounded-[16px] border border-[#D7E6E7]">
-            <Icon
-              icon="mdi:filter-outline"
-              className="text-[42px] mx-auto mb-2 text-[#D7E6E7]"
-            />
-            Select a client above to load sandbox tickets.
-          </div>
-        ) : loading && rows.length === 0 ? (
+        {loading && rows.length === 0 ? (
           <Skeleton className="w-full h-[50vh]" />
         ) : rows.length > 0 ? (
           <AntDTable
@@ -174,13 +149,13 @@ export default function SandboxTickets() {
             pageSize={pagination.size}
             onPageChange={(p) => {
               setPagination((prev) => ({ ...prev, page: p }));
-              fetchData(clientId, p, pagination.size);
+              fetchData(p, pagination.size);
             }}
             onPageSizeChange={(s) => {
               setPagination((prev) =>
                 prev.size !== s ? { ...prev, size: s, page: 1 } : prev
               );
-              fetchData(clientId, 1, s);
+              fetchData(1, s);
             }}
             pagination={true}
             sorting={{ sort_by: null, sort_order: null }}
@@ -191,8 +166,8 @@ export default function SandboxTickets() {
               icon="mdi:inbox-outline"
               className="text-[42px] mx-auto mb-2 text-[#D7E6E7]"
             />
-            No sandbox tickets for this client yet. Ask an admin to flag
-            some tickets from the Sandbox Admin page.
+            No sandbox tickets available yet. Ask an admin to flag some
+            tickets from the Sandbox Admin page.
           </div>
         )}
       </div>

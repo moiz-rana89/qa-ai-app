@@ -8,28 +8,22 @@ import { Modal, Input } from "antd";
 import toast from "react-hot-toast";
 
 import SandboxBanner from "../../components/SandboxBanner";
-import SandboxClientPicker from "../../components/SandboxClientPicker";
 import { CustomButton } from "../../components/Buttons/CustomButton";
 import { submitSandboxEvaluation } from "../../reduxStore/action/sandbox";
 import { extractApiError } from "../../utils/helperFunctions";
 
-// Sandbox evaluation page. Submitting calls the dedicated sandbox endpoint
-// which AI-grades the ticket and returns a preview score — nothing is
-// recorded in live data.
+// Sandbox evaluation page. Submitting calls the dedicated sandbox
+// endpoint which AI-grades the ticket and returns a preview score —
+// nothing is recorded in live data.
 //
-// MVP scope: capture ticket_id / form_id + a "Submit Sandbox Evaluation"
-// button. Show the AI's grade in a result modal. The richer form-rendering
-// UI is intentionally deferred — the spec says to reuse the existing
-// QAForm component, which lives in EvaluteTickets/DynamicForm and is
-// tightly coupled to that page's data flow; reusing it for sandbox is a
+// MVP: capture ticket_id / form_id + Submit. Shows the AI's grade in a
+// result modal. The richer form-rendering UI (reusing QAForm) is a
 // follow-up integration task.
 export default function SandboxEvaluate() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Optionally pre-filled from query string when the user navigated here
-  // from the Sandbox Tickets list.
   const queryParams = useMemo(
     () => new URLSearchParams(location.search),
     [location.search]
@@ -38,64 +32,57 @@ export default function SandboxEvaluate() {
   const [ticketId, setTicketId] = useState(
     queryParams.get("ticket_id") || ""
   );
+  // form_id is optional per spec — the backend uses the ticket's stored
+  // form if this is left blank.
   const [formId, setFormId] = useState(queryParams.get("form_id") || "");
-  const [clientId, setClientId] = useState(() => {
-    const qsClient = queryParams.get("client_id");
-    return qsClient ? Number(qsClient) : null;
-  });
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState(null);
 
   const handleSubmit = () => {
-    if (clientId == null) {
-      toast.error("Pick a client first.");
-      return;
-    }
     if (!ticketId.trim()) {
       toast.error("Ticket ID is required.");
       return;
     }
-    if (!formId.toString().trim()) {
-      toast.error("Form ID is required.");
-      return;
-    }
     setSubmitting(true);
+
+    const body = {
+      ticket_id: ticketId.trim(),
+      source: "gorgias",
+    };
+    // Only include form_id when the user actually filled it — otherwise
+    // let the backend use the ticket's stored form.
+    if (formId !== "" && formId != null) {
+      const parsed = Number(formId);
+      body.form_id = Number.isNaN(parsed) ? formId : parsed;
+    }
+
     dispatch(
-      submitSandboxEvaluation(
-        clientId,
-        {
-          ticket_id: ticketId.trim(),
-          source: "gorgias",
-          form_id: Number(formId) || formId,
-        },
-        (success, data) => {
-          if (success) {
-            setResult(data);
+      submitSandboxEvaluation(body, (success, data) => {
+        if (success) {
+          setResult(data);
+        } else {
+          const status = data?.response?.status;
+          const detail = extractApiError(data, "");
+          if (status === 404) {
+            toast.error(
+              "Ticket not found. It may not have been reconstructed yet."
+            );
+          } else if (status === 403) {
+            toast.error(
+              "This ticket hasn't been added to the sandbox. Contact your admin."
+            );
+          } else if (status === 400) {
+            toast.error(
+              detail || "No evaluation form is linked to this ticket yet."
+            );
+          } else if (status === 500) {
+            toast.error("AI grading failed. Please try again in a moment.");
           } else {
-            const status = data?.response?.status;
-            // extractApiError handles string OR 422 array detail safely.
-            const detail = extractApiError(data, "");
-            if (status === 404) {
-              toast.error(
-                "Ticket not found. It may not have been reconstructed yet."
-              );
-            } else if (status === 403) {
-              toast.error(
-                "This ticket hasn't been added to the sandbox. Contact your admin."
-              );
-            } else if (status === 400) {
-              toast.error(
-                detail || "No evaluation form is linked to this ticket yet."
-              );
-            } else if (status === 500) {
-              toast.error("AI grading failed. Please try again in a moment.");
-            } else {
-              toast.error(detail || "Failed to submit. Please try again.");
-            }
+            toast.error(detail || "Failed to submit. Please try again.");
           }
-          setSubmitting(false);
         }
-      )
+        setSubmitting(false);
+      })
     );
   };
 
@@ -111,8 +98,6 @@ export default function SandboxEvaluate() {
           QA Sandbox — Practice Evaluation
         </span>
       </div>
-
-      <SandboxClientPicker value={clientId} onChange={setClientId} />
 
       <div className="mx-8 mt-6 mb-8 bg-white rounded-[16px] border border-[#D7E6E7] p-8 max-w-[640px]">
         <p className="text-[#7F8A92] text-[14px] mb-6">
@@ -136,15 +121,18 @@ export default function SandboxEvaluate() {
 
         <div className="mb-6">
           <label className="block text-[#163143] font-poppins text-[14px] font-semibold mb-2">
-            Form ID<span className="text-red-500 ml-1">*</span>
+            Form ID
           </label>
           <Input
             value={formId}
             onChange={(e) => setFormId(e.target.value)}
-            placeholder="e.g. 12"
+            placeholder="(optional — falls back to ticket's stored form)"
             disabled={submitting}
             style={{ height: 44, borderRadius: 24 }}
           />
+          <div className="text-[12px] text-[#7F8A92] mt-1">
+            Leave blank to use the form linked to this ticket.
+          </div>
         </div>
 
         <div className="flex justify-end gap-3">
@@ -167,7 +155,7 @@ export default function SandboxEvaluate() {
         </div>
       </div>
 
-      {/* Success modal — shows the AI-graded preview */}
+      {/* Result modal */}
       <Modal
         open={!!result}
         title={
