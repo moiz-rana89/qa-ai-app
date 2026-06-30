@@ -380,6 +380,32 @@ const menuList = [
     ],
   },
   {
+    // Need Help — Bug & Feature reports. Visible to all roles since the
+    // backend auto-scopes (mine / team / all) based on the user's role.
+    title: "Need Help",
+    icon: "mdi:lifebuoy",
+    route: "need-help",
+    roles: [
+      "admin",
+      "dev",
+      "wfa",
+      "tl",
+      "dtl",
+      "itl",
+      "dd",
+      "dm",
+      "om",
+      "som",
+      "aom",
+      "csm",
+      "cstm",
+      "qa",
+      "qa-dm",
+      "qa-tl",
+      "qas",
+    ],
+  },
+  {
     // QA Sandbox — training environment. Distinct icon so the section
     // reads as "practice / experiment" at a glance.
     title: "QA Sandbox",

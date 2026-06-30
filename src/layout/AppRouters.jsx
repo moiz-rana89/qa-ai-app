@@ -40,6 +40,7 @@ import AttendanceInfractions from "../pages/AttendanceInfractions";
 import HubspotRoster from "../pages/HubspotRoster";
 import EndorsementReport from "../pages/EndorsementReport";
 import OnboardFromHubspot from "../pages/OnboardFromHubspot";
+import NeedHelpPage from "../pages/NeedHelp";
 import SandboxTickets from "../pages/Sandbox/SandboxTickets";
 import SandboxEvaluate from "../pages/Sandbox/SandboxEvaluate";
 import SandboxHistory from "../pages/Sandbox/SandboxHistory";
@@ -212,6 +213,27 @@ const ROUTE_ROLES = {
   "attendance-infractions": ["admin", "dev", "wfa"],
   "hubspot-roster": ["admin", "dev", "wfa"],
   "onboard-from-hubspot": ["admin", "dev"],
+  // Need Help — Bug & Feature reporting. Backend auto-scopes per role
+  // (mine/team/all) so the page is safe to expose to everyone.
+  "need-help": [
+    "admin",
+    "dev",
+    "wfa",
+    "tl",
+    "dtl",
+    "itl",
+    "dd",
+    "dm",
+    "om",
+    "som",
+    "aom",
+    "csm",
+    "cstm",
+    "qa",
+    "qa-dm",
+    "qa-tl",
+    "qas",
+  ],
   "endorsement-report": [
     "admin",
     "dev",
@@ -610,6 +632,17 @@ export default function AppRouter() {
                   routeRoles={ROUTE_ROLES}
                 >
                   <OnboardFromHubspot />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/need-help"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["need-help"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <NeedHelpPage />
                 </ProtectedRoute>
               }
             />
