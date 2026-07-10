@@ -6,13 +6,29 @@ import { Modal, Input, InputNumber, Radio } from "antd";
 import { Icon } from "@iconify/react";
 
 import { CustomButton } from "../Buttons/CustomButton";
-import { assignTickets } from "../../reduxStore/action/assignTickets";
+import {
+  assignTickets,
+  getAssignPreview,
+} from "../../reduxStore/action/assignTickets";
 
 // Eligibility window per role — surfaced to the user as a small note so
 // they know zeroes mean "no eligible tickets in that window," not a bug.
 const ELIGIBILITY_DAYS = { tl: 20, qas: 15 };
 
 const isValidEmail = (s) => /^\S+@\S+\.\S+$/.test((s || "").trim());
+
+// Turn a raw client key (which today can be a slug like "parasolco" or
+// already a display name like "Parasol") into something readable.
+//   • Contains a space or an uppercase letter → assume it's already a
+//     display name; leave alone.
+//   • All-lowercase, no spaces → Title-case it. "parasolco" → "Parasolco".
+//     Not perfect ("brunt work wear" would be nicer) but stops it reading
+//     like an internal identifier.
+const prettifyClientKey = (key) => {
+  if (!key) return "";
+  if (/[A-Z\s]/.test(key)) return key;
+  return key.charAt(0).toUpperCase() + key.slice(1);
+};
 
 export default function AssignTicketsModal({ open, onClose, clients = [] }) {
   const dispatch = useDispatch();
@@ -22,8 +38,19 @@ export default function AssignTicketsModal({ open, onClose, clients = [] }) {
   const [role, setRole] = useState("tl"); // "tl" | "qas"
   const [mode, setMode] = useState("total"); // "total" | "per_client"
   const [total, setTotal] = useState(30);
-  // { [clientName]: count } — only entries with count > 0 are sent
+  // { [clientKey]: count } — only entries with count > 0 are sent.
+  // Key format matches whatever the preview endpoint returns (backend
+  // accepts either slug or display name).
   const [perClient, setPerClient] = useState({});
+
+  // ── Preview state (per-user ticket pool) ────────────────────────────────
+  // preview = { by_client: { "Parasol": 32, ... } } | null
+  const [preview, setPreview] = useState(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  // true when we tried the preview endpoint and it returned a hard error
+  // (e.g. 404 — endpoint not deployed yet). We then fall back to the
+  // global client list without a hard failure to the user.
+  const [previewUnavailable, setPreviewUnavailable] = useState(false);
 
   // ── Submit + result state ───────────────────────────────────────────────
   const [submitting, setSubmitting] = useState(false);
@@ -34,7 +61,7 @@ export default function AssignTicketsModal({ open, onClose, clients = [] }) {
   const [emailError, setEmailError] = useState("");
   const [modeError, setModeError] = useState("");
 
-  // Reset everything when the modal is reopened — clean slate each time
+  // Reset everything when the modal is reopened
   useEffect(() => {
     if (open) {
       setEmail("");
@@ -42,6 +69,9 @@ export default function AssignTicketsModal({ open, onClose, clients = [] }) {
       setMode("total");
       setTotal(30);
       setPerClient({});
+      setPreview(null);
+      setPreviewLoading(false);
+      setPreviewUnavailable(false);
       setResult(null);
       setErrorMessage("");
       setEmailError("");
@@ -50,8 +80,100 @@ export default function AssignTicketsModal({ open, onClose, clients = [] }) {
     }
   }, [open]);
 
-  // ── Derived values ──────────────────────────────────────────────────────
-  // Real-time per-client total for the summary row
+  // ── Preview fetch — debounced on (email, role) ──────────────────────────
+  // When both are set to something usable, ask the backend which clients
+  // this specific TL/QAS actually has eligible tickets for. On failure we
+  // silently fall through to the global client list.
+  useEffect(() => {
+    if (!open) return;
+    if (result) return; // don't refetch while showing the success panel
+
+    const trimmed = email.trim();
+    // Clear stale preview when the inputs become unusable
+    if (!trimmed || !isValidEmail(trimmed) || !role) {
+      setPreview(null);
+      setPreviewUnavailable(false);
+      setPerClient({});
+      return;
+    }
+
+    const handle = setTimeout(() => {
+      setPreviewLoading(true);
+      setPreviewUnavailable(false);
+      dispatch(
+        getAssignPreview(
+          { email: trimmed, role },
+          (success, dataOrErr) => {
+            setPreviewLoading(false);
+            if (success) {
+              setPreview(dataOrErr || { by_client: {} });
+              // Reset per-client counts so counts from a previous target
+              // don't linger against a new target's client set.
+              setPerClient({});
+            } else {
+              // Endpoint may not be deployed yet (404) or user has no pool
+              // (403). Fall back to the global list; keep UX moving.
+              setPreview(null);
+              setPreviewUnavailable(true);
+              setPerClient({});
+            }
+          }
+        )
+      );
+    }, 400); // debounce typing
+
+    return () => clearTimeout(handle);
+  }, [email, role, open, result, dispatch]);
+
+  // ── Derived — the client rows to render + their caps ────────────────────
+  //
+  // When the preview endpoint returned data, drive the list from it so the
+  // user can only pick clients this target actually has tickets for, and
+  // can't request more than what's available.
+  //
+  // When it hasn't (endpoint not deployed / 404), fall back to the global
+  // client list from getClientNames — same behavior as before this change.
+  //
+  // Each row is { key, label, max } where:
+  //   key = the backend key we'll send in per_client (slug or display name)
+  //   label = user-facing display string (prettified for slugs)
+  //   max = per-client cap (null when unknown, i.e. fallback mode)
+  const rows = useMemo(() => {
+    const byClient = preview?.by_client;
+    if (byClient && Object.keys(byClient).length > 0) {
+      // Preview drives the list — sorted by highest availability first
+      return Object.entries(byClient)
+        .filter(([, n]) => Number(n) > 0)
+        .sort((a, b) => Number(b[1]) - Number(a[1]))
+        .map(([name, n]) => ({
+          key: name,
+          label: prettifyClientKey(name),
+          max: Number(n),
+        }));
+    }
+    // Fallback: global client list. `clients` prop may be strings or
+    // objects with { client, client_id } from getClientNames.
+    return (Array.isArray(clients) ? clients : [])
+      .map((c) => {
+        const key =
+          typeof c === "string" ? c : c?.client || c?.name || null;
+        if (!key) return null;
+        return { key, label: prettifyClientKey(key), max: null };
+      })
+      .filter(Boolean);
+  }, [preview, clients]);
+
+  // Total-available (sum across all clients in preview) — used to cap the
+  // "Global total" input so users can't request more than the pool has.
+  const totalAvailable = useMemo(() => {
+    if (!preview?.by_client) return null;
+    return Object.values(preview.by_client).reduce(
+      (acc, n) => acc + (Number(n) > 0 ? Number(n) : 0),
+      0
+    );
+  }, [preview]);
+
+  // Running sum of the user's per-client entries
   const perClientTotal = useMemo(
     () =>
       Object.values(perClient).reduce(
@@ -61,7 +183,7 @@ export default function AssignTicketsModal({ open, onClose, clients = [] }) {
     [perClient]
   );
 
-  // Strip zero/empty values — what we'll actually send to the API
+  // Strip zero/empty values before sending
   const perClientCleaned = useMemo(
     () =>
       Object.entries(perClient).reduce((acc, [k, v]) => {
@@ -71,15 +193,6 @@ export default function AssignTicketsModal({ open, onClose, clients = [] }) {
       }, {}),
     [perClient]
   );
-
-  // Normalize the clients prop into a flat name list (works for either
-  // strings or { client } objects coming from getClientNames).
-  const clientList = useMemo(() => {
-    if (!Array.isArray(clients)) return [];
-    return clients
-      .map((c) => (typeof c === "string" ? c : c?.client || c?.name))
-      .filter(Boolean);
-  }, [clients]);
 
   // ── Validation ──────────────────────────────────────────────────────────
   const validate = () => {
@@ -100,11 +213,9 @@ export default function AssignTicketsModal({ open, onClose, clients = [] }) {
         setModeError("Total must be at least 1.");
         ok = false;
       }
-    } else {
-      if (Object.keys(perClientCleaned).length === 0) {
-        setModeError("Set a count of 1 or more for at least one client.");
-        ok = false;
-      }
+    } else if (Object.keys(perClientCleaned).length === 0) {
+      setModeError("Set a count of 1 or more for at least one client.");
+      ok = false;
     }
 
     return ok;
@@ -118,7 +229,6 @@ export default function AssignTicketsModal({ open, onClose, clients = [] }) {
     setErrorMessage("");
     setSubmitting(true);
 
-    // The spec says: send EITHER total OR per_client, never both.
     const body =
       mode === "total"
         ? { email: email.trim(), role, total }
@@ -135,7 +245,6 @@ export default function AssignTicketsModal({ open, onClose, clients = [] }) {
           if (status === 404) {
             setErrorMessage("No user found with that email.");
           } else if (status === 400) {
-            // 400 detail contains the actual role-mismatch / config message
             setErrorMessage(detail || "Request rejected. Check the role.");
           } else if (status === 500) {
             setErrorMessage("Server error, please try again.");
@@ -148,7 +257,6 @@ export default function AssignTicketsModal({ open, onClose, clients = [] }) {
   };
 
   const handleAssignMore = () => {
-    // Keep email + role, reset assignment details and result
     setResult(null);
     setErrorMessage("");
     setMode("total");
@@ -186,9 +294,7 @@ export default function AssignTicketsModal({ open, onClose, clients = [] }) {
           </label>
           <Radio.Group
             value={role}
-            onChange={(e) => {
-              setRole(e.target.value);
-            }}
+            onChange={(e) => setRole(e.target.value)}
             disabled={submitting}
             buttonStyle="solid"
             className="!w-full"
@@ -203,14 +309,37 @@ export default function AssignTicketsModal({ open, onClose, clients = [] }) {
         </div>
       </div>
 
-      {/* Eligibility note */}
+      {/* Eligibility note + preview status */}
       <div className="text-[12px] text-[#7F8A92] bg-[#F8FAFA] border border-[#EBF3F4] rounded-[10px] px-3 py-2 flex items-start gap-2">
         <Icon
           icon="mdi:information-outline"
           className="text-[16px] text-[#69C920] shrink-0 mt-[1px]"
         />
-        Only tickets from the last <strong>{ELIGIBILITY_DAYS[role]} days</strong>{" "}
-        are eligible for {role.toUpperCase()} assignment.
+        <div className="flex-1">
+          <div>
+            Only tickets from the last{" "}
+            <strong>{ELIGIBILITY_DAYS[role]} days</strong> are eligible for{" "}
+            {role.toUpperCase()} assignment.
+          </div>
+          {previewLoading && (
+            <div className="mt-1 inline-flex items-center gap-1 text-[#7F8A92]">
+              <Icon icon="eos-icons:loading" className="text-[14px]" />
+              Loading this user's ticket pool…
+            </div>
+          )}
+          {!previewLoading && preview?.by_client && (
+            <div className="mt-1 text-[#163143]">
+              <strong className="text-[#1F8B3F]">{totalAvailable}</strong>{" "}
+              eligible tickets across {rows.length} client
+              {rows.length === 1 ? "" : "s"}.
+            </div>
+          )}
+          {!previewLoading && previewUnavailable && (
+            <div className="mt-1 text-[#B86E00]">
+              Couldn't load this user's pool — showing all clients.
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Step 2 — Mode */}
@@ -237,9 +366,15 @@ export default function AssignTicketsModal({ open, onClose, clients = [] }) {
           <div className="mt-3 bg-[#F8FAFA] border border-[#EBF3F4] rounded-[12px] p-4">
             <label className="block text-[13px] font-semibold text-[#163143] mb-1.5">
               Total tickets
+              {totalAvailable != null && (
+                <span className="text-[11px] font-normal text-[#7F8A92] ml-2">
+                  (max {totalAvailable})
+                </span>
+              )}
             </label>
             <InputNumber
               min={1}
+              max={totalAvailable ?? undefined}
               value={total}
               onChange={(v) => setTotal(v ?? 1)}
               disabled={submitting}
@@ -250,29 +385,47 @@ export default function AssignTicketsModal({ open, onClose, clients = [] }) {
             </div>
           </div>
         ) : (
-          <div className="mt-3 bg-[#F8FAFA] border border-[#EBF3F4] rounded-[12px] p-4 max-h-[260px] overflow-y-auto">
-            {clientList.length === 0 ? (
+          <div className="mt-3 bg-[#F8FAFA] border border-[#EBF3F4] rounded-[12px] p-4 max-h-[280px] overflow-y-auto">
+            {previewLoading ? (
+              <div className="text-[12px] text-[#7F8A92] py-4 text-center inline-flex items-center gap-2 justify-center w-full">
+                <Icon
+                  icon="eos-icons:loading"
+                  className="text-[16px] text-[#69C920]"
+                />
+                Loading this user's pool…
+              </div>
+            ) : rows.length === 0 ? (
               <div className="text-[12px] text-[#7F8A92] py-4 text-center">
-                No clients available to assign from.
+                {preview
+                  ? "This user has no eligible tickets in the window."
+                  : "No clients available."}
               </div>
             ) : (
               <>
                 <div className="space-y-2">
-                  {clientList.map((name) => (
+                  {rows.map((row) => (
                     <div
-                      key={name}
-                      className="flex items-center justify-between gap-3"
+                      key={row.key}
+                      className="flex items-center gap-3"
                     >
-                      <span className="text-[13px] text-[#163143] truncate flex-1">
-                        {name}
-                      </span>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[13px] text-[#163143] truncate">
+                          {row.label}
+                        </div>
+                        {row.max != null && (
+                          <div className="text-[11px] text-[#7F8A92]">
+                            {row.max} available
+                          </div>
+                        )}
+                      </div>
                       <InputNumber
                         min={0}
-                        value={perClient[name] ?? 0}
+                        max={row.max ?? undefined}
+                        value={perClient[row.key] ?? 0}
                         onChange={(v) =>
                           setPerClient((prev) => ({
                             ...prev,
-                            [name]: v ?? 0,
+                            [row.key]: v ?? 0,
                           }))
                         }
                         disabled={submitting}
@@ -320,13 +473,13 @@ export default function AssignTicketsModal({ open, onClose, clients = [] }) {
             </>
           ) : Object.keys(perClientCleaned).length > 0 ? (
             <>
-              {Object.entries(perClientCleaned).map(([name, n]) => (
+              {Object.entries(perClientCleaned).map(([key, n]) => (
                 <>
-                  <div key={`l-${name}`} className="text-[#7F8A92] truncate">
-                    {name}
+                  <div key={`l-${key}`} className="text-[#7F8A92] truncate">
+                    {prettifyClientKey(key)}
                   </div>
                   <div
-                    key={`v-${name}`}
+                    key={`v-${key}`}
                     className="text-[#163143] tabular-nums"
                   >
                     {n}
@@ -416,7 +569,7 @@ export default function AssignTicketsModal({ open, onClose, clients = [] }) {
             {Object.entries(result.breakdown).map(([name, n]) => (
               <>
                 <div key={`bl-${name}`} className="text-[#163143] truncate">
-                  {name}
+                  {prettifyClientKey(name)}
                 </div>
                 <div
                   key={`bv-${name}`}
