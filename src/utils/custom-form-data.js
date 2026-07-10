@@ -5672,6 +5672,7 @@ export const formTypes = [
     title: "Cozy Earth Quality Form V2.0",
     clientId: 151608,
     clientName: "Cozy Earth",
+    extraSections: [],
     sections: [
       {
         id: "customer-attunement",
