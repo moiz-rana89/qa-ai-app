@@ -5662,6 +5662,313 @@ export const formTypes = [
       },
     ],
   },
+  // ─── Cozy Earth — Quality Form V2.0 ────────────────────────────────
+  // 4-anchor rubric: Does Not Meet (0%) / Partially Meet (50%) /
+  // Meets (100%) / Not Applicable. Weights sum to 100 across four
+  // sections. Critical (Auto Fail) flag is surfaced via `isCritical`
+  // on individual questions.
+  {
+    id: "customer-service-email-chat",
+    title: "Cozy Earth Quality Form V2.0",
+    clientId: 151608,
+    clientName: "Cozy Earth",
+    sections: [
+      {
+        id: "customer-attunement",
+        title: "A. Customer Attunement",
+        description:
+          "The ability to accurately perceive, understand, and respond to the customer's emotions, tone, and needs.",
+        questions: [
+          {
+            id: "A1",
+            label:
+              "How consistently did the agent greet the customer, use their name when available, and personalize the message to create a warm and professional experience?",
+            sublabel: "(3 points) (A1)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "Does Not Meet Expectations" },
+              { value: "0.5", label: "Partially Meet Expectations" },
+              { value: "1.00", label: "Meets Expectations" },
+              { value: "N/A", label: "Not Applicable" },
+            ],
+            inputType: "select",
+            comments: true,
+          },
+          {
+            id: "A2",
+            label:
+              "Did the agent demonstrate clear acknowledgment of the customer's concern/sentiment during the interaction?",
+            sublabel: "(4 points) (A2)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "Does Not Meet Expectations" },
+              { value: "0.5", label: "Partially Meet Expectations" },
+              { value: "1.00", label: "Meets Expectations" },
+              { value: "N/A", label: "Not Applicable" },
+            ],
+            inputType: "select",
+            comments: true,
+          },
+          {
+            id: "A3",
+            label:
+              "Did the agent show empathy—especially when the customer seemed frustrated, confused, or emotional—and were any opportunities missed to acknowledge their situation more genuinely?",
+            sublabel: "(4 points) (A3)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "Does Not Meet Expectations" },
+              { value: "0.5", label: "Partially Meet Expectations" },
+              { value: "1.00", label: "Meets Expectations" },
+              { value: "N/A", label: "Not Applicable" },
+            ],
+            inputType: "select",
+            comments: true,
+          },
+          {
+            id: "A4",
+            label:
+              "Was the tone professional and appropriate for the situation (customer or internal)?",
+            sublabel: "(2 points) (A4)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "Does Not Meet Expectations" },
+              { value: "0.5", label: "Partially Meet Expectations" },
+              { value: "1.00", label: "Meets Expectations" },
+              { value: "N/A", label: "Not Applicable" },
+            ],
+            inputType: "select",
+            comments: true,
+          },
+          {
+            id: "A5",
+            label:
+              "If the agent likely resolved the customer's issue, did they check if additional assistance was needed before closing?",
+            sublabel: "(2 points) (A5)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "Does Not Meet Expectations" },
+              { value: "0.5", label: "Partially Meet Expectations" },
+              { value: "1.00", label: "Meets Expectations" },
+              { value: "N/A", label: "Not Applicable" },
+            ],
+            inputType: "select",
+            comments: true,
+            // "Mark as N/A for backend or non-customer-facing tasks"
+            isOptional: true,
+          },
+        ],
+      },
+      {
+        id: "communication-execution",
+        title: "B. Communication Execution & Tools Usage",
+        description:
+          "The clarity, structure, professionalism, and effectiveness of communication, including proper use of tools and resources.",
+        questions: [
+          {
+            id: "B1",
+            label:
+              "Was the response clear, well-structured, and grammatically correct?",
+            sublabel: "(3 points) (B1)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "Does Not Meet Expectations" },
+              { value: "0.5", label: "Partially Meet Expectations" },
+              { value: "1.00", label: "Meets Expectations" },
+              { value: "N/A", label: "Not Applicable" },
+            ],
+            inputType: "select",
+            comments: true,
+          },
+          {
+            id: "B2",
+            label:
+              "Did the agent use macros/templates appropriately and adjust them as needed (if applicable)?",
+            sublabel: "(3 points) (B2)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "Does Not Meet Expectations" },
+              { value: "0.5", label: "Partially Meet Expectations" },
+              { value: "1.00", label: "Meets Expectations" },
+              { value: "N/A", label: "Not Applicable" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "B3",
+            label:
+              "Were relevant and functional links/resources provided (if applicable)?",
+            sublabel: "(3 points) (B3)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "Does Not Meet Expectations" },
+              { value: "0.5", label: "Partially Meet Expectations" },
+              { value: "1.00", label: "Meets Expectations" },
+              { value: "N/A", label: "Not Applicable" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "B4",
+            label:
+              "Were the agent's solutions clearly tailored to the customer's specific situation—and could they have done more to clarify next steps or prevent unnecessary back-and-forth?",
+            sublabel: "(3 points) (B4)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "Does Not Meet Expectations" },
+              { value: "0.5", label: "Partially Meet Expectations" },
+              { value: "1.00", label: "Meets Expectations" },
+              { value: "N/A", label: "Not Applicable" },
+            ],
+            inputType: "select",
+            comments: true,
+          },
+        ],
+      },
+      {
+        id: "process-adherence",
+        title: "C. Process Adherence & Compliance",
+        description:
+          "The extent to which workflows, policies, and required procedures are followed accurately and consistently.",
+        questions: [
+          {
+            id: "C1",
+            label:
+              "Were the agent's questions/actions sufficient to properly diagnose or handle the issue?",
+            sublabel: "(9 points) (C1)",
+            points: 9,
+            options: [
+              { value: "0.00", label: "Does Not Meet Expectations" },
+              { value: "0.5", label: "Partially Meet Expectations" },
+              { value: "1.00", label: "Meets Expectations" },
+              { value: "N/A", label: "Not Applicable" },
+            ],
+            inputType: "select",
+            comments: true,
+          },
+          {
+            id: "C2",
+            label:
+              "Critical (Auto Fail): Did the agent follow the correct workflow and applicable policies (e.g., warranties, returns, exchanges)?",
+            sublabel: "(19 points) (C2) — Critical",
+            points: 19,
+            options: [
+              { value: "0.00", label: "Does Not Meet Expectations" },
+              { value: "0.5", label: "Partially Meet Expectations" },
+              { value: "1.00", label: "Meets Expectations" },
+              { value: "N/A", label: "Not Applicable" },
+            ],
+            inputType: "select",
+            comments: true,
+            isCritical: true,
+          },
+          {
+            id: "C3",
+            label:
+              "Did the agent follow required follow-up procedures (e.g., requesting missing info, offering alternatives)?",
+            sublabel: "(9 points) (C3)",
+            points: 9,
+            options: [
+              { value: "0.00", label: "Does Not Meet Expectations" },
+              { value: "0.5", label: "Partially Meet Expectations" },
+              { value: "1.00", label: "Meets Expectations" },
+              { value: "N/A", label: "Not Applicable" },
+            ],
+            inputType: "select",
+            comments: true,
+          },
+          {
+            id: "C4",
+            label:
+              "Critical (Auto Fail): Did the agent complete all required steps before resolution (no skipped processes)?",
+            sublabel: "(18 points) (C4) — Critical",
+            points: 18,
+            options: [
+              { value: "0.00", label: "Does Not Meet Expectations" },
+              { value: "0.5", label: "Partially Meet Expectations" },
+              { value: "1.00", label: "Meets Expectations" },
+              { value: "N/A", label: "Not Applicable" },
+            ],
+            inputType: "select",
+            comments: true,
+            isCritical: true,
+          },
+        ],
+      },
+      {
+        id: "documentation",
+        title: "D. Documentation & Case Management",
+        description:
+          "Measures the completeness, clarity, and accuracy of internal notes and case tracking.",
+        questions: [
+          {
+            id: "D1",
+            label:
+              "Critical (Auto Fail): Did the agent leave clear and complete notes in all required areas? Also, are the notes detailed enough for another agent to take over without confusion?",
+            sublabel: "(11 points) (D1) — Critical",
+            points: 11,
+            options: [
+              { value: "0.00", label: "Does Not Meet Expectations" },
+              { value: "0.5", label: "Partially Meet Expectations" },
+              { value: "1.00", label: "Meets Expectations" },
+              { value: "N/A", label: "Not Applicable" },
+            ],
+            inputType: "select",
+            comments: true,
+            isCritical: true,
+          },
+          {
+            id: "D2",
+            label:
+              "Did the agent accurately track the case (e.g., Date Created, Date Processed, Status) without manipulating or misrepresenting SLA data?",
+            sublabel: "(7 points) (D2)",
+            points: 7,
+            options: [
+              { value: "0.00", label: "Does Not Meet Expectations" },
+              { value: "0.5", label: "Partially Meet Expectations" },
+              { value: "1.00", label: "Meets Expectations" },
+              { value: "N/A", label: "Not Applicable" },
+            ],
+            inputType: "select",
+            comments: true,
+          },
+        ],
+      },
+      {
+        id: "overall-feedback",
+        title: "OVERALL FEEDBACK",
+        questions: [
+          {
+            id: "F1",
+            label: "Wins",
+            sublabel: "(F1)",
+            points: 0,
+            inputType: "textarea",
+            comments: false,
+          },
+          {
+            id: "F2",
+            label: "Opportunities",
+            sublabel: "(F2)",
+            points: 0,
+            inputType: "textarea",
+            comments: false,
+          },
+          {
+            id: "F3",
+            label: "Recommendations",
+            sublabel: "(F3)",
+            points: 0,
+            inputType: "textarea",
+            comments: false,
+          },
+        ],
+      },
+    ],
+  },
 ];
 export function getFormTypeById(id) {
   return formTypes.find((type) => type.id === id);

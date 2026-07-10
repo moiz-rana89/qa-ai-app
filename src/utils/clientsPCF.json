@@ -42,5 +42,9 @@
   {
     "client": "Gorgias",
     "client_id": 400001
+  },
+  {
+    "client": "cozyearth",
+    "client_id": 151608
   }
 ]
