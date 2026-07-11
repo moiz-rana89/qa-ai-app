@@ -16,11 +16,6 @@ export function FeedbackSection({
             style={{ width: "max-content" }}
             className="block text-[14px] bg-[#F1F5F5] px-[16px] py-[2px] rounded-[30px] mb-3"
           >
-            {console.log(
-              "selectedFormType",
-              selectedFormType?.includes("phone") ||
-                selectedFormType?.includes("call")
-            )}
             What are some things this agent did particularly well in their
             {selectedFormType?.includes("phone") ||
             selectedFormType?.includes("call")

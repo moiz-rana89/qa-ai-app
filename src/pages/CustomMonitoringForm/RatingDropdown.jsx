@@ -73,7 +73,6 @@ export function RatingDropdown({
                     }`}
                     disabled={!isIncluded}
                   >
-                    {console.log("selectValue", value)}
                     <span className="font-medium">
                       {selectValue?.label?.length > 0
                         ? selectValue?.label
