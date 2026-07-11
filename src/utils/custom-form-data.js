@@ -5668,11 +5668,40 @@ export const formTypes = [
   // Weights sum to 100 across four sections. Critical (Auto Fail) is
   // surfaced via `isCritical` on individual questions.
   {
-    id: "customer-service-email-chat",
+    id: "cozy-earth-quality-form-v2",
     title: "Cozy Earth Quality Form V2.0",
     clientId: 151608,
     clientName: "Cozy Earth",
-    extraSections: [],
+    extraSections: [
+      {
+        id: "summary-notes",
+        title: "SUMMARY NOTES",
+        required: true,
+        questions: [
+          {
+            id: "opportunities",
+            label: "OPPORTUNITIES",
+            sublabel: "",
+            points: 0,
+            inputType: "textarea",
+          },
+          {
+            id: "wins",
+            label: "WINS",
+            sublabel: "",
+            points: 0,
+            inputType: "textarea",
+          },
+          {
+            id: "recommendations",
+            label: "RECOMMENDATIONS",
+            sublabel: "",
+            points: 0,
+            inputType: "textarea",
+          },
+        ],
+      },
+    ],
     sections: [
       {
         id: "customer-attunement",
@@ -5931,36 +5960,6 @@ export const formTypes = [
             ],
             inputType: "select",
             comments: true,
-          },
-        ],
-      },
-      {
-        id: "overall-feedback",
-        title: "OVERALL FEEDBACK",
-        questions: [
-          {
-            id: "F1",
-            label: "Wins",
-            sublabel: "(F1)",
-            points: 0,
-            inputType: "textarea",
-            comments: false,
-          },
-          {
-            id: "F2",
-            label: "Opportunities",
-            sublabel: "(F2)",
-            points: 0,
-            inputType: "textarea",
-            comments: false,
-          },
-          {
-            id: "F3",
-            label: "Recommendations",
-            sublabel: "(F3)",
-            points: 0,
-            inputType: "textarea",
-            comments: false,
           },
         ],
       },
