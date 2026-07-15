@@ -65,6 +65,7 @@ const QAForm = ({
             score: scores[question.question_id] ?? question.score,
             max_points: question.max_points,
             note: notes[question.question_id] ?? question.note,
+            optional: question.optional,
           })),
         })),
       };
@@ -92,8 +93,11 @@ const QAForm = ({
     let maxScore = 0;
 
     category.questions.forEach((question) => {
-      maxScore += question.max_points;
-      totalScore += Number.parseFloat(scores[question.question_id] || 0);
+      const score = Number.parseFloat(scores[question.question_id] || 0);
+      totalScore += score;
+      if (!question.optional || score > 0) {
+        maxScore += question.max_points;
+      }
     });
 
     return { totalScore, maxScore };

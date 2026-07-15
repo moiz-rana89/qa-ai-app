@@ -25,8 +25,11 @@ export default function EvaluteHeader({
     return categories.reduce(
       (acc, category) => {
         category?.questions?.forEach((q) => {
-          acc.totalScore += Number(q.score) || 0;
-          acc.maxScore += Number(q.max_points) || 0;
+          const score = Number(q.score) || 0;
+          acc.totalScore += score;
+          if (!q.optional || score > 0) {
+            acc.maxScore += Number(q.max_points) || 0;
+          }
         });
 
         return acc;
