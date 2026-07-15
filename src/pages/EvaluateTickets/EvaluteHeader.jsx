@@ -36,6 +36,10 @@ export default function EvaluteHeader({
   };
 
   const resolveYourScore = () => {
+    const live = calculateScores(userJson);
+    if (live.maxScore > 0) {
+      return { score: live.totalScore, max: live.maxScore };
+    }
     if (tlScore?.final_score != null && tlScore?.max_score != null) {
       return { score: tlScore.final_score, max: tlScore.max_score };
     }
