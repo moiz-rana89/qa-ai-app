@@ -283,24 +283,24 @@ function EvaluateTickets() {
         </div>
       ),
     },
-    {
-      title: "Created At",
-      dataIndex: "created_at",
-      key: "created_at",
-      width: 250,
-      render: (_, { created_at }) => (
-        <div>{created_at && formatDateTimePlainEnglish(created_at)}</div>
-      ),
-    },
-    {
-      title: "Updated At",
-      dataIndex: "updated_at",
-      key: "updated_at",
-      width: 250,
-      render: (_, { updated_at }) => (
-        <div>{updated_at && formatDateTimePlainEnglish(updated_at)}</div>
-      ),
-    },
+    // {
+    //   title: "Created At",
+    //   dataIndex: "created_at",
+    //   key: "created_at",
+    //   width: 250,
+    //   render: (_, { created_at }) => (
+    //     <div>{created_at && formatDateTimePlainEnglish(created_at)}</div>
+    //   ),
+    // },
+    // {
+    //   title: "Updated At",
+    //   dataIndex: "updated_at",
+    //   key: "updated_at",
+    //   width: 250,
+    //   render: (_, { updated_at }) => (
+    //     <div>{updated_at && formatDateTimePlainEnglish(updated_at)}</div>
+    //   ),
+    // },
   ];
 
   const handleEvalute = () => {
