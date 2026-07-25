@@ -22,6 +22,7 @@ import { Tabs, Tab } from "../../../components/Tabs/Tabs";
 
 export default function RemoteTeamManagement() {
   const isMounted = useRef(false);
+  const isTabEffectInitialMount = useRef(true);
 
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
@@ -53,7 +54,7 @@ export default function RemoteTeamManagement() {
 
   const [CurrntActiveTab, setCurrntActiveTab] = useState("Unresolved");
 
-  const userDetails = JSON.parse(localStorage.getItem("user_details") || "{}");
+  const userDetails = useSelector((state) => state.auth.user);
 
   const {
     attendanceRecords,
@@ -96,8 +97,13 @@ export default function RemoteTeamManagement() {
   }, []);
 
   useEffect(() => {
+    if (!userDetails) return;
     let roleObject = {};
-    if (userDetails?.role == "tl" || userDetails?.role == "dtl") {
+    if (
+      userDetails?.role == "tl" ||
+      userDetails?.role == "dtl" ||
+      userDetails?.role == "itl"
+    ) {
       roleObject = { team_lead_id: [parseInt(userDetails?.owner_id)] };
     } else if (userDetails?.role == "om") {
       roleObject = { operations_manager_id: [parseInt(userDetails?.owner_id)] };
@@ -151,6 +157,7 @@ export default function RemoteTeamManagement() {
     sortBy,
     sortOrder,
     opsDropDownFilters,
+    userDetails,
   ]);
   useEffect(() => {
     if (!isMounted.current) {
@@ -167,9 +174,9 @@ export default function RemoteTeamManagement() {
     }
   }, [currentpage, currentpageSize]);
   useEffect(() => {
-    if (!isMounted.current) {
-      isMounted.current = true; // Set to true after the first render
-      return; // Skip the effect for the first render
+    if (isTabEffectInitialMount.current) {
+      isTabEffectInitialMount.current = false;
+      return;
     }
     const params = {
       ...filterParams,

@@ -245,6 +245,30 @@ export const createQuestion = (formsBody, handle) => {
   };
 };
 
+// PATCH a single question with only the fields the user changed.
+// `body` should already contain only the diff — see updateQuestionWithDiff
+// in CategoryWithQuestion.jsx for the helper that builds it.
+// The callback receives (success, dataOrError):
+//   success=true  → dataOrError is the JSON body
+//                   (e.g. { question_id, status: "Question updated" }
+//                    or { status: "no changes" })
+//   success=false → dataOrError is the Error object thrown by Api.xhr;
+//                   inspect `.response?.status` for 404 / 409 / 422 etc.
+export const updateQuestionAction = (questionId, body, handle) => {
+  return (dispatch) => {
+    dispatch(setLoaderQuestionAction(true));
+    Api.patch(`/qa_ai_new/questions/questions/${questionId}`, body)
+      .then((resp) => {
+        dispatch(setLoaderQuestionAction(false));
+        handle?.(true, resp?.data);
+      })
+      .catch((error) => {
+        dispatch(setLoaderQuestionAction(false));
+        handle?.(false, error);
+      });
+  };
+};
+
 export const getCategoryByForm = (formId) => {
   return (dispatch) => {
     try {
@@ -280,6 +304,20 @@ export const getAgentName = (setLoader) => {
     try {
       setLoader(true);
       Api.get(`/get-team-members-filter`).then((resp) => {
+        dispatch(setAgentName(resp.data?.data));
+        setLoader(false);
+      });
+    } catch (error) {
+      setLoader(false);
+    }
+  };
+};
+
+export const getTeamMemberFilter = (setLoader) => {
+  return (dispatch) => {
+    try {
+      setLoader(true);
+      Api.get(`/qa_ai_apis/get-team-members-filter`).then((resp) => {
         dispatch(setAgentName(resp.data?.data));
         setLoader(false);
       });
@@ -460,7 +498,7 @@ export const getDownloadReport = (setLoader, toast, params = {}) => {
       addParam("form_name", params.selectedReportCat);
       addParam("event_type", params.event_type);
       addParam("updated_by_tl", params.updated_by_tl);
-
+      addParam("admin", params.admin);
       Api.get("/openai/forms-download", queryParams)
         .then((resp) => {
           const blob = new Blob([resp.data], { type: "text/csv" });
@@ -488,16 +526,16 @@ export const getDownloadReport = (setLoader, toast, params = {}) => {
   };
 };
 
-export const getClientsNameForCSFDownload = (setLoader, tlName) => {
+export const getClientsNameForCSFDownload = (setLoader, tlName, role) => {
   return (dispatch) => {
     try {
       setLoader(true);
-      Api.get(`/openai/client-form-client-names?updated_by_tl=${tlName}`).then(
-        (resp) => {
-          dispatch(setClientsNameDownload(resp.data));
-          setLoader(false);
-        }
-      );
+      Api.get(
+        `/openai/client-form-client-names?updated_by_tl=${tlName}&admin=${role}`
+      ).then((resp) => {
+        dispatch(setClientsNameDownload(resp.data));
+        setLoader(false);
+      });
     } catch (error) {
       setLoader(false);
     }
@@ -524,6 +562,7 @@ export const getDownloadCSFReport = (setLoader, toast, params = {}) => {
       addParam("start_date", params.date[0]);
       addParam("raw", params.selectedReportFormat == "raw" ? true : false);
       addParam("updated_by_tl", params.updated_by_tl);
+      addParam("admin", params.admin);
 
       Api.get("/openai/client-form-download", queryParams)
         .then((resp) => {
@@ -534,6 +573,53 @@ export const getDownloadCSFReport = (setLoader, toast, params = {}) => {
           link.href = URL.createObjectURL(blob);
 
           link.download = `forms_reports.csv`;
+
+          link.click();
+
+          URL.revokeObjectURL(link.href);
+          setLoader(false);
+          toast.success("File Downloaded Successfuly");
+        })
+        .catch((error) => {
+          setLoader(false);
+          toast.error("No data found for selected filters");
+        });
+    } catch (error) {
+      setLoader(false);
+      toast.error("No data found for selected filters");
+    }
+  };
+};
+
+export const getQAAIReport = (setLoader, toast, params = {}) => {
+  return (dispatch) => {
+    try {
+      setLoader(true);
+      const queryParams = {};
+
+      const addParam = (key, value) => {
+        if (value !== undefined && value !== null && value !== "") {
+          if (Array.isArray(value) && value.length === 0) {
+            return;
+          }
+          queryParams[key] = value;
+        }
+      };
+
+      addParam("owner", params.owner);
+      addParam("start_date", params.start_date);
+      addParam("end_date", params.end_date);
+      addParam("admin", params.admin);
+
+      Api.get("/qa_ai_apis/qa_ai_report_download", queryParams)
+        .then((resp) => {
+          const blob = new Blob([resp.data], { type: "text/csv" });
+
+          const link = document.createElement("a");
+
+          link.href = URL.createObjectURL(blob);
+
+          link.download = `qa_ai_report.csv`;
 
           link.click();
 

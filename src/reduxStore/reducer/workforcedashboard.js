@@ -121,6 +121,18 @@ const workforceReducer = createReducer(INITIAL_STATE, {
       attendanceDisputedRecords: action.data,
     };
   },
+  [types.FETCH_RESOLVED_BY_WFA_RECORDS](state, action) {
+    return {
+      ...state,
+      resolvedByWfaRecords: action.data,
+    };
+  },
+  [types.FETCH_ONTIME_REPORTS](state, action) {
+    return {
+      ...state,
+      onTimeRecords: action.data,
+    };
+  },
 });
 
 export default workforceReducer;

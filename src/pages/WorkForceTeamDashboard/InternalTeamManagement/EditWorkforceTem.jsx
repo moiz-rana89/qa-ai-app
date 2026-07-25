@@ -19,7 +19,7 @@ import {
   ATT_REASONS_STATUS,
   handleReasonRules,
 } from "../../../utils/constants";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   addAutomationReport,
   getAttendanceRecords,
@@ -29,7 +29,12 @@ import {
 } from "../../../reduxStore/action/workforcedashboard";
 import UploadFile from "../../../components/UploadFile/index";
 import ReasonAttachment from "../../../components/UploadFile/ReasonAttachment";
-import { isJsonString, isWithin90 } from "../../../utils/helperFunctions";
+import {
+  isJsonString,
+  isWithin15,
+  isWithin90,
+} from "../../../utils/helperFunctions";
+import moment from "moment";
 import Skeleton from "../../../components/Skeleton";
 import { Icon } from "@iconify/react";
 import { NotesInput } from "../../../components/NotesInput";
@@ -59,8 +64,13 @@ export default function EditRemoteTeam({
   const [authCheck, setAuthCheck] = useState(false);
 
   const [endDate, setEndDate] = useState("");
+  // Start date only matters for "Schedule plotted for Billing Purposes",
+  // mirroring the Remote Team drawer behavior.
+  const [startDate, setStartDate] = useState("");
   const [reasonAttachment, setReasonAttachment] = useState(null);
-  const userDetails = JSON.parse(localStorage.getItem("user_details") || "{}");
+
+  const userDetails = useSelector((state) => state.auth.user);
+
   const dispatch = useDispatch();
   const onClose = () => {
     setOpen(false);
@@ -73,6 +83,19 @@ export default function EditRemoteTeam({
       // setNotesTL(selectedReport?.notes);
       // setIsDisputed(false);
       setAuthCheck(false);
+      // Pre-fill start/end date from the report so they round-trip on edit
+      selectedReport?.end_date
+        ? setEndDate({
+            d: moment(selectedReport?.end_date),
+            ds: moment(selectedReport?.end_date).format("YYYY-MM-DD"),
+          })
+        : setEndDate("");
+      selectedReport?.start_date
+        ? setStartDate({
+            d: moment(selectedReport?.start_date),
+            ds: moment(selectedReport?.start_date).format("YYYY-MM-DD"),
+          })
+        : setStartDate("");
       if (selectedReport?.attachments) {
         if (isJsonString(selectedReport?.attachments)) {
           setFileInfo(JSON.parse(selectedReport?.attachments));
@@ -84,11 +107,13 @@ export default function EditRemoteTeam({
       } else {
         setFileInfo();
       }
-      if (selectedReport?.attendance_reason != null) {
+      const reasonToUse = selectedReport?.updated_reason_tl || selectedReport?.attendance_reason;
+      if (reasonToUse != null) {
+        const found = ATT_REASONS_STATUS?.find(
+          (item) => item.reason == reasonToUse
+        );
         setReason([
-          ATT_REASONS_STATUS?.find(
-            (item) => item.reason == selectedReport?.attendance_reason
-          ),
+          found || { reason: reasonToUse, validity: "VALID", description: "" },
         ]);
       } else {
         setReason([]);
@@ -141,15 +166,56 @@ export default function EditRemoteTeam({
       toast.error("You must check 'Mark as Resolved' before proceeding.");
     } else if (!fileInfo?.length > 0 && reason[0]?.isFileReq) {
       toast.error("You must Upload Attachment before proceeding.");
+    } else if (
+      handleReasonRules(reason[0]?.reason) &&
+      (!endDate?.ds || !fileInfo?.length > 0)
+    ) {
+      toast.error(
+        "You must provide End Date and Upload Attachment before proceeding."
+      );
+    } else if (
+      handleReasonRules(reason[0]?.reason) &&
+      reason[0]?.reason == "Schedule plotted for Billing Purposes" &&
+      !isWithin15(endDate?.ds, startDate?.ds)
+    ) {
+      toast.error("End date must be within 15 days.");
+    } else if (
+      handleReasonRules(reason[0]?.reason) &&
+      reason[0]?.reason != "Schedule plotted for Billing Purposes" &&
+      !isWithin90(endDate?.ds)
+    ) {
+      toast.error("End date must be within 90 days.");
     } else if (!authCheck) {
       toast.error(
         "Please confirm that you have reviewed the infraction and provided the required notes or documentation."
       );
     } else {
       setLoading(true);
+
+      // Same flow as Remote Team: when the reason is one of the leave /
+      // long-term-schedule reasons (LOA, Maternity, Paternity, Flexible
+      // Schedule, Schedule plotted for Billing Purposes), also push an
+      // automation record so the schedule engine knows to skip attendance
+      // checks for the agreed window.
+      const paramsAutomation = {
+        user_id: selectedReport?.user_id,
+        reason: reason[0]?.reason,
+        end_date: endDate?.ds,
+        team_lead_note: notes,
+        attachment_url:
+          fileInfo?.length > 0 ? JSON.stringify(fileInfo) : null,
+        updated_by: userDetails?.name,
+        start_date: startDate?.ds,
+        team_type: "internal",
+      };
+      if (handleReasonRules(reason[0]?.reason)) {
+        dispatch(addAutomationReport(paramsAutomation, toast));
+      }
+
       const paramsDisputeResolve = {
         id: selectedReport?.id,
         updated_reason_tl: reason[0]?.reason,
+        reason: reason[0]?.reason,
         updated_notes_tl: notes,
         file_urls:
           fileInfo?.length > 0 ? fileInfo?.map((item) => item.url) : [],
@@ -172,6 +238,7 @@ export default function EditRemoteTeam({
         role: role,
         attachments: fileInfo?.length > 0 ? JSON.stringify(fileInfo) : null,
         end_date: endDate?.ds,
+        start_date: startDate?.ds,
       };
       if (role === "wfa") {
         params = {
@@ -252,7 +319,7 @@ export default function EditRemoteTeam({
       ) : (
         <div className="space-y-6">
           {/* Mark as Resolved Checkbox */}
-          <div className="flex items-center border-b border-[#D7E6E7] w-[100%] pl-[24px]">
+          <div className="sticky top-0 z-10 bg-white flex items-center border-b border-[#D7E6E7] w-[100%] pl-[24px] pt-4">
             <label className="flex items-center">
               <input
                 type="checkbox"
@@ -344,7 +411,8 @@ export default function EditRemoteTeam({
                   setAllowGreenCard(false);
                 }
                 setFileInfo();
-                setEndDate();
+                setEndDate("");
+                setStartDate("");
               }}
               fullwidthDropdown={true}
               displayKey={"reason"}
@@ -369,6 +437,46 @@ export default function EditRemoteTeam({
               </label>
             </div>
           </div>
+
+          {/* Start Date — only for "Schedule plotted for Billing Purposes" */}
+          {handleReasonRules(reason[0]?.reason) &&
+            reason[0]?.reason == "Schedule plotted for Billing Purposes" && (
+              <div className="space-y-2 px-6">
+                <label
+                  htmlFor="start-date"
+                  className="text-[#163143] font-poppins text-[16px] not-italic font-semibold leading-[20.5px]"
+                >
+                  Start Date<span className="text-red-500 ml-1">*</span>
+                </label>
+                <DatePicker
+                  className="!mt-[10px] w-full h-[45px] bg-[#FBFBFB] !border-[#EFEFEF] !bg-[#FBFBFB] !rounded-[32px] focus:shadow-none focus:!border-[#EFEFEF] hover:!border-[#EFEFEF]"
+                  placeholder="Select Start Date"
+                  onChange={(d, ds) => setStartDate({ d: d, ds: ds })}
+                  value={startDate?.d}
+                  allowClear={false}
+                />
+              </div>
+            )}
+
+          {/* End Date — for any reason matching handleReasonRules */}
+          {handleReasonRules(reason[0]?.reason) && (
+            <div className="space-y-2 px-6">
+              <label
+                htmlFor="end-date"
+                className="text-[#163143] font-poppins text-[16px] not-italic font-semibold leading-[20.5px]"
+              >
+                End Date<span className="text-red-500 ml-1">*</span>
+              </label>
+              <DatePicker
+                className="!mt-[10px] w-full h-[45px] bg-[#FBFBFB] !border-[#EFEFEF] !bg-[#FBFBFB] !rounded-[32px] focus:shadow-none focus:!border-[#EFEFEF] hover:!border-[#EFEFEF]"
+                placeholder="Select End Date"
+                onChange={(d, ds) => setEndDate({ d: d, ds: ds })}
+                value={endDate?.d}
+                allowClear={false}
+              />
+            </div>
+          )}
+
           {/* Notes */}
           <div className="space-y-2 px-6">
             <label
@@ -388,23 +496,21 @@ export default function EditRemoteTeam({
           </div>
 
           {activeTab === "Disputed by WFA" && (
-            <div className="space-y-2 px-6">
-              <label
-                htmlFor="notes"
-                className="text-[#163143] font-poppins text-[16px] not-italic font-semibold leading-[20.5px]"
-              >
-                Notes By WFA
-              </label>
-
-              <TextArea
-                className="!mt-[10px] !border-[#EFEFEF] !bg-[#FFF7D8] !rounded-[16px] focus:!shadow-none focus:!border-[#EFEFEF] hover:!border-[#EFEFEF]"
-                id="notesbytl"
-                placeholder="Add notes here..."
-                autoSize={{ minRows: 5, maxRows: 10 }}
-                value={selectedReport?.notes_wfa}
-                readOnly={true}
-              />
-            </div>
+            <>
+              <div className="space-y-2 px-6">
+                <label className="text-[#163143] font-poppins text-[16px] not-italic font-semibold leading-[20.5px]">
+                  Notes By WFA
+                </label>
+                <TextArea
+                  className="!mt-[10px] !border-[#EFEFEF] !bg-[#FFF7D8] !rounded-[16px] focus:!shadow-none focus:!border-[#EFEFEF] hover:!border-[#EFEFEF]"
+                  id="notesbytl"
+                  placeholder="Add notes here..."
+                  autoSize={{ minRows: 5, maxRows: 10 }}
+                  value={selectedReport?.notes_wfa}
+                  readOnly={true}
+                />
+              </div>
+            </>
           )}
 
           <div className="space-y-2 px-6">

@@ -62,7 +62,7 @@ export function CustomerServiceSection({
             setQuestions={setQuestions}
           />
         ))}
-        {formType.extraSections.map((section) => (
+        {(formType.extraSections ?? []).map((section) => (
           <DynamicFormExtraQuestion
             key={section.id}
             section={section}

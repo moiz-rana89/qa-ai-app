@@ -15,6 +15,8 @@ export default function EvaluteHeader({
   id,
   aiJson,
   userJson,
+  tlScore,
+  qasScore,
   submit,
   isLoading,
 }) {
@@ -23,14 +25,32 @@ export default function EvaluteHeader({
     return categories.reduce(
       (acc, category) => {
         category?.questions?.forEach((q) => {
-          acc.totalScore += Number(q.score) || 0;
-          acc.maxScore += Number(q.max_points) || 0;
+          const score = Number(q.score) || 0;
+          acc.totalScore += score;
+          if (!q.optional || score > 0) {
+            acc.maxScore += Number(q.max_points) || 0;
+          }
         });
 
         return acc;
       },
       { totalScore: 0, maxScore: 0 }
     );
+  };
+
+  const resolveYourScore = () => {
+    const live = calculateScores(userJson);
+    if (live.maxScore > 0) {
+      return { score: live.totalScore, max: live.maxScore };
+    }
+    if (tlScore?.final_score != null && tlScore?.max_score != null) {
+      return { score: tlScore.final_score, max: tlScore.max_score };
+    }
+    if (qasScore?.final_score != null && qasScore?.max_score != null) {
+      return { score: qasScore.final_score, max: qasScore.max_score };
+    }
+    const fallback = calculateScores(aiJson);
+    return { score: fallback.totalScore, max: fallback.maxScore };
   };
 
   return (
@@ -80,8 +100,8 @@ export default function EvaluteHeader({
                 Your Score:
               </div>
               <div className="text-[#69C920] text-[16px] font-semibold mr-8">
-                {roundTo(calculateScores(userJson)?.totalScore, 1)}/
-                {calculateScores(userJson)?.maxScore}
+                {roundTo(resolveYourScore().score, 1)}/
+                {resolveYourScore().max}
               </div>
             </div>
           ) : null}

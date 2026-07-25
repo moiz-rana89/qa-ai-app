@@ -6,6 +6,31 @@ export const humanizeKey = (key) =>
     .replace(/\b\w/g, (char) => char.toUpperCase())
     .trim();
 
+// Normalize an API error object into a single human-readable string —
+// safe to pass to toast.error() / inline alerts without crashing React
+// when the backend returns a 422 with `detail: [{loc, msg, type}, …]`.
+export const extractApiError = (err, fallback = "Something went wrong.") => {
+  // `err` is the Error thrown by Api.xhr — its `.data` holds the parsed
+  // error body and `.response` holds the original Response object.
+  const detail = err?.data?.detail ?? err?.detail;
+  if (typeof detail === "string") return detail;
+  if (Array.isArray(detail)) {
+    // FastAPI/Pydantic 422 shape: [{ loc, msg, type }, …]
+    return detail
+      .map((d) => {
+        if (typeof d === "string") return d;
+        const field = Array.isArray(d?.loc) ? d.loc.join(".") : "";
+        const msg = d?.msg || "Invalid value";
+        return field ? `${field}: ${msg}` : msg;
+      })
+      .join("; ");
+  }
+  if (detail && typeof detail === "object") {
+    return JSON.stringify(detail);
+  }
+  return err?.message || fallback;
+};
+
 export const formatDateTimeEnglish = (utcTimestamp) => {
   const utcDate = new Date(utcTimestamp);
   if (

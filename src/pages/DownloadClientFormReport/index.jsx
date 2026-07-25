@@ -14,6 +14,7 @@ import {
   getEventTypesForDownload,
 } from "../../reduxStore/action/formsManagement";
 import UnifiedDropdown from "../../components/Dropdown/UnifiedDropdown";
+import Api from "../../reduxStore/lib/api";
 
 const REPORTCATEGORY = [
   {
@@ -40,7 +41,6 @@ Includes full, unfiltered data. Multiple report types allowed.`,
   },
 ];
 export const DownloadClientFormReport = () => {
-  const user = JSON.parse(localStorage.getItem("user_details"));
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     selectedReportFormat: null,
@@ -48,15 +48,41 @@ export const DownloadClientFormReport = () => {
     date: null,
   });
   const [loader, setLoader] = useState();
+  const [refreshLoader, setRefreshLoader] = useState(false);
 
   const [loaderForClients, setLoaderForClients] = useState();
 
   const { clientNamesForDownload } = useSelector(
     (store) => store.formsManagement
   );
+  const user = useSelector((state) => state.auth.user);
+
   useEffect(() => {
-    dispatch(getClientsNameForCSFDownload(setLoaderForClients, user?.name));
+    dispatch(
+      getClientsNameForCSFDownload(
+        setLoaderForClients,
+        user?.name,
+        ["admin", "dev", "wfa"].includes(user?.role)
+      )
+    );
   }, []);
+
+  const handleRefreshClientData = async () => {
+    setRefreshLoader(true);
+    try {
+      const result = await Api.post("/openai/client-specific-forms-expanded");
+      const body = result?.data;
+      if (body?.status === "error") {
+        toast("Refresh is already in progress", { icon: "⚠️" });
+      } else {
+        toast.success(body?.message || "Process started");
+      }
+    } catch (err) {
+      toast.error("Failed to refresh client specific data");
+    } finally {
+      setRefreshLoader(false);
+    }
+  };
 
   const handleChange = (name, value) => {
     setFormData({
@@ -82,13 +108,28 @@ export const DownloadClientFormReport = () => {
       getDownloadCSFReport(setLoader, toast, {
         ...formData,
         updated_by_tl: user?.name,
+        admin: ["admin", "dev", "wfa"].includes(user?.role),
       })
     );
   };
   return (
     <div className="w-full h-full flex flex-col p-8">
-      <div className="text-[#163143] text-[24px] font-semibold">
-        Download Report
+      <div className="flex items-center justify-between">
+        <div className="text-[#163143] text-[24px] font-semibold">
+          Download Report
+        </div>
+        <button
+          type="button"
+          onClick={handleRefreshClientData}
+          disabled={refreshLoader}
+          className={`w-[213px] min-h-[40px] text-[14px] font-medium rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#61BF19] focus:ring-offset-2 ${
+            refreshLoader
+              ? "bg-gray-400 cursor-not-allowed text-white"
+              : "bg-[#69C920] hover:bg-[#5CB518] text-white"
+          }`}
+        >
+          {refreshLoader ? "Refreshing..." : "Refresh Client Specific Data"}
+        </button>
       </div>
       <div className="font-semibold pr-2 mt-[30px] text-[20px] text-[#163143]">
         Customize Your Report

@@ -16,7 +16,7 @@ export const QUESTION_TYPE = [
   { label: "Multiple Choice", value: "multiselect" },
   { label: "Yes/No", value: "boolean" },
 ];
-export const QUESTION_SCORE = Array.from({ length: 21 }, (_, i) => ({
+export const QUESTION_SCORE = Array.from({ length: 41 }, (_, i) => ({
   label: String(i),
   value: i,
 }));

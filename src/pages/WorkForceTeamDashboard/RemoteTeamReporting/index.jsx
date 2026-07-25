@@ -67,7 +67,7 @@ export default function RemoteTeamReporting() {
     omList,
   } = useSelector((store) => store.workforcedashboard);
 
-  const userDetails = JSON.parse(localStorage.getItem("user_details") || "{}");
+  const userDetails = useSelector((state) => state.auth.user);
 
   const fetchData = (params) => {
     dispatch(getAttendanceReports(params));
@@ -84,8 +84,13 @@ export default function RemoteTeamReporting() {
   }, []);
 
   useEffect(() => {
+    if (!userDetails) return;
     let roleObject = {};
-    if (userDetails?.role == "tl" || userDetails?.role === "dtl") {
+    if (
+      userDetails?.role == "tl" ||
+      userDetails?.role === "dtl" ||
+      userDetails?.role == "itl"
+    ) {
       roleObject = {
         team_lead_id: [parseInt(userDetails?.owner_id)],
         columns_to_drop: [
@@ -155,6 +160,7 @@ export default function RemoteTeamReporting() {
     endDate,
     startDate,
     opsDropDownFilters,
+    userDetails,
   ]);
   useEffect(() => {
     if (!isMounted.current) {

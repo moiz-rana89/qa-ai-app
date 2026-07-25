@@ -27,9 +27,10 @@ export default function AntDRangePicker({
   startPlaceholder,
   endPlaceholder,
   className,
+  defaultValue,
 }) {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(null);
+  const [value, setValue] = useState(defaultValue || null);
 
   const hasEndDate = Boolean(value?.[1]);
 

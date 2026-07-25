@@ -156,12 +156,24 @@ const AntDTable = ({
     // }
   };
 
+  // Deduplicate rows by rowKey
+  const uniqueData = React.useMemo(() => {
+    if (!data || !rowKey) return data;
+    const seen = new Set();
+    return data.filter((record) => {
+      const key = record[rowKey];
+      if (key != null && seen.has(key)) return false;
+      if (key != null) seen.add(key);
+      return true;
+    });
+  }, [data, rowKey]);
+
   return (
     <div className="">
       <Table
         rowKey={(record) => record[`${rowKey}`] || record.key}
         columns={finalColumns}
-        dataSource={data}
+        dataSource={uniqueData}
         loading={loading}
         bordered={bordered}
         onChange={handleTableChange}
@@ -175,9 +187,16 @@ const AntDTable = ({
                 showTotal: (total, range) =>
                   `${range[0]}-${range[1]} of ${total} items`,
                 position: ["bottomCenter"],
-                onChange: (page, size) => {
-                  onPageChange?.(page);
-                  onPageSizeChange?.(size);
+                onChange: (nextPage, nextSize) => {
+                  // AntD fires this with (page, size) on every pagination
+                  // event — including pure page clicks where size didn't
+                  // change. Consumers commonly reset page=1 inside their
+                  // onPageSizeChange handler, which would clobber the page
+                  // click. Only forward size changes when size truly changed.
+                  if (nextSize !== pageSize) {
+                    onPageSizeChange?.(nextSize);
+                  }
+                  onPageChange?.(nextPage);
                 },
                 className: "custom-pagination",
               }

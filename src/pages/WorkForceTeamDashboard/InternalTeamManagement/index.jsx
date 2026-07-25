@@ -26,6 +26,7 @@ import { Tab, Tabs } from "../../../components/Tabs/Tabs";
 
 export default function InternalTeamManagement() {
   const isMounted = useRef(false);
+  const isTabEffectInitialMount = useRef(true);
 
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
@@ -56,7 +57,7 @@ export default function InternalTeamManagement() {
   const [isLoadingDepartment, setIsLoadingDepartment] = useState(false);
   const [CurrntActiveTab, setCurrntActiveTab] = useState("Unresolved");
 
-  const userDetails = JSON.parse(localStorage.getItem("user_details") || "{}");
+  const userDetails = useSelector((state) => state.auth.user);
 
   const {
     attendanceRecords,
@@ -102,8 +103,9 @@ export default function InternalTeamManagement() {
   }, []);
 
   useEffect(() => {
+    if (!userDetails) return;
     let roleObject = {};
-    if (userDetails?.role == "tl") {
+    if (userDetails?.role == "tl" || userDetails?.role == "dtl") {
       roleObject = { team_lead_id: [parseInt(userDetails?.owner_id)] };
     } else if (userDetails?.role == "om") {
       roleObject = { om_id: [parseInt(userDetails?.owner_id)] };
@@ -117,11 +119,11 @@ export default function InternalTeamManagement() {
       roleObject = {
         aom_id: [parseInt(userDetails?.owner_id)],
       };
-    } else if (userDetails?.role == "itl") {
+    } else if (userDetails?.role == "itl" || userDetails?.role == "qa-tl") {
       roleObject = {
         team_lead_id: [parseInt(userDetails?.owner_id)],
       };
-    } else if (userDetails?.role == "dm") {
+    } else if (userDetails?.role == "dm" || userDetails?.role == "qa-dm") {
       roleObject = {
         operations_manager_id: [parseInt(userDetails?.owner_id)],
       };
@@ -177,6 +179,7 @@ export default function InternalTeamManagement() {
     omDropDownFilters,
     opsDropDownFilters,
     aomDropDownFilters,
+    userDetails,
   ]);
   useEffect(() => {
     if (!isMounted.current) {
@@ -194,9 +197,9 @@ export default function InternalTeamManagement() {
   }, [currentpage, currentpageSize]);
 
   useEffect(() => {
-    if (!isMounted.current) {
-      isMounted.current = true; // Set to true after the first render
-      return; // Skip the effect for the first render
+    if (isTabEffectInitialMount.current) {
+      isTabEffectInitialMount.current = false;
+      return;
     }
     const params = {
       ...filterParams,
@@ -266,7 +269,8 @@ export default function InternalTeamManagement() {
               searchKeys={["user_name"]}
             />
             {userDetails?.role === "tl" ||
-            userDetails?.role === "itl" ? null : (
+            userDetails?.role === "itl" ||
+            userDetails?.role === "qa-tl" ? null : (
               <UnifiedDropdown
                 name="Team Leads"
                 className="border-[#d9d9d9] bg-white flex items-center justify-between px-3"
@@ -280,7 +284,9 @@ export default function InternalTeamManagement() {
                 searchKeys={["team_lead"]}
               />
             )}
-            {userDetails?.role === "om" || userDetails?.role === "dm" ? null : (
+            {userDetails?.role === "om" ||
+            userDetails?.role === "dm" ||
+            userDetails?.role === "qa-dm" ? null : (
               <UnifiedDropdown
                 name="Dept. Manager"
                 className="border-[#d9d9d9] bg-white flex items-center justify-between px-3"

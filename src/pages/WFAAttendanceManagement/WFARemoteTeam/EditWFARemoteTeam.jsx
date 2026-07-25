@@ -19,12 +19,14 @@ import {
   ATT_REASONS_STATUS,
   handleReasonRules,
 } from "../../../utils/constants";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   addAutomationReport,
   disputeAttendnceReportbyWFA,
+  disputeReopenAttendnceReportbyWFA,
   getAttendanceRecords,
   getAttendanceReportsTL,
+  resolveAttendanceDispute,
   updateAttendnceReport,
 } from "../../../reduxStore/action/workforcedashboard";
 import moment from "moment";
@@ -57,6 +59,7 @@ export default function EditWFARemoteTeam({
   const [reason, setReason] = useState("");
   const [isResolved, setIsResolved] = useState(false);
   const [isDisputed, setIsDisputed] = useState(false);
+  const [isDisputeResolved, setIsDisputeResolved] = useState(false);
 
   const [notes, setNotes] = useState("");
   const [notesTL, setNotesTL] = useState(" ");
@@ -70,7 +73,7 @@ export default function EditWFARemoteTeam({
   const [endDate, setEndDate] = useState("");
   const [startDate, setStartDate] = useState("");
 
-  const [reasonAttachment, setReasonAttachment] = useState(null);
+  const userDetails = useSelector((state) => state.auth.user);
 
   const dispatch = useDispatch();
   const onClose = () => {
@@ -95,6 +98,7 @@ export default function EditWFARemoteTeam({
       setNotes(selectedReport?.notes_wfa);
       setNotesTL(selectedReport?.notes);
       setIsDisputed(false);
+      setIsDisputeResolved(false);
       setAuthCheck(false);
       if (selectedReport?.attachments) {
         if (isJsonString(selectedReport?.attachments)) {
@@ -107,11 +111,14 @@ export default function EditWFARemoteTeam({
       } else {
         setFileInfo();
       }
-      if (selectedReport?.attendance_reason != null) {
+      const reasonToUse =
+        selectedReport?.updated_reason_tl || selectedReport?.attendance_reason;
+      if (reasonToUse != null) {
+        const found = ATT_REASONS_STATUS?.find(
+          (item) => item.reason == reasonToUse,
+        );
         setReason([
-          ATT_REASONS_STATUS?.find(
-            (item) => item.reason == selectedReport?.attendance_reason
-          ),
+          found || { reason: reasonToUse, validity: "VALID", description: "" },
         ]);
       } else {
         setReason([]);
@@ -144,18 +151,36 @@ export default function EditWFARemoteTeam({
     }
     setLoading(false);
   };
+  const handleResponseDisputeResolve = (success) => {
+    if (success) {
+      toast.success("Dispute resolved successfully");
+      onClose();
+      fetchData({ ...filterParams, page: currentpage });
+    } else {
+      toast.error("Error occurred while resolving dispute, Please try again");
+    }
+    setLoading(false);
+  };
+  const handleResponseDisputeReopen = (success) => {
+    if (success) {
+      toast.success("Dispute added again Successfuly");
+      onClose();
+      fetchData({ ...filterParams, page: currentpage });
+    } else {
+      toast.error(`Error occured while adding dispute, Please try again`);
+    }
+    setLoading(false);
+  };
   const handleSave = () => {
     if (reason?.length == 0) {
       toast.error("Please select reason");
       setIsnotes(true);
-    } else if (!fileInfo?.length > 0 && reason[0]?.isFileReq) {
-      toast.error("You must Upload Attachment before proceeding.");
     } else if (
       handleReasonRules(reason[0]?.reason) &&
       (!endDate?.ds || !fileInfo?.length > 0)
     ) {
       toast.error(
-        "You must provide End Date and Upload Attachment before proceeding."
+        "You must provide End Date and Upload Attachment before proceeding.",
       );
     } else if (
       handleReasonRules(reason[0]?.reason) &&
@@ -176,12 +201,24 @@ export default function EditWFARemoteTeam({
       toast.error("End date must be within 90 days.");
     } else if (!authCheck) {
       toast.error(
-        "Please confirm that you have reviewed the infraction and provided the required notes or documentation."
+        "Please confirm that you have reviewed the infraction and provided the required notes or documentation.",
       );
-    } else if (isDisputed && !isResolved) {
+    } else if (
+      isDisputed &&
+      !isResolved &&
+      activeTab != "Dispute Resolved by TL"
+    ) {
       toast.error(
-        "Please Mark this as resolved if you want to add this in dispute"
+        "Please Mark this as resolved if you want to add this in dispute",
       );
+    } else if (
+      !isDisputed &&
+      !isDisputeResolved &&
+      activeTab == "Dispute Resolved by TL"
+    ) {
+      toast.error("Please select Mark as Disputed or Mark as Resolved");
+    } else if (isDisputed && (!notes || !notes.trim())) {
+      toast.error("Notes By WFA is required when marking as disputed");
     } else {
       setLoading(true);
       let params = {
@@ -208,9 +245,6 @@ export default function EditWFARemoteTeam({
           updated_by_tl: userName,
         };
       }
-      const userDetails = JSON.parse(
-        localStorage.getItem("user_details") || "{}"
-      );
       const paramsAutomation = {
         user_id: selectedReport?.user_id,
         reason: reason[0]?.reason,
@@ -227,11 +261,35 @@ export default function EditWFARemoteTeam({
         id: selectedReport?.id,
         table_type: "remote",
         notes_wfa: notes,
+        reason: reason[0]?.reason,
       };
       if (isDisputed && activeTab == "Resolved by TL") {
         dispatch(
-          disputeAttendnceReportbyWFA(paramsDispute, handleResponseDispute)
+          disputeAttendnceReportbyWFA(paramsDispute, handleResponseDispute),
         );
+      }
+      if (isDisputed && activeTab == "Dispute Resolved by TL") {
+        dispatch(
+          disputeReopenAttendnceReportbyWFA(
+            paramsDispute,
+            handleResponseDisputeReopen,
+          ),
+        );
+        return;
+      }
+      if (isDisputeResolved && activeTab == "Dispute Resolved by TL") {
+        dispatch(
+          resolveAttendanceDispute(
+            {
+              id: selectedReport?.id,
+              resolved_by_wfa: true,
+              updated_notes_wfa: notes,
+              reason: reason[0]?.reason,
+            },
+            handleResponseDisputeResolve,
+          ),
+        );
+        return;
       }
       dispatch(updateAttendnceReport(params, handleResponse));
     }
@@ -297,8 +355,8 @@ export default function EditWFARemoteTeam({
         </div>
       ) : (
         <div className="space-y-6">
-          {/* Mark as Resolved Checkbox */}
-          <div className="flex items-center border-b border-[#D7E6E7] w-[100%] pl-6">
+          {/* Sticky Mark as Resolved Checkbox */}
+          <div className="sticky top-0 z-10 bg-white flex items-center border-b border-[#D7E6E7] w-[100%] pl-6 pt-4">
             {/* </Checkbox> */}
             <div className="flex justify-end gap-2 w-[60%] ml-auto">
               <div className="py-5  px-8 flex justify-end gap-5 items-center">
@@ -327,27 +385,51 @@ export default function EditWFARemoteTeam({
             <div className="text-[#163143] text-[14px] font-semibold">
               Mark As:
             </div>
-            <label className="flex items-center ml-1 mt-3">
-              <input
-                type="checkbox"
-                class="custom-checkbox"
-                checked={isResolved}
-                onChange={(e) => setIsResolved(e.target.checked)}
-              ></input>
-              <span className="text-[#163143] text-center font-poppins text-[16px] not-italic font-normal leading-[20px] ml-2">
-                Mark as Resolved
-              </span>
-            </label>
-            {activeTab == "Resolved by TL" && (
+            {activeTab != "Dispute Resolved by TL" && (
+              <label className="flex items-center ml-1 mt-3">
+                <input
+                  type="checkbox"
+                  class="custom-checkbox"
+                  checked={isResolved}
+                  onChange={(e) => setIsResolved(e.target.checked)}
+                ></input>
+                <span className="text-[#163143] text-center font-poppins text-[16px] not-italic font-normal leading-[20px] ml-2">
+                  Mark as Resolved
+                </span>
+              </label>
+            )}
+
+            {(activeTab == "Resolved by TL" ||
+              activeTab == "Dispute Resolved by TL") && (
               <label className="flex items-center ml-1 mt-3">
                 <input
                   type="checkbox"
                   class="custom-checkbox"
                   checked={isDisputed}
-                  onChange={(e) => setIsDisputed(e.target.checked)}
+                  onChange={(e) => {
+                    setIsDisputed(e.target.checked);
+                    if (e.target.checked) setIsDisputeResolved(false);
+                  }}
                 ></input>
                 <span className="text-[#163143] text-center font-poppins text-[16px] not-italic font-normal leading-[20px] ml-2">
                   Mark as Disputed
+                </span>
+              </label>
+            )}
+
+            {activeTab == "Dispute Resolved by TL" && (
+              <label className="flex items-center ml-1 mt-3">
+                <input
+                  type="checkbox"
+                  class="custom-checkbox"
+                  checked={isDisputeResolved}
+                  onChange={(e) => {
+                    setIsDisputeResolved(e.target.checked);
+                    if (e.target.checked) setIsDisputed(false);
+                  }}
+                ></input>
+                <span className="text-[#163143] text-center font-poppins text-[16px] not-italic font-normal leading-[20px] ml-2">
+                  Mark as Resolved
                 </span>
               </label>
             )}
@@ -379,7 +461,7 @@ export default function EditWFARemoteTeam({
                 onChange={(e) => {
                   if (selectedReport?.green_card_count >= 2) {
                     toast.error(
-                      "Green card limit reached. This agent has already received two or more green cards in the last 30 days"
+                      "Green card limit reached. This agent has already received two or more green cards in the last 30 days",
                     );
                     return;
                   }
@@ -407,7 +489,9 @@ export default function EditWFARemoteTeam({
                 if (e[0]?.validity === "VALID") {
                   setAllowGreenCard(false);
                 }
-                setFileInfo();
+                // WFA: do NOT clear uploaded files on reason change.
+                // WFA users may keep existing attachments and add/remove
+                // individual files via the upload area's X button.
                 setEndDate();
                 setStartDate();
               }}
@@ -480,7 +564,7 @@ export default function EditWFARemoteTeam({
                   onChange={(e) => {
                     if (selectedReport?.green_card_count >= 2) {
                       toast.error(
-                        "Green card limit reached. This agent has already received two or more green cards in the last 30 days"
+                        "Green card limit reached. This agent has already received two or more green cards in the last 30 days",
                       );
                       return;
                     }
@@ -520,6 +604,7 @@ export default function EditWFARemoteTeam({
               className="text-[#163143] font-poppins text-[16px] not-italic font-semibold leading-[20.5px]"
             >
               Notes By WFA
+              {isDisputed && <span className="text-red-500 ml-1">*</span>}
             </label>
             {activeTab === "Disputed by WFA" ? (
               <TextArea
@@ -544,7 +629,7 @@ export default function EditWFARemoteTeam({
             <UploadFile
               // required={handleReasonRules(reason[0]?.reason)}
               reqNotes={reason?.[0]?.fileReqMessage}
-              required={reason?.[0]?.isFileReq}
+              required={false}
               fileInfo={fileInfo}
               setFileInfo={setFileInfo}
             />

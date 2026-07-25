@@ -12,6 +12,12 @@ import {
   getEventTypesForDownload,
 } from "../../reduxStore/action/formsManagement";
 import UnifiedDropdown from "../../components/Dropdown/UnifiedDropdown";
+import {
+  EVENT_TYPES,
+  EVENT_TYPES_PC,
+  EVENT_TYPES_TICKET_MONITORING,
+} from "../../utils/constants";
+import Api from "../../reduxStore/lib/api";
 
 const REPORTCATEGORY = [
   {
@@ -38,7 +44,6 @@ Includes full, unfiltered data. Multiple report types allowed.`,
   },
 ];
 export const DownloadReport = () => {
-  const user = JSON.parse(localStorage.getItem("user_details"));
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     selectedReportCat: null,
@@ -49,27 +54,45 @@ export const DownloadReport = () => {
     date: null,
   });
   const [loader, setLoader] = useState();
+  const [refreshTMLoader, setRefreshTMLoader] = useState(false);
+  const [refreshPCLoader, setRefreshPCLoader] = useState(false);
 
-  const [loaderForClients, setLoaderForClients] = useState();
-  const [loaderForAgents, setLoaderForAgents] = useState();
   const [loaderForTypes, setLoaderForTypes] = useState();
-
-  const {
-    eventTypesForDownload,
-    agentsNamesForDownload,
-    clientNamesForDownload,
-  } = useSelector((store) => store.formsManagement);
-  useEffect(() => {
-    dispatch(getClientsNameForDownload(setLoaderForClients));
-    dispatch(getAgentsNameForDownload(setLoaderForAgents, user?.name));
-    dispatch(getEventTypesForDownload(setLoaderForTypes));
-  }, []);
+  const { eventTypesForDownload } = useSelector(
+    (store) => store.formsManagement
+  );
+  const user = useSelector((state) => state.auth.user);
 
   const handleChange = (name, value) => {
     setFormData({
       ...formData,
       [name]: value,
     });
+  };
+
+  const handleChangeReportCategory = (value) => {
+    setFormData({
+      ...formData,
+      selectedReportCat: value,
+      event_type: [],
+    });
+  };
+
+  const handleRefresh = async (route, setLoading) => {
+    setLoading(true);
+    try {
+      const result = await Api.post(route);
+      const body = result?.data;
+      if (body?.status === "error") {
+        toast("A refresh is already in progress", { icon: "⚠️" });
+      } else {
+        toast.success(body?.message || "Process started");
+      }
+    } catch (err) {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = () => {
@@ -92,17 +115,58 @@ export const DownloadReport = () => {
       toast.error("Please select Start and end date");
       return;
     }
-    dispatch(
-      getDownloadReport(setLoader, toast, {
-        ...formData,
-        updated_by_tl: user?.name,
-      })
-    );
+    const params = {
+      ...formData,
+      event_type: formData?.event_type?.map((item) => item?.value),
+      updated_by_tl: user?.name,
+      admin: ["admin", "dev", "wfa"].includes(user?.role),
+    };
+    dispatch(getDownloadReport(setLoader, toast, params));
   };
   return (
     <div className="w-full h-full flex flex-col p-8">
-      <div className="text-[#163143] text-[24px] font-semibold">
-        Download Report
+      <div className="flex items-center justify-between">
+        <div className="text-[#163143] text-[24px] font-semibold">
+          Download Report
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() =>
+              handleRefresh(
+                "/openai/ticket-monitoring-form-expanded",
+                setRefreshTMLoader
+              )
+            }
+            disabled={refreshTMLoader}
+            className={`min-w-[213px] min-h-[40px] px-4 text-[14px] font-medium rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#61BF19] focus:ring-offset-2 ${
+              refreshTMLoader
+                ? "bg-gray-400 cursor-not-allowed text-white"
+                : "bg-[#69C920] hover:bg-[#5CB518] text-white"
+            }`}
+          >
+            {refreshTMLoader ? "Refreshing..." : "Refresh Ticket Monitoring Data"}
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              handleRefresh(
+                "/openai/performance-coaching-expanded",
+                setRefreshPCLoader
+              )
+            }
+            disabled={refreshPCLoader}
+            className={`min-w-[213px] min-h-[40px] px-4 text-[14px] font-medium rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#61BF19] focus:ring-offset-2 ${
+              refreshPCLoader
+                ? "bg-gray-400 cursor-not-allowed text-white"
+                : "bg-[#69C920] hover:bg-[#5CB518] text-white"
+            }`}
+          >
+            {refreshPCLoader
+              ? "Refreshing..."
+              : "Refresh Performance Coaching Data"}
+          </button>
+        </div>
       </div>
       <div className="font-semibold pr-2 mt-[30px] text-[20px] text-[#163143]">
         Customize Your Report
@@ -120,7 +184,9 @@ export const DownloadReport = () => {
               <button
                 key={type?.id}
                 type="button"
-                onClick={() => handleChange("selectedReportCat", type?.id)}
+                onClick={() => {
+                  handleChangeReportCategory(type?.id);
+                }}
                 className={`p-4 rounded-[16px] border-1 text-left transition-all duration-200 ${
                   formData?.selectedReportCat?.includes(type?.id)
                     ? "border-[#86FE96] bg-[#86FE960A]"
@@ -158,7 +224,13 @@ export const DownloadReport = () => {
               <button
                 key={type?.id}
                 type="button"
-                onClick={() => handleChange("selectedReportFormat", type?.id)}
+                onClick={() =>
+                  setFormData({
+                    ...formData,
+                    selectedReportFormat: type?.id,
+                    event_type: [],
+                  })
+                }
                 className={`p-4 rounded-[16px] border-1 text-left transition-all duration-200 ${
                   formData?.selectedReportFormat?.includes(type?.id)
                     ? "border-[#86FE96] bg-[#86FE960A]"
@@ -188,7 +260,7 @@ export const DownloadReport = () => {
           </div>
         </div>
 
-        <div className="mt-[14px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[24px]">
+        <div className="mt-[14px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[24px]">
           <div>
             <label className="block font-semibold text-[14px] mb-3">
               Date
@@ -213,13 +285,25 @@ export const DownloadReport = () => {
             <UnifiedDropdown
               name="Type"
               className="bg-[#FBFBFB] border-[#efefef] h-[50px] flex items-center justify-between px-3"
-              data={eventTypesForDownload}
+              fullwidthDropdown={true}
+              // data={eventTypesForDownload}
+              data={
+                formData?.selectedReportCat == "ticket_monitoring_form"
+                  ? EVENT_TYPES_TICKET_MONITORING
+                  : formData?.selectedReportCat == "performance_coaching_form"
+                  ? EVENT_TYPES_PC
+                  : EVENT_TYPES
+              }
               isLoading={loaderForTypes}
               selectedList={formData?.event_type}
+              // setselectedList={(e) => handleChange("event_type", e)}
               setselectedList={(e) => handleChange("event_type", e)}
               multiSelect={
                 formData?.selectedReportFormat == "expanded" ? false : true
               }
+              displayKey="label"
+              valueKey="value"
+              searchKeys={["label"]}
             />
           </div>
         </div>

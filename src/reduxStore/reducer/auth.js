@@ -5,6 +5,7 @@ const INITIAL_STATE = {
   isLoadingAuth: false,
   isAuthenticated: false,
   isAuthInitialized: false,
+  user: null, // 👈 ADD THIS
 };
 
 const auth = createReducer(INITIAL_STATE, {
@@ -17,10 +18,27 @@ const auth = createReducer(INITIAL_STATE, {
   [types.IS_AUTHENTICATED](state, action) {
     return {
       ...state,
-      isAuthenticated: action.data,
+      // isAuthenticated: action.data,
+      // isAuthInitialized: true,
+      isAuthenticated: action.data.isAuthenticated,
+      user: action.data.user || null,
       isAuthInitialized: true,
     };
   },
+  [types.LOGOUT](state, action) {
+    return {
+      ...state,
+      isAuthenticated: false,
+      user: null,
+      isAuthInitialized: true,
+    };
+  },
+  // [types.SESSION_EXPIRE](state, action) {
+  //   return {
+  //     ...state,
+  //     sessionExpire: action.data,
+  //   };
+  // },
 });
 
 export default auth;

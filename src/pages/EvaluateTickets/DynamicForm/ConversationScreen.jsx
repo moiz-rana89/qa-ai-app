@@ -53,14 +53,19 @@ const ConversationScreen = ({
       </div>
 
       {/* Messages */}
-      <div className="p-6 space-y-6">
+      <div className="p-6 space-y-4">
         {messages.map((message, index) => (
           <div
             key={index}
-            className="border-b border-gray-200 pb-6 last:border-b-0"
+            // Alternate row background — even rows white, odd rows a subtle
+            // light tint — so it's easier to tell consecutive messages apart
+            // at a glance without dominating the read.
+            className={`rounded-[12px] p-5 border border-[#EBF3F4] ${
+              index % 2 === 0 ? "bg-white" : "bg-[#F8FAFA]"
+            }`}
           >
             {/* Message Header */}
-            <div className="flex justify-between items-start mb-4">
+            <div className="flex justify-between items-start mb-3">
               <div className="flex gap-8">
                 <div className="flex items-center gap-3">
                   <span className="text-[12px] bg-[#F1F5F5] px-[16px] py-[2px] rounded-[30px]">
@@ -98,8 +103,14 @@ const ConversationScreen = ({
             {message?.attachments && message?.attachments?.length > 0 && (
               <div className="flex flex-wrap gap-4 mb-4">
                 {message?.attachments?.map((attachment, attIndex) => (
-                  <div className="flex items-center gap-2 text-[12px] bg-[#F1F5F5] px-[16px] py-[2px] rounded-[30px]">
-                    <span> {attachment?.filename}</span>
+                  <div
+                    className="flex items-center gap-2 text-[12px] bg-[#F1F5F5] px-[16px] py-[2px] rounded-[30px] cursor-pointer hover:bg-[#E5EBEB] transition-all"
+                    onClick={() => {
+                      const url = attachment?.content_url || attachment?.url || attachment?.mapped_content_url;
+                      if (url) window.open(url, "_blank");
+                    }}
+                  >
+                    <span> {attachment?.file_name || attachment?.filename || attachment?.name}</span>
                     <span className="text-[#69C920]">
                       <Icon icon="fluent:open-12-regular" fontSize={16} />
                     </span>

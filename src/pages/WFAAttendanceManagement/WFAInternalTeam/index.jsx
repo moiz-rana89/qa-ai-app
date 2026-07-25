@@ -28,6 +28,7 @@ import EditWFAInternalTeam from "./EditWFAInternalTeam.jsx";
 
 export default function WFAInternalTeam() {
   const isMounted = useRef(false);
+  const isTabEffectInitialMount = useRef(true);
 
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
@@ -59,7 +60,7 @@ export default function WFAInternalTeam() {
   const [isLoadingAOM, setIsLoadingAOM] = useState(false);
   const [isLoadingOPSTL, setIsLoadingOPSTL] = useState(false);
 
-  const userDetails = JSON.parse(localStorage.getItem("user_details") || "{}");
+  const userDetails = useSelector((state) => state.auth.user);
 
   const {
     attendanceRecords,
@@ -82,20 +83,21 @@ export default function WFAInternalTeam() {
       dispatch(getAttendanceRecordsWFA(params, true));
     } else if (CurrntActiveTab == "Resolved by TL") {
       dispatch(getAttendanceReportsTL(params, true));
-    } else if ("Dispute Resolved by TL") {
+    } else if (CurrntActiveTab == "Dispute Resolved by TL") {
       dispatch(
         getDisputedAttendanceRecords({
           ...params,
           role: userDetails?.role,
-        })
+          table_type: "internal",
+        }),
       );
     }
   };
 
   useEffect(() => {
-    if (!isMounted.current) {
-      isMounted.current = true; // Set to true after the first render
-      return; // Skip the effect for the first render
+    if (isTabEffectInitialMount.current) {
+      isTabEffectInitialMount.current = false;
+      return;
     }
     const params = {
       ...filterParams,
@@ -121,6 +123,7 @@ export default function WFAInternalTeam() {
   }, []);
 
   useEffect(() => {
+    if (!userDetails) return;
     let roleObject = {};
     if (userDetails?.role == "tl") {
       roleObject = { team_lead_id: [parseInt(userDetails?.owner_id)] };
@@ -133,21 +136,21 @@ export default function WFAInternalTeam() {
       department: departmentFilter,
       agent_name: agentFilters?.map((item) => item?.user_name),
       team_lead_id: teamLeadsFilters?.map((item) =>
-        parseInt(item?.team_lead_id)
+        parseInt(item?.team_lead_id),
       ),
       operations_manager_id: omFilters?.map((item) =>
-        parseInt(item?.department_manager_id)
+        parseInt(item?.department_manager_id),
       ),
       csm: csmFilters?.map((item) => item?.department_director_id),
 
       om_id: omDropDownFilters?.map((item) =>
-        parseInt(item?.operations_manager_id)
+        parseInt(item?.operations_manager_id),
       ),
       aom_id: aomDropDownFilters?.map((item) =>
-        parseInt(item?.associate_operations_manager)
+        parseInt(item?.associate_operations_manager),
       ),
       ops_team_lead_id: opsDropDownFilters?.map((item) =>
-        parseInt(item?.ops_team_lead_id)
+        parseInt(item?.ops_team_lead_id),
       ),
 
       sort_order: sortOrder,
@@ -173,6 +176,7 @@ export default function WFAInternalTeam() {
     omDropDownFilters,
     opsDropDownFilters,
     aomDropDownFilters,
+    userDetails,
   ]);
   useEffect(() => {
     if (!isMounted.current) {
@@ -376,8 +380,8 @@ export default function WFAInternalTeam() {
                         order == "ascend"
                           ? "asc"
                           : order == "descend"
-                          ? "desc"
-                          : null
+                            ? "desc"
+                            : null,
                       );
                     }}
                     sorting={sorting}
@@ -417,8 +421,8 @@ export default function WFAInternalTeam() {
                         order == "ascend"
                           ? "asc"
                           : order == "descend"
-                          ? "desc"
-                          : null
+                            ? "desc"
+                            : null,
                       );
                     }}
                     sorting={sorting}
@@ -459,8 +463,8 @@ export default function WFAInternalTeam() {
                         order == "ascend"
                           ? "asc"
                           : order == "descend"
-                          ? "desc"
-                          : null
+                            ? "desc"
+                            : null,
                       );
                     }}
                     sorting={sorting}

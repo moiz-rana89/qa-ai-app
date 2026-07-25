@@ -16,6 +16,7 @@ import {
   getOMFilterData,
   getOMFiltersList,
   getOPSTLFiltersList,
+  getResolvedByWfaRecords,
   getSomList,
   getTeamLeadList,
   getTeamListFilterData,
@@ -24,14 +25,17 @@ import { Tab, Tabs } from "../../../components/Tabs/Tabs";
 import {
   ColumnDataInternalTeam,
   ColumnDataRemoteTeam,
+  ColumnDataResolvedByWFA,
 } from "../../../utils/tablesColumns";
 import DownloadCSVButton from "../../../components/Buttons/DownloadCSVButton";
 import Skeleton from "../../../components/Skeleton";
 import AntDTable from "../../../components/AntDTable";
 import EditWFAAttendance from "./EditWFAAttendance";
+import AntDRangePicker from "../../../components/AntDRangePicker";
 
 export default function WFAAttendanceReporting() {
   const isMounted = useRef(false);
+  const isTabEffectInitialMount = useRef(true);
 
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
@@ -50,6 +54,9 @@ export default function WFAAttendanceReporting() {
   const [sortBy, setsortBy] = useState("");
   const [sortOrder, setsortOrder] = useState("desc");
   const [resolutionTypeFilter, setResolutionTypeFilter] = useState();
+  // Dispute History only — filter dispute records by member team type
+  // (sent to API as `table_type`).
+  const [tableTypeFilter, setTableTypeFilter] = useState();
   const [isLoadingDepartment, setIsLoadingDepartment] = useState(false);
   const [departmentFilter, setDepartmentFilter] = useState();
   const [teamLeadsInternalFilters, setTeamLeadsInternalFilters] = useState();
@@ -92,6 +99,7 @@ export default function WFAAttendanceReporting() {
     setsortBy("");
     setsortOrder("desc");
     setResolutionTypeFilter();
+    setTableTypeFilter();
     setcurrentpage(1);
     setTeamLeadsInternalFilters();
     setDepartmentManagerFilter();
@@ -102,7 +110,8 @@ export default function WFAAttendanceReporting() {
     setAomDropDownFilters();
     setOpsDropDownFilters();
   };
-  const userDetails = JSON.parse(localStorage.getItem("user_details") || "{}");
+
+  const userDetails = useSelector((state) => state.auth.user);
 
   const {
     attendanceRecords,
@@ -123,12 +132,15 @@ export default function WFAAttendanceReporting() {
     csmList,
     agentList,
     omList,
+    resolvedByWfaRecords,
   } = useSelector((store) => store.workforcedashboard);
   const fetchData = (params) => {
     if (CurrntActiveTab == "Internal Team") {
       dispatch(getAttendanceReports(params, true));
     } else if (CurrntActiveTab == "Remote Team") {
       dispatch(getAttendanceReports(params));
+    } else if (CurrntActiveTab == "Dispute History") {
+      dispatch(getResolvedByWfaRecords(params));
     }
   };
 
@@ -150,9 +162,9 @@ export default function WFAAttendanceReporting() {
   }, []);
 
   useEffect(() => {
-    if (!isMounted.current) {
-      isMounted.current = true; // Set to true after the first render
-      return; // Skip the effect for the first render
+    if (isTabEffectInitialMount.current) {
+      isTabEffectInitialMount.current = false;
+      return;
     }
     const params = {
       // ...filterParams,
@@ -173,6 +185,7 @@ export default function WFAAttendanceReporting() {
   }, [CurrntActiveTab]);
 
   useEffect(() => {
+    if (!userDetails) return;
     let roleObject = {};
     if (userDetails?.role == "tl") {
       roleObject = { team_lead_id: [parseInt(userDetails?.owner_id)] };
@@ -185,21 +198,23 @@ export default function WFAAttendanceReporting() {
       client_name: clientsFilter?.map((item) => item?.client),
       agent_name: agentFilters?.map((item) => item?.user_name),
       team_lead_id: teamLeadsFilters?.map((item) =>
-        parseInt(item?.teamlead_id)
+        parseInt(item?.teamlead_id),
       ),
       operations_manager_id: omFilters?.map((item) =>
-        parseInt(item?.operations_manager_id)
+        parseInt(item?.operations_manager_id),
       ),
       csm_id: csmFilters?.map((item) => parseInt(item?.csm_id)),
       associate_operations_manager_id: aomFilters?.map((item) =>
-        parseInt(item?.id)
+        parseInt(item?.id),
       ),
       senior_operations_manager: somFilters?.map((item) => parseInt(item?.id)),
       ops_team_lead_id: opsDropDownFilters?.map((item) =>
-        parseInt(item?.ops_team_lead_id)
+        parseInt(item?.ops_team_lead_id),
       ),
       reason_type: resolutionTypeFilter?.[0]?.value,
       green_card: greenCardFilter?.[0]?.value,
+      // Dispute History only — sent for /workforce/reports/attendance/dispute/resolved
+      table_type: tableTypeFilter?.[0]?.value,
       sort_order: sortOrder,
       sort_by: sortBy,
       page: 1,
@@ -216,19 +231,19 @@ export default function WFAAttendanceReporting() {
         client_name: null,
         csm_id: null,
         team_lead_id: teamLeadsInternalFilters?.map((item) =>
-          parseInt(item?.team_lead_id)
+          parseInt(item?.team_lead_id),
         ),
         operations_manager_id: departmentManagerFilter?.map((item) =>
-          parseInt(item?.department_manager_id)
+          parseInt(item?.department_manager_id),
         ),
         csm: departmentDirectorFilter?.map(
-          (item) => item?.department_director_id
+          (item) => item?.department_director_id,
         ),
         om_id: omDropDownFilters?.map((item) =>
-          parseInt(item?.operations_manager_id)
+          parseInt(item?.operations_manager_id),
         ),
         aom_id: aomDropDownFilters?.map((item) =>
-          parseInt(item?.associate_operations_manager)
+          parseInt(item?.associate_operations_manager),
         ),
       };
       fetchData(dynamicParms);
@@ -252,11 +267,13 @@ export default function WFAAttendanceReporting() {
     teamLeadsInternalFilters,
     greenCardFilter,
     resolutionTypeFilter,
+    tableTypeFilter,
     startDate,
     endDate,
     omDropDownFilters,
     opsDropDownFilters,
     aomDropDownFilters,
+    userDetails,
   ]);
   useEffect(() => {
     if (!isMounted.current) {
@@ -286,6 +303,10 @@ export default function WFAAttendanceReporting() {
     };
     fetchData(params);
   };
+  const onChangeDate = (date) => {
+    setStartDate(date[0]);
+    setEndDate(date[1]);
+  };
   return (
     <div className="w-full h-full flex flex-col">
       <div className="pt-7 flex items-center pl-8">
@@ -314,6 +335,11 @@ export default function WFAAttendanceReporting() {
               setStartDate={setStartDate}
               setEndDate={setEndDate}
             /> */}
+            <AntDRangePicker
+              onChange={onChangeDate}
+              startPlaceholder="Start Date"
+              endPlaceholder="End Date"
+            />
             {CurrntActiveTab == "Remote Team" ? (
               <UnifiedDropdown
                 name="Clients"
@@ -542,6 +568,21 @@ export default function WFAAttendanceReporting() {
               valueKey="value"
               searchKeys={["value"]}
             />
+            {CurrntActiveTab === "Dispute History" && (
+              <UnifiedDropdown
+                name="Member Type"
+                className="border-[#d9d9d9] bg-white flex items-center justify-between px-3"
+                data={[
+                  { label: "Remote", value: "remote" },
+                  { label: "Internal", value: "internal" },
+                ]}
+                selectedList={tableTypeFilter}
+                setselectedList={setTableTypeFilter}
+                displayKey="label"
+                valueKey="value"
+                searchKeys={["value"]}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -576,6 +617,43 @@ export default function WFAAttendanceReporting() {
                         dataIndex: "updated_by_tl",
                         key: "updated_by_tl",
                       },
+                      {
+                        title: "In Dispute",
+                        width: 130,
+                        dataIndex: "in_disputed",
+                        key: "in_disputed",
+                        render: (value) =>
+                          value === true ? "Yes" : value === false ? "No" : "-",
+                      },
+                      {
+                        title: "IS WFA Resolved?",
+                        width: 150,
+                        dataIndex: "resolved_by_wfa",
+                        key: "resolved_by_wfa",
+                        render: (value) =>
+                          value === true ? "Yes" : value === false ? "No" : "-",
+                      },
+                      {
+                        title: "TL Final Reason",
+                        width: 180,
+                        dataIndex: "updated_reason_tl",
+                        key: "updated_reason_tl",
+                        render: (value) => value || "-",
+                      },
+                      {
+                        title: "TL Final Notes",
+                        width: 200,
+                        dataIndex: "updated_notes_tl",
+                        key: "updated_notes_tl",
+                        render: (value) => value || "-",
+                      },
+                      {
+                        title: "WFA Final Notes",
+                        width: 200,
+                        dataIndex: "updated_notes_wfa",
+                        key: "updated_notes_wfa",
+                        render: (value) => value || "-",
+                      },
                     ]}
                     data={attendanceRecords?.data}
                     bordered={true}
@@ -593,8 +671,8 @@ export default function WFAAttendanceReporting() {
                         order == "ascend"
                           ? "asc"
                           : order == "descend"
-                          ? "desc"
-                          : null
+                            ? "desc"
+                            : null,
                       );
                     }}
                     sorting={sorting}
@@ -667,8 +745,8 @@ export default function WFAAttendanceReporting() {
                         order == "ascend"
                           ? "asc"
                           : order == "descend"
-                          ? "desc"
-                          : null
+                            ? "desc"
+                            : null,
                       );
                     }}
                     sorting={sorting}
@@ -695,6 +773,46 @@ export default function WFAAttendanceReporting() {
                 title="Overview"
                 emptyMessage="None of your team members has any unresolved attendance issues at the moment."
               /> */}
+            </Tab>
+            <Tab data-label={"Dispute History"} labelData={""}>
+              <div className="w-full overflow-y-scroll pb-[50px] pt-2 space-y-9 scrollbar-hide">
+                <div className="flex items-center w-[100%] mb-[20px]">
+                  <span className="text-xl font-semibold">
+                    {"Dispute History"}
+                  </span>
+                  <div className="ml-auto mr-[15px]">
+                    <DownloadCSVButton onClick={handleCSVDownload} />
+                  </div>
+                </div>
+                {isLoading ? (
+                  <Skeleton className="w-full h-[75vh]" />
+                ) : (
+                  <AntDTable
+                    columns={ColumnDataResolvedByWFA}
+                    data={resolvedByWfaRecords?.data}
+                    bordered={true}
+                    total={resolvedByWfaRecords?.pagination?.totalRecords}
+                    current={resolvedByWfaRecords?.pagination?.currentPage}
+                    pageSize={resolvedByWfaRecords?.pagination?.pageSize}
+                    rowKey={"id"}
+                    onPageChange={setcurrentpage}
+                    onPageSizeChange={setPageSize}
+                    onSortChange={(columnKey, order) => {
+                      setSorting({ sort_by: columnKey, sort_order: order });
+                      setsortBy(columnKey);
+                      setsortOrder(
+                        order == "ascend"
+                          ? "asc"
+                          : order == "descend"
+                            ? "desc"
+                            : null,
+                      );
+                    }}
+                    sorting={sorting}
+                    pagination={true}
+                  />
+                )}
+              </div>
             </Tab>
           </Tabs>
 

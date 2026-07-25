@@ -30,6 +30,7 @@ import { Tab, Tabs } from "../../../components/Tabs/Tabs";
 
 export default function WFARemoteTeam() {
   const isMounted = useRef(false);
+  const isTabEffectInitialMount = useRef(true);
 
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
@@ -61,8 +62,7 @@ export default function WFARemoteTeam() {
   const [isLoadingAgent, setIsLoadingAgent] = useState(false);
   const [isLoadingOm, setIsLoadingOm] = useState(false);
 
-  const userDetails = JSON.parse(localStorage.getItem("user_details") || "{}");
-
+  const userDetails = useSelector((state) => state.auth.user);
   const {
     attendanceRecords,
     isLoading,
@@ -84,14 +84,15 @@ export default function WFARemoteTeam() {
       dispatch(
         getAttendanceReportsTL({
           ...params,
-        })
+        }),
       );
-    } else if ("Dispute Resolved by TL") {
+    } else if (CurrntActiveTab == "Dispute Resolved by TL") {
       dispatch(
         getDisputedAttendanceRecords({
           ...params,
           role: userDetails?.role,
-        })
+          table_type: "remote",
+        }),
       );
     }
   };
@@ -108,9 +109,9 @@ export default function WFARemoteTeam() {
   }, []);
 
   useEffect(() => {
-    if (!isMounted.current) {
-      isMounted.current = true; // Set to true after the first render
-      return; // Skip the effect for the first render
+    if (isTabEffectInitialMount.current) {
+      isTabEffectInitialMount.current = false;
+      return;
     }
     const params = {
       ...filterParams,
@@ -124,6 +125,7 @@ export default function WFARemoteTeam() {
   }, [CurrntActiveTab]);
 
   useEffect(() => {
+    if (!userDetails) return;
     let roleObject = {};
     if (userDetails?.role == "tl") {
       roleObject = { team_lead_id: [parseInt(userDetails?.owner_id)] };
@@ -136,18 +138,18 @@ export default function WFARemoteTeam() {
       client_name: clientsFilter?.map((item) => item?.client),
       agent_name: agentFilters?.map((item) => item?.user_name),
       team_lead_id: teamLeadsFilters?.map((item) =>
-        parseInt(item?.teamlead_id)
+        parseInt(item?.teamlead_id),
       ),
       operations_manager_id: omFilters?.map((item) =>
-        parseInt(item?.operations_manager_id)
+        parseInt(item?.operations_manager_id),
       ),
       csm_id: csmFilters?.map((item) => parseInt(item?.csm_id)),
       associate_operations_manager_id: aomFilters?.map((item) =>
-        parseInt(item?.id)
+        parseInt(item?.id),
       ),
       senior_operations_manager: somFilters?.map((item) => parseInt(item?.id)),
       ops_team_lead_id: opsDropDownFilters?.map((item) =>
-        parseInt(item?.ops_team_lead_id)
+        parseInt(item?.ops_team_lead_id),
       ),
       sort_order: sortOrder,
       sort_by: sortBy,
@@ -172,6 +174,7 @@ export default function WFARemoteTeam() {
     startDate,
     endDate,
     opsDropDownFilters,
+    userDetails,
   ]);
   useEffect(() => {
     if (!isMounted.current) {
@@ -379,8 +382,8 @@ export default function WFARemoteTeam() {
                         order == "ascend"
                           ? "asc"
                           : order == "descend"
-                          ? "desc"
-                          : null
+                            ? "desc"
+                            : null,
                       );
                     }}
                     sorting={sorting}
@@ -420,8 +423,8 @@ export default function WFARemoteTeam() {
                         order == "ascend"
                           ? "asc"
                           : order == "descend"
-                          ? "desc"
-                          : null
+                            ? "desc"
+                            : null,
                       );
                     }}
                     sorting={sorting}
@@ -452,7 +455,7 @@ export default function WFARemoteTeam() {
                     current={attendanceDisputedRecords?.pagination?.currentPage}
                     pageSize={attendanceDisputedRecords?.pagination?.pageSize}
                     rowKey={"id"}
-                    // onEdit={handleEditClick}
+                    onEdit={handleEditClick}
                     onPageChange={setcurrentpage}
                     onPageSizeChange={setPageSize}
                     onSortChange={(columnKey, order) => {
@@ -462,8 +465,8 @@ export default function WFARemoteTeam() {
                         order == "ascend"
                           ? "asc"
                           : order == "descend"
-                          ? "desc"
-                          : null
+                            ? "desc"
+                            : null,
                       );
                     }}
                     sorting={sorting}

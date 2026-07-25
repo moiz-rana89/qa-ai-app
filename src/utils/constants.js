@@ -1,3 +1,65 @@
+export const EVENT_TYPES = [
+  { label: "Customer Service - Email/Chat", value: "customer-service-email" },
+  { label: "Brand Concierge – Live Chat", value: "brand-concierge-live-chat" },
+  {
+    label: "Brand Concierge – Post Purchase Call",
+    value: "brand-concierge-post-purchase-call",
+  },
+  {
+    label: "Brand Concierge - Subscription",
+    value: "brand-concierge-subscription",
+  },
+  {
+    label: "Brand Concierge - Abandon Cart",
+    value: "brand-concierge-abandon-cart",
+  },
+  { label: "Customer Service - Phone", value: "customer-service-phone" },
+  {
+    label: "Customer Service - Email/Chat",
+    value: "customer-service-email-chat",
+  },
+  {
+    label: "Customer Service - Email, Chat & Phone",
+    value: "customer-service-email-chat-phone",
+  },
+  { label: "Brand Concierge", value: "brand-concierge" },
+  { label: "Growth Assistant", value: "growth-assistant" },
+];
+
+/** Event types from ticket-form-data.js (Ticket Monitoring) */
+export const EVENT_TYPES_TICKET_MONITORING = [
+  { label: "Customer Service - Email/Chat", value: "customer-service-email" },
+  { label: "Brand Concierge – Live Chat", value: "brand-concierge-live-chat" },
+  {
+    label: "Brand Concierge – Post Purchase Call",
+    value: "brand-concierge-post-purchase-call",
+  },
+  {
+    label: "Brand Concierge - Subscription",
+    value: "brand-concierge-subscription",
+  },
+  {
+    label: "Brand Concierge - Abandon Cart",
+    value: "brand-concierge-abandon-cart",
+  },
+  { label: "Customer Service - Phone", value: "customer-service-phone" },
+];
+
+/** Event types from PC-form-data.js (PC) */
+export const EVENT_TYPES_PC = [
+  {
+    label: "Customer Service - Email/Chat",
+    value: "customer-service-email-chat",
+  },
+  { label: "Customer Service - Phone", value: "customer-service-phone" },
+  {
+    label: "Customer Service - Email, Chat & Phone",
+    value: "customer-service-email-chat-phone",
+  },
+  { label: "Brand Concierge", value: "brand-concierge" },
+  { label: "Growth Assistant", value: "growth-assistant" },
+];
+
 export const ATT_REASONS = [
   "Approved Extended Lunch",
   "Bereavement Leave",
@@ -27,6 +89,7 @@ export const ATT_REASONS = [
   "Maternity Leave",
   "Minimal: Agent Device Update",
   "Health Issue/Sick Leave - HR Validated",
+  "Health Issue/Sick Leave – Pending HR Verification",
   "Exempted",
   "Power & ISP Interruption",
   "Agent Device Issue",
@@ -196,7 +259,7 @@ A screenshot of the agents claim that their HS stopped working can suffic as an 
     reason: "PTO",
     validity: "VALID",
     description:
-      "Used when Agent is on PTO (These requests are less than 2 weeks)",
+      "Used when Agent is on PTO",
     fileReqMessage: `Include "Time off Request" screenshot in hubstaff`,
     isFileReq: true,
   },
@@ -251,6 +314,15 @@ A screenshot of the agents claim that their HS stopped working can suffic as an 
     fileReqMessage: `• HR validation or approval
 • Medical certificate or supporting document (if required by HR)
 • Approved sick leave record with matching dates`,
+    isFileReq: true,
+  },
+  {
+    reason: "Health Issue/Sick Leave – Pending HR Verification",
+    validity: "VALID",
+    description:
+      "Used when the Agent is on sick leave and the Medical Certificate has been submitted to HR but is still under validation. No attendance points are generated.",
+    fileReqMessage: `• Proof of communication to HR confirming that the medical certificate is under validation
+• Completed HR Request Form (Medical Certificate Verification Request)`,
     isFileReq: true,
   },
   {

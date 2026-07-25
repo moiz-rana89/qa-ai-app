@@ -1,6 +1,9 @@
+import { useSelector } from "react-redux";
+
 export const getUserRole = () => {
   try {
-    const userDetails = localStorage.getItem("user_details");
+    const userDetails = useSelector((state) => state.auth.user);
+
     if (!userDetails) return null;
     const user = JSON.parse(userDetails);
     return user?.role || null;
@@ -20,12 +23,28 @@ export const hasAnyRole = (roles) => {
   return userRole ? roles.includes(userRole) : false;
 };
 
-export const filterMenuByRole = (menuList, userRole) => {
+// A menu entry passes the gate if BOTH:
+//   • the user's role is in `roles`, AND
+//   • if `emails` is defined on the entry, the user's email is in that list
+// If `emails` is undefined, only the role check applies (existing behavior).
+const passesAccessGate = (entry, userRole, userEmail) => {
+  if (!entry?.roles?.includes(userRole)) return false;
+  if (entry?.emails?.length) {
+    const lower = userEmail?.toLowerCase();
+    if (!lower) return false;
+    if (!entry.emails.map((e) => e.toLowerCase()).includes(lower)) return false;
+  }
+  return true;
+};
+
+export const filterMenuByRole = (menuList, userRole, userEmail) => {
   return menuList
-    .filter((menu) => menu.roles.includes(userRole))
+    .filter((menu) => passesAccessGate(menu, userRole, userEmail))
     .map((menu) => ({
       ...menu,
-      submenu: menu.submenu?.filter((sub) => sub.roles.includes(userRole)),
+      submenu: menu.submenu?.filter((sub) =>
+        passesAccessGate(sub, userRole, userEmail)
+      ),
     }))
     .filter((menu) => menu.submenu?.length > 0 || !menu.submenu); // Keep items with no submenu
 };
@@ -75,6 +94,8 @@ export const getFirstAllowedSidebarRoute = (menuList, userRole) => {
 };
 
 export const ROLE_DEFAULT_ROUTES = {
+  dev: "/workforce-remote-team-attendance",
+  admin: "/workforce-remote-team-attendance",
   wfa: "/wfa-remote-team-attendance",
   tl: "/workforce-remote-team-attendance",
   dtl: "/workforce-remote-team-attendance",
@@ -84,10 +105,15 @@ export const ROLE_DEFAULT_ROUTES = {
   om: "/workforce-remote-team-attendance",
   som: "/workforce-remote-team-attendance",
   aom: "/workforce-remote-team-attendance",
-  admin: "/workforce-remote-team-attendance",
+  csm: "/workforce-remote-team-attendance",
+  cstm: "/workforce-remote-team-attendance",
+  qas: "/evaluate-tickets",
+  qa: "/evaluate-tickets",
+  "qa-dm": "/evaluate-tickets",
+  "qa-tl": "/evaluate-tickets",
 };
 
 export const getDefaultRouteForRole = (userRole) => {
   if (!userRole) return "/login";
-  return ROLE_DEFAULT_ROUTES[userRole] || "/login";
+  return ROLE_DEFAULT_ROUTES[userRole] || "/evaluate-tickets";
 };

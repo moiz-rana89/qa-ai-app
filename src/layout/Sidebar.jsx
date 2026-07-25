@@ -3,10 +3,12 @@
 import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import logo from "../assets/tp-logo.jpg";
-import { logout } from "../reduxStore/action/auth";
+import { logout, logoutAction } from "../reduxStore/action/auth";
 import { filterMenuByRole } from "../utils/roleHelpers";
+import NeedHelpModal from "../components/NeedHelpModal";
+import { ENDORSEMENT_REPORT_EMAILS } from "../utils/accessLists";
 
 const menuList = [
   {
@@ -26,6 +28,8 @@ const menuList = [
       "dd",
       "dm",
       "dtl",
+      "qa-dm",
+      "qa-tl",
     ],
     submenu: [
       {
@@ -41,17 +45,44 @@ const menuList = [
       {
         title: "Internal Team Management",
         route: "workforce-internal-team-attendance",
-        roles: ["dev", "om", "som", "aom", "admin", "itl", "dm", "dd"],
+        roles: [
+          "dev",
+          "om",
+          "som",
+          "aom",
+          "admin",
+          "itl",
+          "dm",
+          "dd",
+          "qa-dm",
+          "qa-tl",
+        ],
       },
       {
         title: "Internal Team Reporting",
         route: "workforce-internal-team-attendance-report",
-        roles: ["dev", "om", "som", "aom", "admin", "itl", "dm", "dd"],
+        roles: [
+          "dev",
+          "om",
+          "som",
+          "aom",
+          "admin",
+          "itl",
+          "dm",
+          "dd",
+          "qa-dm",
+          "qa-tl",
+        ],
       },
       {
         title: "Advance Notice",
         route: "advance-notice",
         roles: ["dev", "admin", "tl"],
+      },
+      {
+        title: "Schedule Management",
+        route: "schedule-management",
+        roles: ["dev", "admin", "om", "aom", "tl", "csm", "itl", "dtl"],
       },
     ],
   },
@@ -76,59 +107,331 @@ const menuList = [
         route: "wfa-attendance-reporting",
         roles: ["dev", "wfa"],
       },
+      {
+        title: "OnTime Reporting",
+        route: "wfa-ontime-reporting",
+        roles: ["dev", "wfa"],
+      },
+      {
+        title: "Attendance Automation Infractions",
+        route: "attendance-infractions",
+        roles: ["admin", "dev", "wfa"],
+      },
+      {
+        title: "Schedule Management",
+        route: "schedule-management",
+        roles: ["dev", "wfa"],
+      },
+      {
+        title: "Hubspot Roster",
+        route: "hubspot-roster",
+        roles: ["dev", "wfa", "admin"],
+      },
     ],
   },
   {
-    title: "Ticket Monitoring Form",
+    title: "Forms",
     icon: "mage:file-2",
-    route: "ticket-monitoring-form",
-    roles: ["dev", "tl", "om", "admin", "csm", "cstm", "som", "aom", "dtl"],
+    route: "forms",
+    roles: [
+      "dev",
+      "qa-tl",
+      "tl",
+      "om",
+      "admin",
+      "csm",
+      "cstm",
+      "som",
+      "aom",
+      "dtl",
+      "qas",
+    ],
+    submenu: [
+      {
+        title: "Ticket Monitoring Form",
+        route: "ticket-monitoring-form",
+        roles: [
+          "dev",
+          "qa-tl",
+          "tl",
+          "om",
+          "admin",
+          "csm",
+          "cstm",
+          "som",
+          "aom",
+          "dtl",
+          "qas",
+        ],
+      },
+      {
+        title: "Performance Coaching Form",
+        route: "performance-monitoring-form",
+        roles: [
+          "om",
+          "som",
+          "aom",
+          "admin",
+          "dev",
+          "csm",
+          "cstm",
+          "qa-tl",
+          "tl",
+          "dtl",
+          "qas",
+        ],
+      },
+      {
+        title: "Other Coaching Types",
+        route: "other-coaching-types",
+        roles: [
+          "om",
+          "som",
+          "aom",
+          "admin",
+          "dev",
+          "csm",
+          "cstm",
+          "qa-tl",
+          "tl",
+          "dtl",
+          "qas",
+        ],
+      },
+      {
+        title: "Client Specific Forms",
+        route: "custom-monitoring-form",
+        roles: ["admin", "dev", "dtl", "om", "aom", "tl"],
+      },
+      {
+        title: "Client Bonus Request Form",
+        route: "google-form",
+        roles: [
+          "admin",
+          "dev",
+          "qa-tl",
+          "tl",
+          "om",
+          "csm",
+          "cstm",
+          "som",
+          "aom",
+          "dtl",
+          "qas",
+        ],
+      },
+    ],
   },
   {
-    title: "Performance Coaching Form",
-    icon: "mage:file-2",
-    route: "performance-monitoring-form",
-    roles: ["om", "som", "aom", "admin", "dev", "csm", "cstm", "tl", "dtl"],
-  },
-  {
-    title: "Other Coaching Types",
-    icon: "mage:file-2",
-    route: "other-coaching-types",
-    roles: ["om", "som", "aom", "admin", "dev", "csm", "cstm", "tl", "dtl"],
-  },
-  {
-    title: "Client Specific Forms",
-    icon: "mage:file-2",
-    route: "custom-monitoring-form",
-    roles: ["admin", "dev", "dtl", "om", "aom"],
-  },
-  {
-    title: "Download Report",
+    title: "Reports",
     icon: "hugeicons:download-03",
-    route: "download-report",
-    roles: ["tl", "admin", "dev", "aom"],
+    route: "reports",
+    roles: [
+      "admin",
+      "dev",
+      "qa-tl",
+      "qa-dm",
+      "tl",
+      "aom",
+      "dtl",
+      "wfa",
+      "om",
+      "qas",
+    ],
+    submenu: [
+      {
+        title: "Download Ticket OR Performance Report",
+        route: "download-report",
+        roles: [
+          "admin",
+          "dev",
+          "qa-tl",
+          "qa-dm",
+          "tl",
+          "aom",
+          "dtl",
+          "wfa",
+          "om",
+          "qas",
+        ],
+      },
+      {
+        title: "Download Client Specific Report",
+        route: "download-client-specific-report",
+        roles: [
+          "admin",
+          "dev",
+          "dtl",
+          "qa-tl",
+          "qa-dm",
+          "tl",
+          "aom",
+          "wfa",
+          "om",
+          "qas",
+        ],
+      },
+      {
+        title: "QA AI Report",
+        route: "qa-ai-report",
+        roles: [
+          "admin",
+          "dev",
+          "qa-tl",
+          "qa-dm",
+          "tl",
+          "aom",
+          "dtl",
+          "wfa",
+          "om",
+          "qas",
+        ],
+      },
+      {
+        title: "Endorsement Report",
+        route: "endorsement-report",
+        roles: [
+          "admin",
+          "dev",
+          "wfa",
+          "om",
+          "som",
+          "aom",
+          "csm",
+          "cstm",
+          "tl",
+          "dtl",
+        ],
+        // Additional fine-grained gate — even if the user's role is in the
+        // `roles` list above, the entry is only shown when their email is
+        // in this allowlist.
+        emails: ENDORSEMENT_REPORT_EMAILS,
+      },
+    ],
   },
+  // {
+  //   title: "Performance Review",
+  //   icon: "carbon:dashboard",
+  //   route: "performance-review",
+  //   roles: ["admin", "dev", "tl"],
+  // },
   {
-    title: "Download Client Specific Report",
-    icon: "hugeicons:download-03",
-    route: "download-client-specific-report",
-    roles: ["admin", "dev", "dtl", "aom", "om"],
+    title: "Bugs & Features",
+    icon: "mdi:bug-outline",
+    route: "bugs-features",
+    roles: ["admin", "dev", "om", "qa-dm"],
   },
   {
     title: "Quality Assurance",
     icon: "icon-park-outline:success",
     route: "quality-assurance",
-    roles: ["admin", "dev", "qas", "tl", "dtl"],
+    roles: [
+      "admin",
+      "dev",
+      "qas",
+      "tl",
+      "dtl",
+      "qa",
+      "qa-dm",
+      "qa-tl",
+      "om",
+      "aom",
+    ],
     submenu: [
       {
         title: "Evaluate Tickets",
         route: "evaluate-tickets",
-        roles: ["admin", "dev", "qas", "tl", "dtl"],
+        roles: [
+          "admin",
+          "dev",
+          "qas",
+          "tl",
+          "dtl",
+          "qa",
+          "qa-dm",
+          "qa-tl",
+          "om",
+          "aom",
+        ],
       },
       {
         title: "Forms Management",
         route: "forms-management",
+        roles: ["admin", "dev", "qa", "qa-dm", "qa-tl", "qas", "om", "aom"],
+      },
+      {
+        title: "QA Settings",
+        route: "qa-settings",
+        roles: ["admin", "dev", "om", "aom", "qa", "qa-dm", "qa-tl"],
+      },
+    ],
+  },
+  {
+    title: "Users",
+    icon: "mdi:account-cog-outline",
+    route: "users",
+    roles: ["admin", "dev"],
+    submenu: [
+      {
+        title: "Onboard from HubSpot",
+        route: "onboard-from-hubspot",
         roles: ["admin", "dev"],
+      },
+    ],
+  },
+  {
+    // Need Help — Bug & Feature reports. Visible to all roles since the
+    // backend auto-scopes (mine / team / all) based on the user's role.
+    title: "Need Help",
+    icon: "mdi:lifebuoy",
+    route: "need-help",
+    roles: [
+      "admin",
+      "dev",
+      "wfa",
+      "tl",
+      "dtl",
+      "itl",
+      "dd",
+      "dm",
+      "om",
+      "som",
+      "aom",
+      "csm",
+      "cstm",
+      "qa",
+      "qa-dm",
+      "qa-tl",
+      "qas",
+    ],
+  },
+  {
+    // QA Sandbox — training environment. Distinct icon so the section
+    // reads as "practice / experiment" at a glance.
+    title: "QA Sandbox",
+    icon: "mdi:test-tube",
+    route: "sandbox",
+    roles: ["admin", "dev", "qa", "qa-tl", "qa-dm", "qas", "tl", "dtl"],
+    submenu: [
+      {
+        title: "Practice Tickets",
+        route: "sandbox-tickets",
+        roles: ["admin", "dev", "qa", "qa-tl", "qa-dm", "qas", "tl", "dtl"],
+      },
+      {
+        title: "Evaluate Ticket",
+        route: "sandbox-evaluate",
+        roles: ["admin", "dev", "qa", "qa-tl", "qa-dm", "qas", "tl", "dtl"],
+      },
+      {
+        title: "My Practice History",
+        route: "sandbox-history",
+        roles: ["admin", "dev", "qa", "qa-tl", "qa-dm", "qas", "tl", "dtl"],
+      },
+      {
+        title: "Admin (Flag Tickets)",
+        route: "sandbox-admin",
+        roles: ["admin", "dev", "qa-dm", "qa-tl"],
       },
     ],
   },
@@ -138,20 +441,24 @@ export default function Sidebar() {
   const [openMenu, setOpenMenu] = useState(null);
   const [isPopover, setIsPopover] = useState(false);
   const [filteredMenu, setFilteredMenu] = useState([]);
+  const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  const user = JSON.parse(localStorage.getItem("user_details") || "{}");
-  const role = user?.role;
+  // const user = JSON.parse(localStorage.getItem("user_details") || "{}");
+  // const role = user?.role;
 
+  const user = useSelector((state) => state.auth.user);
+  const role = user?.role;
+  const email = user?.email;
   useEffect(() => {
     if (role) {
-      const filtered = filterMenuByRole(menuList, role);
+      const filtered = filterMenuByRole(menuList, role, email);
       setFilteredMenu(filtered);
     }
-  }, [role]);
+  }, [role, email]);
 
   useEffect(() => {
     filteredMenu.forEach((item, index) => {
@@ -169,8 +476,18 @@ export default function Sidebar() {
     }
   };
 
-  const handleLogout = () => {
-    dispatch(logout(navigate));
+  // const handleLogout = () => {
+  //   dispatch(logout(navigate));
+  // };
+
+  const handleLogout = async () => {
+    await fetch(`${import.meta.env.VITE_API_URL}/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+
+    dispatch(logoutAction());
+    // navigate("/login");
   };
 
   return (
@@ -244,6 +561,22 @@ export default function Sidebar() {
           );
         })}
       </div>
+
+      {/* NEED HELP BUTTON */}
+      <div className="px-4 pb-3">
+        <button
+          onClick={() => setIsHelpModalOpen(true)}
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-full bg-[#86FE964D] hover:bg-[#86FE9680] text-[#163143] text-[14px] font-medium transition-all cursor-pointer"
+        >
+          <Icon icon="mdi:help-circle-outline" className="text-[18px]" />
+          Need help?
+        </button>
+      </div>
+
+      <NeedHelpModal
+        open={isHelpModalOpen}
+        onClose={() => setIsHelpModalOpen(false)}
+      />
 
       {/* LOGOUT POPOVER */}
       {isPopover && (

@@ -11,7 +11,7 @@ import {
   ATT_REASONS_STATUS,
   handleReasonRules,
 } from "../../../utils/constants";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   addAutomationReport,
   resolveAttendanceDispute,
@@ -56,7 +56,7 @@ export default function EditRemoteTeam({
 
   const [reasonAttachment, setReasonAttachment] = useState(null);
 
-  const userDetails = JSON.parse(localStorage.getItem("user_details") || "{}");
+  const userDetails = useSelector((state) => state.auth.user);
 
   const dispatch = useDispatch();
   const onClose = () => {
@@ -93,11 +93,13 @@ export default function EditRemoteTeam({
       } else {
         setFileInfo();
       }
-      if (selectedReport?.attendance_reason != null) {
+      const reasonToUse = selectedReport?.updated_reason_tl || selectedReport?.attendance_reason;
+      if (reasonToUse != null) {
+        const found = ATT_REASONS_STATUS?.find(
+          (item) => item.reason == reasonToUse
+        );
         setReason([
-          ATT_REASONS_STATUS?.find(
-            (item) => item.reason == selectedReport?.attendance_reason
-          ),
+          found || { reason: reasonToUse, validity: "VALID", description: "" },
         ]);
       } else {
         setReason([]);
@@ -198,6 +200,7 @@ export default function EditRemoteTeam({
       const paramsDisputeResolve = {
         id: selectedReport?.id,
         updated_reason_tl: reason[0]?.reason,
+        reason: reason[0]?.reason,
         updated_notes_tl: notes,
         file_urls:
           fileInfo?.length > 0 ? fileInfo?.map((item) => item.url) : [],
@@ -299,7 +302,7 @@ export default function EditRemoteTeam({
       ) : (
         <div className="space-y-6">
           {/* Mark as Resolved Checkbox */}
-          <div className="flex items-center border-b border-[#D7E6E7] w-[100%] pl-[24px]">
+          <div className="sticky top-0 z-10 bg-white flex items-center border-b border-[#D7E6E7] w-[100%] pl-[24px] pt-4">
             <label className="flex items-center">
               <input
                 type="checkbox"
@@ -472,23 +475,21 @@ export default function EditRemoteTeam({
             />
           </div>
           {activeTab === "Disputed by WFA" && (
-            <div className="space-y-2 px-6">
-              <label
-                htmlFor="notes"
-                className="text-[#163143] font-poppins text-[16px] not-italic font-semibold leading-[20.5px]"
-              >
-                Notes By WFA
-              </label>
-
-              <TextArea
-                className="!mt-[10px] !border-[#EFEFEF] !bg-[#FFF7D8] !rounded-[16px] focus:!shadow-none focus:!border-[#EFEFEF] hover:!border-[#EFEFEF]"
-                id="notesbytl"
-                placeholder="Add notes here..."
-                autoSize={{ minRows: 5, maxRows: 10 }}
-                value={selectedReport?.notes_wfa}
-                readOnly={true}
-              />
-            </div>
+            <>
+              <div className="space-y-2 px-6">
+                <label className="text-[#163143] font-poppins text-[16px] not-italic font-semibold leading-[20.5px]">
+                  Notes By WFA
+                </label>
+                <TextArea
+                  className="!mt-[10px] !border-[#EFEFEF] !bg-[#FFF7D8] !rounded-[16px] focus:!shadow-none focus:!border-[#EFEFEF] hover:!border-[#EFEFEF]"
+                  id="notesbytl"
+                  placeholder="Add notes here..."
+                  autoSize={{ minRows: 5, maxRows: 10 }}
+                  value={selectedReport?.notes_wfa}
+                  readOnly={true}
+                />
+              </div>
+            </>
           )}
           <div className="space-y-2 px-6">
             <UploadFile

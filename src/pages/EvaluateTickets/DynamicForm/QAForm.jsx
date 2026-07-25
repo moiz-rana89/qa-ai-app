@@ -5,7 +5,13 @@ import { Tabs } from "antd";
 import CategorySection from "./CategorySection";
 import { TicketDetails } from "./TicketDetails";
 
-const QAForm = ({ initialData, onStateChange, details }) => {
+const QAForm = ({
+  initialData,
+  onStateChange,
+  details,
+  customerConcern,
+  setCustomerConcern,
+}) => {
   const [formData, setFormData] = useState(initialData);
 
   const initializeState = (data) => {
@@ -59,6 +65,7 @@ const QAForm = ({ initialData, onStateChange, details }) => {
             score: scores[question.question_id] ?? question.score,
             max_points: question.max_points,
             note: notes[question.question_id] ?? question.note,
+            optional: question.optional,
           })),
         })),
       };
@@ -86,8 +93,11 @@ const QAForm = ({ initialData, onStateChange, details }) => {
     let maxScore = 0;
 
     category.questions.forEach((question) => {
-      maxScore += question.max_points;
-      totalScore += Number.parseFloat(scores[question.question_id] || 0);
+      const score = Number.parseFloat(scores[question.question_id] || 0);
+      totalScore += score;
+      if (!question.optional || score > 0) {
+        maxScore += question.max_points;
+      }
     });
 
     return { totalScore, maxScore };
@@ -122,7 +132,11 @@ const QAForm = ({ initialData, onStateChange, details }) => {
       label: "Ticket Details",
       children: (
         <div className="p-4  h-[84vh] overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          <TicketDetails details={details} />
+          <TicketDetails
+            details={details}
+            customerConcern={customerConcern}
+            setCustomerConcern={setCustomerConcern}
+          />
         </div>
       ),
     },

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Slider, Input, Select, Checkbox } from "antd";
+import { Button, Slider, Input, InputNumber, Select, Checkbox } from "antd";
 import { Icon } from "@iconify/react";
 import { apiCalls, exportQuestionnaireJSON } from "../../../lib/api";
 import GenericAntDrawer from "../../../components/GenericAntDrawer";
@@ -15,11 +15,13 @@ import {
   deleteQuestionAction,
   getCategoryByForm,
   updateCategory,
+  updateQuestionAction,
 } from "../../../reduxStore/action/formsManagement";
 import { useEffect } from "react";
 import Skeleton from "../../../components/Skeleton";
 import { QUESTION_SCORE, QUESTION_TYPE } from "../../../utils/formsConstant";
 import GenericAntDeleteModal from "../../../components/GenericAntDeleteModal";
+import RubricAssistantDrawer from "../../../components/RubricAssistantDrawer";
 
 const { TextArea } = Input;
 
@@ -114,6 +116,31 @@ export default function CategoryWithQuestion() {
   ]);
   const [isCatDelOpen, setIsCatDelOpen] = useState(false);
   const [isQuestionDelOpen, setIsQuestionDelOpen] = useState(false);
+  // Snapshot of the question's API-shaped fields at drawer-open time.
+  // Used to compute a diff on save so we only PATCH what changed.
+  const [originalQuestion, setOriginalQuestion] = useState(null);
+  // Inline error for the question-text field (set on 409 duplicate-question).
+  const [questionTextError, setQuestionTextError] = useState("");
+  // AI Rubric Assistant — opens with whatever form/category/question is
+  // currently being edited so the user doesn't have to pick context manually.
+  const [aiOpen, setAiOpen] = useState(false);
+  const [aiContext, setAiContext] = useState({});
+  const [aiContextLabel, setAiContextLabel] = useState("");
+
+  // Open the Rubric Assistant with the broadest context that makes sense.
+  // Caller can override with category/question for narrower scope.
+  const openAiAssistant = ({ categoryId, questionId, label } = {}) => {
+    setAiContext({
+      form_id: activeForms?.form_id,
+      category_id: categoryId,
+      question_id: questionId,
+    });
+    setAiContextLabel(
+      label ||
+        `Form: ${activeForms?.form_name || activeForms?.form_id || "—"}`
+    );
+    setAiOpen(true);
+  };
 
   const {
     activeForms,
@@ -185,8 +212,32 @@ export default function CategoryWithQuestion() {
   //   setGradingCriteria(updatedCriteria);
   // };
 
-  const handleTotalScoreChange = (e) => {
+  const handleTotalScoreChange = (e, questionType) => {
     const totalScore = Number(e) || 0;
+    const type = questionType || formData.questionType;
+
+    if (type === "boolean") {
+      setGradingCriteria([
+        { score: 0, remarks: "No" },
+        { score: totalScore, remarks: "Yes" },
+      ]);
+      return;
+    }
+
+    if (type === "multiselect") {
+      const count = selectOption.length || 1;
+      const step = totalScore / count;
+      setGradingCriteria(
+        selectOption.length > 0
+          ? selectOption.map((opt, i) => ({
+              score: parseFloat(((i + 1) * step).toFixed(2)),
+              remarks: gradingCriteria[i]?.remarks || "",
+            }))
+          : [{ score: 0, remarks: "" }]
+      );
+      return;
+    }
+
     const criteriaCount = gradingCriteria.length;
 
     if (!criteriaCount) return;
@@ -249,6 +300,7 @@ export default function CategoryWithQuestion() {
   const openEditQuestionDrawer = (categoryId, question) => {
     setSelectedCategoryId(categoryId);
     setSelectedQuestionId(question.id);
+    setQuestionTextError("");
     setFormData({
       questionText: question.text,
       questionPoints: question.points,
@@ -258,12 +310,45 @@ export default function CategoryWithQuestion() {
       questionType: question.questionType || "text",
     });
 
-    setGradingCriteria(
-      question?.questions_criteria?.criteria
-        ? question?.questions_criteria?.criteria
-        : question?.grading_criteria
-    );
-    setSelectOption(question?.select_options);
+    // Normalize criteria across all known shapes the backend has used:
+    //   - New shape:    questions_criteria: [ { score, remarks, ... }, ... ]   ← array directly
+    //   - Legacy shape: questions_criteria: { criteria: [ ... ] }
+    //   - Add flow:     grading_criteria:   [ ... ]
+    // Falls back to a 5-row empty grid so the render path (which spreads
+    // gradingCriteria with `[...gradingCriteria]`) never crashes.
+    const rawCriteria = question?.questions_criteria;
+    let incomingCriteria;
+    if (Array.isArray(rawCriteria)) {
+      incomingCriteria = rawCriteria;
+    } else if (Array.isArray(rawCriteria?.criteria)) {
+      incomingCriteria = rawCriteria.criteria;
+    } else if (Array.isArray(question?.grading_criteria)) {
+      incomingCriteria = question.grading_criteria;
+    } else {
+      incomingCriteria = [
+        { score: 0, remarks: "" },
+        { score: 0, remarks: "" },
+        { score: 0, remarks: "" },
+        { score: 0, remarks: "" },
+        { score: 0, remarks: "" },
+      ];
+    }
+    setGradingCriteria(incomingCriteria);
+    setSelectOption(question?.select_options ?? []);
+
+    // Snapshot the question in API-shaped form so we can diff on save.
+    setOriginalQuestion({
+      question_text: question.text ?? "",
+      question_type: question.questionType ?? "text",
+      max_points: question.points ?? 0,
+      optional: !!question.isOptional,
+      comments_notes: !!question.allowNotes,
+      select_options: question?.select_options ?? [],
+      // Snapshot the same normalized array so the JSON.stringify diff
+      // compares apples to apples on save.
+      grading_criteria: incomingCriteria,
+    });
+
     setDrawerType("editQuestion");
     setDrawerOpen(true);
   };
@@ -455,59 +540,157 @@ export default function CategoryWithQuestion() {
           )
         );
       } else if (drawerType === "editQuestion") {
-        // Call API to update question
-        const questionData = {
-          text: formData.questionText,
-          points: formData.questionPoints,
-          code: formData.questionCode,
-          isOptional: formData.isOptional,
-          allowNotes: formData.allowNotes,
-          questionType: formData.questionType,
+        // Build the candidate payload in API-shape, then diff against the
+        // snapshot captured when the drawer opened. Only changed keys are
+        // PATCHed — untouched fields must NOT round-trip to the backend.
+        const candidate = {
+          question_text: (formData.questionText ?? "").toString(),
+          question_type: formData.questionType ?? "text",
+          max_points: Number(formData.questionPoints) || 0,
+          optional: !!formData.isOptional,
+          comments_notes: !!formData.allowNotes,
+          select_options: Array.isArray(selectOption) ? selectOption : [],
+          grading_criteria: gradingCriteria ?? null,
         };
 
-        await apiCalls.updateQuestion(
-          selectedCategoryId,
-          selectedQuestionId,
-          questionData
-        );
-
-        const updatedCategories = categories.map((cat) => {
-          if (cat.id === selectedCategoryId) {
-            const oldQuestion = cat.questions.find(
-              (q) => q.id === selectedQuestionId
-            );
-            const pointsDifference =
-              formData.questionPoints - oldQuestion.points;
-
-            return {
-              ...cat,
-              questions: cat.questions.map((q) =>
-                q.id === selectedQuestionId
-                  ? {
-                      ...q,
-                      text: formData.questionText,
-                      points: formData.questionPoints,
-                      code: formData.questionCode,
-                      isOptional: formData.isOptional,
-                      allowNotes: formData.allowNotes,
-                      questionType: formData.questionType,
-                    }
-                  : q
-              ),
-              totalScore: cat.totalScore + pointsDifference,
-            };
+        // Backend only stores select_options for select-type questions —
+        // don't bother diffing it when the type doesn't use it.
+        const fieldsToCompare = Object.keys(candidate).filter((k) => {
+          if (k === "select_options" && candidate.question_type !== "select") {
+            return false;
           }
-          return cat;
+          return true;
         });
 
-        setCategories(updatedCategories);
-
-        AntDNotification({
-          status: "success",
-          title: "Updated!",
-          description: "Question updated successfully",
-          duration: 3,
+        const changes = {};
+        const original = originalQuestion || {};
+        fieldsToCompare.forEach((key) => {
+          // JSON.stringify gives us deep equality on the simple shapes we
+          // deal with here (strings, numbers, booleans, arrays of
+          // strings, plain criteria objects). Good enough — and avoids
+          // pulling in lodash for one comparison.
+          if (JSON.stringify(candidate[key]) !== JSON.stringify(original[key])) {
+            changes[key] = candidate[key];
+          }
         });
+
+        if (Object.keys(changes).length === 0) {
+          AntDNotification({
+            status: "info",
+            title: "No changes",
+            description: "Nothing was modified.",
+            duration: 3,
+          });
+          setDrawerOpen(false);
+          setFormData({});
+          setOriginalQuestion(null);
+          return;
+        }
+
+        // Wrap the thunk in a promise so we can await it inside this try.
+        await new Promise((resolve) => {
+          dispatch(
+            updateQuestionAction(selectedQuestionId, changes, (success, data) => {
+              if (success) {
+                // Could be { status: "no changes" } if the backend determined
+                // nothing actually moved — treat as success either way.
+                AntDNotification({
+                  status: "success",
+                  title: "Updated!",
+                  description:
+                    data?.status === "no changes"
+                      ? "No changes were detected by the server."
+                      : "Question updated successfully",
+                  duration: 3,
+                });
+
+                // Patch local state with the candidate values for the keys
+                // we sent — gives instant visual feedback without a full
+                // form refetch. Recompute totalScore if max_points changed.
+                setCategories((prev) =>
+                  prev.map((cat) => {
+                    if (cat.id !== selectedCategoryId) return cat;
+                    const oldQuestion = cat.questions.find(
+                      (q) => q.id === selectedQuestionId
+                    );
+                    const pointsDifference =
+                      changes.max_points !== undefined
+                        ? candidate.max_points - (oldQuestion?.points || 0)
+                        : 0;
+                    return {
+                      ...cat,
+                      questions: cat.questions.map((q) =>
+                        q.id !== selectedQuestionId
+                          ? q
+                          : {
+                              ...q,
+                              text: candidate.question_text,
+                              points: candidate.max_points,
+                              isOptional: candidate.optional,
+                              allowNotes: candidate.comments_notes,
+                              questionType: candidate.question_type,
+                              select_options: candidate.select_options,
+                              questions_criteria:
+                                changes.grading_criteria !== undefined
+                                  ? { criteria: candidate.grading_criteria }
+                                  : q.questions_criteria,
+                            }
+                      ),
+                      totalScore: (cat.totalScore || 0) + pointsDifference,
+                    };
+                  })
+                );
+
+                setDrawerOpen(false);
+                setFormData({});
+                setOriginalQuestion(null);
+                setQuestionTextError("");
+              } else {
+                // Map per-spec status codes onto the right surface.
+                const status = data?.response?.status;
+                const detail = data?.data?.detail || data?.message;
+                if (status === 409) {
+                  setQuestionTextError(
+                    detail ||
+                      "A question with this text already exists in this category."
+                  );
+                } else if (status === 404) {
+                  AntDNotification({
+                    status: "error",
+                    title: "Question not found",
+                    description:
+                      detail || "This question was archived or deleted.",
+                    duration: 4,
+                  });
+                  // Refetch the form so the stale question disappears.
+                  if (activeForms?.form_id) {
+                    dispatch(getCategoryByForm(activeForms.form_id));
+                  }
+                  setDrawerOpen(false);
+                } else if (status === 422) {
+                  AntDNotification({
+                    status: "error",
+                    title: "Validation error",
+                    description:
+                      typeof detail === "string"
+                        ? detail
+                        : "Please check the form fields.",
+                    duration: 4,
+                  });
+                } else {
+                  AntDNotification({
+                    status: "error",
+                    title: "Update failed",
+                    description: detail || "Please try again.",
+                    duration: 4,
+                  });
+                }
+              }
+              resolve();
+            })
+          );
+        });
+        return; // skip the generic setFormData({}) tail below
       }
       setFormData({});
     } catch (error) {
@@ -604,6 +787,10 @@ export default function CategoryWithQuestion() {
       { score: 0, remarks: "" },
       { score: 0, remarks: "" },
     ]);
+    // Clear edit-mode state so reopening the drawer doesn't carry over
+    // a stale snapshot or a previous duplicate-question error.
+    setOriginalQuestion(null);
+    setQuestionTextError("");
   };
 
   const exportJSON = () => {
@@ -676,7 +863,8 @@ export default function CategoryWithQuestion() {
             >
               Cancel
             </button>
-            {drawerType != "editQuestion" && (
+            {/* "Save and Add Another" is only for the add-new flow. */}
+            {drawerType !== "editQuestion" && (
               <button
                 type="submit"
                 onClick={handleDrawerSubmit}
@@ -686,20 +874,20 @@ export default function CategoryWithQuestion() {
                 {isAddingQuestion ? "Processing..." : "Save and Add Another"}
               </button>
             )}
-            {drawerType != "editQuestion" && (
-              <button
-                type="submit"
-                onClick={handleDrawerSubmit}
-                disabled={isLoading}
-                className={`w-[130px] min-h-[32px] text-[14px] font-sm rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#61BF19] focus:ring-offset-2 ${
-                  isLoading
-                    ? "bg-gray-400 cursor-not-allowed text-white"
-                    : "bg-[#69C920] hover:bg-[#5CB518] text-white"
-                }`}
-              >
-                {isAddingQuestion ? "Processing..." : "Save"}
-              </button>
-            )}
+            {/* Save button — shown for both add and edit. In edit mode it
+                PATCHes only the changed fields via updateQuestionAction. */}
+            <button
+              type="submit"
+              onClick={handleDrawerSubmit}
+              disabled={isLoading || isAddingQuestion}
+              className={`w-[130px] min-h-[32px] text-[14px] font-sm rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#61BF19] focus:ring-offset-2 ${
+                isLoading || isAddingQuestion
+                  ? "bg-gray-400 cursor-not-allowed text-white"
+                  : "bg-[#69C920] hover:bg-[#5CB518] text-white"
+              }`}
+            >
+              {isLoading || isAddingQuestion ? "Processing..." : "Save"}
+            </button>
           </div>
           <div className="mt-5 mx-5 mb-5 space-y-6 text-[#163143] font-[400]">
             <div className="">
@@ -738,7 +926,37 @@ export default function CategoryWithQuestion() {
                 showSearch
                 placeholder="Select Question Type"
                 value={formData.questionType || "text"}
-                onChange={(value) => handleFormChange("questionType", value)}
+                onChange={(value) => {
+                  handleFormChange("questionType", value);
+                  if (value === "boolean") {
+                    const totalScore = Number(formData.questionPoints) || 0;
+                    setGradingCriteria([
+                      { score: 0, remarks: "No" },
+                      { score: totalScore, remarks: "Yes" },
+                    ]);
+                  } else if (value === "multiselect") {
+                    const totalScore = Number(formData.questionPoints) || 0;
+                    const count = selectOption.length || 1;
+                    const step = totalScore / count;
+                    setGradingCriteria(
+                      selectOption.length > 0
+                        ? selectOption.map((opt, i) => ({
+                            score: parseFloat(((i + 1) * step).toFixed(2)),
+                            remarks: "",
+                          }))
+                        : [{ score: 0, remarks: "" }]
+                    );
+                  } else {
+                    const totalScore = Number(formData.questionPoints) || 0;
+                    const step = totalScore / 5;
+                    setGradingCriteria(
+                      Array.from({ length: 5 }, (_, i) => ({
+                        score: parseFloat(((i + 1) * step).toFixed(2)),
+                        remarks: "",
+                      }))
+                    );
+                  }
+                }}
                 options={QUESTION_TYPE}
                 className="w-[100%] custom-select"
                 style={{ height: "44px" }}
@@ -758,22 +976,51 @@ export default function CategoryWithQuestion() {
                     const val = e.target.value.trim();
                     if (!val) return;
 
-                    // Add to state array
-                    setSelectOption((prev) => [...prev, val]);
+                    const newOptions = [...selectOption, val];
+                    setSelectOption(newOptions);
 
-                    // Clear input
+                    // Update grading criteria to match option count
+                    const totalScore = Number(formData.questionPoints) || 0;
+                    const count = newOptions.length;
+                    const step = count > 0 ? totalScore / count : 0;
+                    setGradingCriteria(
+                      newOptions.map((opt, i) => ({
+                        score: parseFloat(((i + 1) * step).toFixed(2)),
+                        remarks: gradingCriteria[i]?.remarks || "",
+                      }))
+                    );
+
                     setOptionText("");
                   }}
                   className="w-full custom-select"
                   style={{ height: "44px" }}
                 />
-                <div className="mt-[10px] w-[50%] flex flex-wrap gap-3">
+                <div className="mt-[10px] w-full flex flex-wrap gap-3">
                   {selectOption.length > 0 &&
                     selectOption.map((item) => (
                       <div
-                        onClick={() =>
-                          RemoveFromSelect(item, selectOption, setSelectOption)
-                        }
+                        onClick={() => {
+                          const newOptions = selectOption.filter(
+                            (o) => o !== item
+                          );
+                          setSelectOption(newOptions);
+
+                          // Update grading criteria to match new option count
+                          const totalScore =
+                            Number(formData.questionPoints) || 0;
+                          const count = newOptions.length || 1;
+                          const step = totalScore / count;
+                          setGradingCriteria(
+                            newOptions.length > 0
+                              ? newOptions.map((opt, i) => ({
+                                  score: parseFloat(
+                                    ((i + 1) * step).toFixed(2)
+                                  ),
+                                  remarks: gradingCriteria[i]?.remarks || "",
+                                }))
+                              : [{ score: 0, remarks: "" }]
+                          );
+                        }}
                         className="cursor-pointer py-1  bg-[#DBFFDF] rounded-full flex items-center justify-center px-2 text-[14px] text-[#163143]"
                       >
                         {item}
@@ -797,12 +1044,19 @@ export default function CategoryWithQuestion() {
               <TextArea
                 placeholder="Enter your question"
                 value={formData.questionText || ""}
-                onChange={(e) =>
-                  handleFormChange("questionText", e.target.value)
-                }
+                onChange={(e) => {
+                  handleFormChange("questionText", e.target.value);
+                  if (questionTextError) setQuestionTextError("");
+                }}
+                status={questionTextError ? "error" : ""}
                 className="!bg-[#fbfbfb] !border-[#efefef] !rounded-[12px]"
                 autoSize={{ minRows: 3, maxRows: 5 }}
               />
+              {questionTextError && (
+                <div className="text-[#C81E1E] text-[12px] mt-1">
+                  {questionTextError}
+                </div>
+              )}
             </div>
             {/* <div>
               <label className="block text-[14px] font-semibold mb-3">
@@ -855,26 +1109,87 @@ export default function CategoryWithQuestion() {
                 Grading Criteria Breakdown
                 <span className="text-red-500">*</span>
               </label>
-              {gradingCriteria?.map((item, index) => (
-                <div className="relative w-full mt-[10px]">
-                  <label
-                    className={`absolute left-3 top-2 text-[#163143] text-[14px] font-semibold transition-all duration-200 
-                    pointer-events-none z-10 bg-[#fbfbfb]
-                    ${formData.questionText ? "top-0 text-xs px-1" : ""}
-                  `}
-                  >
-                    {item?.score} Points
-                  </label>
+              {formData.questionType === "boolean" ? (
+                <div className="flex flex-col gap-3 mt-[10px]">
+                  {[...gradingCriteria].reverse()?.map((item) => {
+                    const originalIndex = item.remarks === "Yes" ? 1 : 0;
+                    return (
+                      <div key={originalIndex} className="relative w-full">
+                        <label
+                          className={`absolute left-3 top-2 text-[#163143] text-[14px] font-semibold transition-all duration-200
+                          pointer-events-none z-10 bg-[#fbfbfb]
+                          ${formData.questionText ? "top-0 text-xs px-1" : ""}
+                        `}
+                        >
+                          {item.score} Points · {item.remarks}
+                        </label>
 
-                  <TextArea
-                    placeholder="Explain how this question should be assessed..."
-                    value={item.remarks}
-                    onChange={(e) => handleRemarkChange(index, e.target.value)}
-                    className="!pt-[30px] !bg-[#fbfbfb] !border-[#efefef] !rounded-[12px] pt-10 overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
-                    autoSize={{ minRows: 3, maxRows: 5 }}
-                  />
+                        <TextArea
+                          placeholder="Explain how this question should be assessed..."
+                          value={item.explanation || ""}
+                          onChange={(e) => {
+                            const updated = [...gradingCriteria];
+                            updated[originalIndex].explanation = e.target.value;
+                            setGradingCriteria(updated);
+                          }}
+                          className="!pt-[30px] !bg-[#fbfbfb] !border-[#efefef] !rounded-[12px] pt-10 overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                          autoSize={{ minRows: 3, maxRows: 5 }}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
-              ))}
+              ) : formData.questionType === "multiselect" ? (
+                gradingCriteria?.map((item, index) => (
+                  <div className="relative w-full mt-[10px] bg-[#fbfbfb] border border-[#efefef] rounded-[12px] p-4" key={index}>
+                    <div className="flex items-center gap-2 mb-3">
+                      <InputNumber
+                        min={0}
+                        max={formData.questionPoints || 0}
+                        value={item?.score}
+                        onChange={(val) => {
+                          const updated = [...gradingCriteria];
+                          updated[index].score = val || 0;
+                          setGradingCriteria(updated);
+                        }}
+                        className="!w-[120px] !rounded-[8px]"
+                        style={{ height: "36px" }}
+                      />
+                      <span className="text-[14px] font-semibold text-[#163143]">
+                        Points
+                      </span>
+                    </div>
+                    <TextArea
+                      placeholder="Explain how this question should be assessed..."
+                      value={item.remarks}
+                      onChange={(e) => handleRemarkChange(index, e.target.value)}
+                      className="!bg-[#fbfbfb] !border-none !shadow-none !rounded-[12px] overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                      autoSize={{ minRows: 3, maxRows: 5 }}
+                    />
+                  </div>
+                ))
+              ) : (
+                gradingCriteria?.map((item, index) => (
+                  <div className="relative w-full mt-[10px]" key={index}>
+                    <label
+                      className={`absolute left-3 top-2 text-[#163143] text-[14px] font-semibold transition-all duration-200
+                      pointer-events-none z-10 bg-[#fbfbfb]
+                      ${formData.questionText ? "top-0 text-xs px-1" : ""}
+                    `}
+                    >
+                      {item?.score} Points
+                    </label>
+
+                    <TextArea
+                      placeholder="Explain how this question should be assessed..."
+                      value={item.remarks}
+                      onChange={(e) => handleRemarkChange(index, e.target.value)}
+                      className="!pt-[30px] !bg-[#fbfbfb] !border-[#efefef] !rounded-[12px] pt-10 overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                      autoSize={{ minRows: 3, maxRows: 5 }}
+                    />
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
@@ -904,6 +1219,22 @@ export default function CategoryWithQuestion() {
             icon="material-symbols:add-rounded"
           />
           <span>Add Category</span>
+        </div>
+
+        {/* AI Rubric Assistant — opens chat drawer pre-scoped to this form */}
+        <div
+          onClick={() => openAiAssistant()}
+          className="group flex items-center border border-[#D7E6E7] px-[16px] py-[1px] rounded-[30px] text-[14px] text-[#163143] cursor-pointer hover:border-[#69C920] hover:bg-[#69C920] hover:text-[#fff] transition-all duration-200 ml-auto"
+        >
+          <Icon
+            fontSize={20}
+            className="pr-1 text-[#69C920] group-hover:text-white transition-all duration-200"
+            icon="mdi:robot-outline"
+          />
+          <span>Ask AI</span>
+          <span className="ml-2 text-[10px] uppercase tracking-wide font-semibold bg-[#FFF7D8] text-[#7A5A00] px-2 py-[1px] rounded-full group-hover:bg-white group-hover:text-[#7A5A00]">
+            Beta
+          </span>
         </div>
         {/* <button
           onClick={exportJSON}
@@ -1072,7 +1403,11 @@ export default function CategoryWithQuestion() {
                       }}
                       type="text"
                       icon={
-                        <Icon icon={"mdi:eye"} fontSize={16} color="#69C920" />
+                        <Icon
+                          icon={"mdi:pencil-outline"}
+                          fontSize={16}
+                          color="#69C920"
+                        />
                       }
                       onClick={() =>
                         openEditQuestionDrawer(category.id, question)
@@ -1117,6 +1452,13 @@ export default function CategoryWithQuestion() {
       >
         {renderDrawerContent()}
       </GenericAntDrawer>
+
+      <RubricAssistantDrawer
+        open={aiOpen}
+        onClose={() => setAiOpen(false)}
+        context={aiContext}
+        contextLabel={aiContextLabel}
+      />
     </div>
   );
 }

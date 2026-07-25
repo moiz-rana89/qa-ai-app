@@ -11,7 +11,7 @@ import {
   ATT_REASONS_STATUS,
   handleReasonRules,
 } from "../../../utils/constants";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   addAutomationReport,
   updateAttendnceInternalReport,
@@ -55,7 +55,7 @@ export default function EditWFAAttendance({
   const [startDate, setStartDate] = useState("");
   const [authCheck, setAuthCheck] = useState(false);
 
-  const [reasonAttachment, setReasonAttachment] = useState(null);
+  const userDetails = useSelector((state) => state.auth.user);
 
   const dispatch = useDispatch();
   const onClose = () => {
@@ -97,10 +97,11 @@ export default function EditWFAAttendance({
         setFileInfo();
       }
       if (selectedReport?.attendance_reason != null) {
+        const found = ATT_REASONS_STATUS?.find(
+          (item) => item.reason == selectedReport?.attendance_reason
+        );
         setReason([
-          ATT_REASONS_STATUS?.find(
-            (item) => item.reason == selectedReport?.attendance_reason
-          ),
+          found || { reason: selectedReport.attendance_reason, validity: "VALID", description: "" },
         ]);
       } else {
         setReason([]);
@@ -137,9 +138,11 @@ export default function EditWFAAttendance({
     // }
     else if (!isResolved) {
       toast.error("Please check Mark as Resolved checkbox");
-    } else if (!fileInfo?.length > 0 && reason[0]?.isFileReq) {
-      toast.error("You must Upload Attachment before proceeding.");
-    } else if (!authCheck) {
+    }
+    // else if (!fileInfo?.length > 0 && reason[0]?.isFileReq) {
+    //   toast.error("You must Upload Attachment before proceeding.");
+    // }
+    else if (!authCheck) {
       toast.error(
         "Please confirm that you have reviewed the infraction and provided the required notes or documentation."
       );
@@ -169,18 +172,10 @@ export default function EditWFAAttendance({
           updated_by_tl: userName,
         };
       }
-      const userDetails = JSON.parse(
-        localStorage.getItem("user_details") || "{}"
-      );
 
       if (CurrntActiveTab == "Remote Team") {
-        if (
-          handleReasonRules(reason[0]?.reason) &&
-          (!endDate?.ds || !fileInfo)
-        ) {
-          toast.error(
-            "You must provide End Date and Upload Attachment before proceeding."
-          );
+        if (handleReasonRules(reason[0]?.reason) && !endDate?.ds) {
+          toast.error("You must provide End Date before proceeding.");
           return;
         } else if (
           handleReasonRules(reason[0]?.reason) &&
@@ -283,8 +278,8 @@ export default function EditWFAAttendance({
         </div>
       ) : (
         <div className="space-y-6">
-          {/* Mark as Resolved Checkbox */}
-          <div className="flex items-center border-b border-[#D7E6E7] w-[100%] pl-6">
+          {/* Sticky Mark as Resolved Checkbox */}
+          <div className="sticky top-0 z-10 bg-white flex items-center border-b border-[#D7E6E7] w-[100%] pl-6 pt-4">
             <label className="flex  items-center">
               <input
                 type="checkbox"
@@ -477,6 +472,46 @@ export default function EditWFAAttendance({
               </label>
             </div>
           )}
+          {/* Dispute Info (only when record is in dispute) */}
+          {selectedReport?.in_disputed === true && (
+            <>
+              <div className="space-y-2 px-6">
+                <label className="text-[#163143] font-poppins text-[14px] not-italic font-semibold leading-[20.5px]">
+                  TL Final Reason
+                </label>
+                <Input
+                  className="!border-[#EFEFEF] !bg-[#FBFBFB] !rounded-[16px]"
+                  value={selectedReport?.updated_reason_tl || "-"}
+                  readOnly={true}
+                />
+              </div>
+              <div className="space-y-2 px-6">
+                <label className="text-[#163143] font-poppins text-[14px] not-italic font-semibold leading-[20.5px]">
+                  TL Final Notes
+                </label>
+                <TextArea
+                  className="!mt-[10px] !border-[#EFEFEF] !bg-[#FBFBFB] !rounded-[16px] focus:!shadow-none focus:!border-[#EFEFEF] hover:!border-[#EFEFEF]"
+                  placeholder="-"
+                  autoSize={{ minRows: 3, maxRows: 8 }}
+                  value={selectedReport?.updated_notes_tl || ""}
+                  readOnly={true}
+                />
+              </div>
+              <div className="space-y-2 px-6">
+                <label className="text-[#163143] font-poppins text-[14px] not-italic font-semibold leading-[20.5px]">
+                  WFA Final Notes
+                </label>
+                <TextArea
+                  className="!mt-[10px] !border-[#EFEFEF] !bg-[#FFF7D8] !rounded-[16px] focus:!shadow-none focus:!border-[#EFEFEF] hover:!border-[#EFEFEF]"
+                  placeholder="-"
+                  autoSize={{ minRows: 3, maxRows: 8 }}
+                  value={selectedReport?.updated_notes_wfa || ""}
+                  readOnly={true}
+                />
+              </div>
+            </>
+          )}
+
           {/* Notes */}
           {notesTL && (
             <div className="space-y-2 px-6">
@@ -520,7 +555,7 @@ export default function EditWFAAttendance({
               //   handleReasonRules(reason[0]?.reason)
               // }
               reqNotes={reason?.[0]?.fileReqMessage}
-              required={reason?.[0]?.isFileReq}
+              required={false}
               fileInfo={fileInfo}
               setFileInfo={setFileInfo}
             />

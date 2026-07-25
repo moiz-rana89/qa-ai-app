@@ -1,5 +1,5 @@
 import { Icon } from "@iconify/react";
-import { DatePicker } from "antd";
+import { DatePicker, Input } from "antd";
 import { useEffect } from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,6 +8,7 @@ import { AntDNotification } from "../../components/AntDNotification";
 import AntDRangePicker from "../../components/AntDRangePicker/index";
 import AntDTable from "../../components/AntDTable";
 import MainPageButton from "../../components/Buttons/MainPageButton";
+import AssignTicketsModal from "../../components/AssignTicketsModal";
 import UnifiedDropdown from "../../components/Dropdown/UnifiedDropdown";
 import GenericAntDeleteModal from "../../components/GenericAntDeleteModal";
 import GenericAntDrawer from "../../components/GenericAntDrawer";
@@ -18,8 +19,14 @@ import {
   getClientNames,
   getQasName,
   getTeamLeadName,
+  getTeamMemberFilter,
   setSelectedFormToEvaluate,
 } from "../../reduxStore/action/formsManagement";
+import {
+  getOMFilterData,
+  getCSMFilterData,
+  getAomList,
+} from "../../reduxStore/action/workforcedashboard";
 import {
   formatDateTimePlainEnglish,
   RemoveFromSelect,
@@ -27,17 +34,28 @@ import {
 } from "../../utils/helperFunctions";
 
 function EvaluateTickets() {
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [pagination, setPagination] = useState({ page: 1, size: 10 });
+  // Assign Tickets modal — gated to admin / dev / tl per spec.
+  const [assignOpen, setAssignOpen] = useState(false);
+  // Ticket ID free-text filter — sent to API as `ticket_id`.
+  // `ticketIdInput` is the live typed value; `ticketIdFilter` is the
+  // debounced/committed value the fetch effect actually watches.
+  const [ticketIdInput, setTicketIdInput] = useState("");
+  const [ticketIdFilter, setTicketIdFilter] = useState("");
   const [open, setOpen] = useState(false);
   const [selectedRow, setselectedRow] = useState([]);
   const [sorting, setSorting] = useState({ sort_by: null, sort_order: null });
   const [selectedClients, setSelectedClients] = useState([]);
+  const userDetails = useSelector((state) => state.auth.user);
+
   const [selectedQas, setSelectedQas] = useState(
-    userDetails?.role == "admin" || userDetails?.role == "dev"
+    userDetails?.role == "admin" ||
+      userDetails?.role == "dev" ||
+      userDetails?.role == "qa" ||
+      userDetails?.role == "qa-dm" ||
+      userDetails?.role == "qa-tl"
       ? []
       : userDetails?.role == "qas"
       ? [{ owner: userDetails?.owner_id }]
@@ -45,7 +63,11 @@ function EvaluateTickets() {
   );
   const [selectedAgents, setSelectedAgents] = useState([]);
   const [selectedTL, setSelectedTL] = useState(
-    userDetails?.role == "admin" || userDetails?.role == "dev"
+    userDetails?.role == "admin" ||
+      userDetails?.role == "dev" ||
+      userDetails?.role == "qa" ||
+      userDetails?.role == "qa-tl" ||
+      userDetails?.role == "qa-dm"
       ? []
       : userDetails?.role != "qas"
       ? [{ teamlead_id: userDetails?.owner_id }]
@@ -53,6 +75,12 @@ function EvaluateTickets() {
   );
   const [isLoadingAgent, setIsLoadingAgent] = useState(false);
   const [isLoadingTL, setIsLoadingTL] = useState(false);
+  const [selectedOm, setSelectedOm] = useState([]);
+  const [selectedCsm, setSelectedCsm] = useState([]);
+  const [selectedAom, setSelectedAom] = useState([]);
+  const [isLoadingOm, setIsLoadingOm] = useState(false);
+  const [isLoadingCsm, setIsLoadingCsm] = useState(false);
+  const [isLoadingAom, setIsLoadingAom] = useState(false);
 
   const { isLoading, allFormsTickets } = useSelector((store) => store?.evalute);
   const {
@@ -63,6 +91,9 @@ function EvaluateTickets() {
     agentNames,
     teamLeadNames,
   } = useSelector((store) => store.formsManagement);
+  const { omList, csmList, aomList } = useSelector(
+    (store) => store.workforcedashboard
+  );
 
   const getData = (sorting, pagination, filters) => {
     dispatch(
@@ -73,8 +104,27 @@ function EvaluateTickets() {
     dispatch(getClientNames());
     dispatch(getQasName());
     dispatch(getTeamLeadName(setIsLoadingTL));
-    dispatch(getAgentName(setIsLoadingAgent));
+    dispatch(getTeamMemberFilter(setIsLoadingAgent));
+    dispatch(getOMFilterData(setIsLoadingOm));
+    dispatch(getCSMFilterData(setIsLoadingCsm));
+    dispatch(getAomList(setIsLoadingAom));
   }, []);
+
+  // Debounce Ticket ID input → committed filter. 400ms feels responsive
+  // without firing on every keystroke when someone pastes/types an id.
+  // Also resets pagination to page 1 so a narrowed filter doesn't strand
+  // the user on an empty page.
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      const trimmed = ticketIdInput.trim();
+      if (trimmed !== ticketIdFilter) {
+        setTicketIdFilter(trimmed);
+        setPagination((prev) => ({ ...prev, page: 1 }));
+      }
+    }, 400);
+    return () => clearTimeout(handle);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ticketIdInput]);
   useEffect(() => {
     // if (type) {
     // let selectedQasLocal = [...selectedQas];
@@ -83,8 +133,17 @@ function EvaluateTickets() {
     getData(pagination, sorting, {
       client_id: selectedClients.map((item) => item.client_id),
       assigned_to_qas: selectedQas?.map((item) => item.owner),
-      agent_id: selectedAgents?.map((item) => item.user_id),
+      agent_id: selectedAgents?.map((item) => item.helpdesk_user_id),
       assigned_to_tl: selectedTL?.map((item) => item.teamlead_id),
+      operations_manager_id: selectedOm?.map((item) =>
+        parseInt(item?.operations_manager_id)
+      ),
+      csm_id: selectedCsm?.map((item) => parseInt(item?.csm_id)),
+      associate_operations_manager_id: selectedAom?.map((item) =>
+        parseInt(item?.id)
+      ),
+      // Empty string is filtered out by the Api wrapper — no need to guard here.
+      ticket_id: ticketIdFilter || undefined,
     });
     // }
   }, [
@@ -94,6 +153,10 @@ function EvaluateTickets() {
     selectedQas,
     selectedAgents,
     selectedTL,
+    selectedOm,
+    selectedCsm,
+    selectedAom,
+    ticketIdFilter,
   ]);
 
   const columns = [
@@ -109,22 +172,22 @@ function EvaluateTickets() {
         </div>
       ),
     },
-    // {
-    //   title: "QAS Name",
-    //   dataIndex: "assigned_to_qas",
-    //   key: "assigned_to_qas",
-    //   width: 120,
-    //   disableSort: true,
-    //   render: (_, { assigned_to_qas }) => <div>{assigned_to_qas}</div>,
-    // },
-    // {
-    //   title: "TL Name",
-    //   dataIndex: "assigned_to_tl",
-    //   key: "assigned_to_tl",
-    //   width: 120,
-    //   disableSort: true,
-    //   render: (_, { assigned_to_tl }) => <div>{assigned_to_tl}</div>,
-    // },
+    {
+      title: "QAS Name",
+      dataIndex: "qas_name",
+      key: "qas_name",
+      width: 120,
+      disableSort: true,
+      render: (_, { qas_name }) => <div>{qas_name}</div>,
+    },
+    {
+      title: "TL Name",
+      dataIndex: "tl_name",
+      key: "tl_name",
+      width: 120,
+      disableSort: true,
+      render: (_, { tl_name }) => <div>{tl_name}</div>,
+    },
     {
       title: "Due Date",
       dataIndex: "due_date",
@@ -134,27 +197,27 @@ function EvaluateTickets() {
         <div>{due_date && formatDateTimePlainEnglish(due_date)}</div>
       ),
     },
-    // {
-    //   title: "Agent ID",
-    //   dataIndex: "agent_id",
-    //   key: "agent_id",
-    //   width: 150,
-    //   disableSort: true,
-    // },
-    // {
-    //   title: "Client ID",
-    //   dataIndex: "client_id",
-    //   key: "client_id",
-    //   width: 150,
-    //   disableSort: true,
-    // },
-    // {
-    //   title: "Form ID",
-    //   dataIndex: "form_id",
-    //   key: "form_id",
-    //   width: 150,
-    //   disableSort: true,
-    // },
+    {
+      title: "Agent Name",
+      dataIndex: "agent_name",
+      key: "agent_name",
+      width: 150,
+      disableSort: true,
+    },
+    {
+      title: "Client Name",
+      dataIndex: "client_name",
+      key: "client_name",
+      width: 150,
+      disableSort: true,
+    },
+    {
+      title: "Form Name",
+      dataIndex: "form_name",
+      key: "form_name",
+      width: 150,
+      disableSort: true,
+    },
     {
       title: "Ticket ID",
       dataIndex: "ticket_id",
@@ -247,7 +310,7 @@ function EvaluateTickets() {
     getData({ page: 1, size: 10 }, sorting, {
       client_id: selectedClients.map((item) => item.client_id),
       assigned_to_qas: selectedQas?.map((item) => item.owner),
-      agent_id: selectedAgents?.map((item) => item.user_id),
+      agent_id: selectedAgents?.map((item) => item.helpdesk_user_id),
       assigned_to_tl: selectedTL?.map((item) => item.teamlead_id),
       due_date_from: date[0],
       due_date_to: date[1],
@@ -297,6 +360,26 @@ function EvaluateTickets() {
               <AntDRangePicker onChange={onChange} />
             </div>
             <div className="flex space-x-0 flex-wrap gap-3 pl-3">
+              <Input
+                placeholder="Ticket ID"
+                value={ticketIdInput}
+                onChange={(e) => setTicketIdInput(e.target.value)}
+                allowClear
+                prefix={
+                  <Icon
+                    icon="mdi:ticket-outline"
+                    className="text-[#69C920]"
+                    fontSize={16}
+                  />
+                }
+                style={{
+                  height: 44,
+                  borderRadius: 32,
+                  width: 180,
+                  background: "white",
+                  borderColor: "#d9d9d9",
+                }}
+              />
               <UnifiedDropdown
                 placeholder="Select Client for this form"
                 name="Clients"
@@ -339,7 +422,7 @@ function EvaluateTickets() {
                 setselectedList={setSelectedAgents}
                 multiSelect={true}
                 displayKey="user_name"
-                valueKey="user_id"
+                valueKey="helpdesk_user_id"
                 searchKeys={["user_name"]}
                 className="h-[44px] w-[100%] border-[#d9d9d9] bg-white"
               />
@@ -378,15 +461,80 @@ function EvaluateTickets() {
                 />
               </div>
             )}
+            {userDetails?.role !== "om" && (
+              <div className="flex space-x-0 flex-wrap gap-3 pl-3">
+                <UnifiedDropdown
+                  placeholder="Select OM"
+                  name="OM"
+                  data={omList}
+                  isLoading={isLoadingOm}
+                  selectedList={selectedOm}
+                  setselectedList={setSelectedOm}
+                  multiSelect={true}
+                  displayKey="operations_manager"
+                  valueKey="operations_manager_id"
+                  searchKeys={["operations_manager"]}
+                  className="h-[44px] w-[100%] border-[#d9d9d9] bg-white"
+                />
+              </div>
+            )}
+            {userDetails?.role !== "csm" && (
+              <div className="flex space-x-0 flex-wrap gap-3 pl-3">
+                <UnifiedDropdown
+                  placeholder="Select CSM"
+                  name="CSM"
+                  data={csmList}
+                  isLoading={isLoadingCsm}
+                  selectedList={selectedCsm}
+                  setselectedList={setSelectedCsm}
+                  multiSelect={true}
+                  displayKey="csm"
+                  valueKey="csm_id"
+                  searchKeys={["csm"]}
+                  className="h-[44px] w-[100%] border-[#d9d9d9] bg-white"
+                />
+              </div>
+            )}
+            {userDetails?.role !== "aom" && (
+              <div className="flex space-x-0 flex-wrap gap-3 pl-3">
+                <UnifiedDropdown
+                  placeholder="Select AOM"
+                  name="AOM"
+                  data={aomList}
+                  isLoading={isLoadingAom}
+                  selectedList={selectedAom}
+                  setselectedList={setSelectedAom}
+                  multiSelect={true}
+                  displayKey="name"
+                  valueKey="name"
+                  searchKeys={["name"]}
+                  className="h-[44px] w-[100%] border-[#d9d9d9] bg-white"
+                />
+              </div>
+            )}
           </div>
         </div>
         <div className="flex items-center">
           <span className="text-xl font-semibold">{"Evaluate Tickets"}</span>
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-3">
+            {/* Assign Tickets — admin / dev / tl only.
+                API enforces too; this just keeps the UI clean for others. */}
+            {["admin", "dev", "tl"].includes(userDetails?.role) && (
+              <button
+                onClick={() => setAssignOpen(true)}
+                className="inline-flex items-center gap-2 min-h-[40px] px-5 text-[14px] font-medium rounded-full border border-[#69C920] text-[#163143] bg-white hover:bg-[#F1F5F5] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#61BF19] focus:ring-offset-2"
+              >
+                <Icon
+                  icon="mdi:ticket-account"
+                  className="text-[#69C920] text-[18px]"
+                />
+                <span className="font-poppins">Assign Tickets</span>
+              </button>
+            )}
             <button
               onClick={handleEvalute}
               disabled={!selectedRow?.length > 0}
-              className={`w-[160px] min-h-[40px] ml-auto text-[14px] font-sm rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#61BF19] focus:ring-offset-2 ${
+              className={`w-[160px] min-h-[40px] text-[14px] font-sm rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#61BF19] focus:ring-offset-2 ${
                 !selectedRow?.length > 0
                   ? "bg-gray-400 cursor-not-allowed text-white"
                   : "bg-[#69C920] hover:bg-[#5CB518] text-white"
@@ -410,18 +558,16 @@ function EvaluateTickets() {
           pageSize={allFormsTickets?.pagination?.pageSize}
           rowKey={"id"}
           onPageChange={(page) => {
-            setPagination({
-              ...pagination,
-              page: page,
-            });
+            // Functional updater — AntDTable fires onPageChange and
+            // onPageSizeChange in the same tick on size changes; without
+            // this they each spread a stale `pagination` and the second
+            // setState wins, clobbering the new size.
+            setPagination((prev) => ({ ...prev, page }));
           }}
           onPageSizeChange={(size) => {
-            if (size != pagination.size) {
-              setPagination({
-                ...pagination,
-                size: size,
-              });
-            }
+            setPagination((prev) =>
+              prev.size !== size ? { ...prev, size, page: 1 } : prev
+            );
           }}
           onSortChange={(columnKey, order) => {
             setSorting({ sort_by: columnKey, sort_order: order });
@@ -437,6 +583,12 @@ function EvaluateTickets() {
           }}
         />
       )}
+
+      <AssignTicketsModal
+        open={assignOpen}
+        onClose={() => setAssignOpen(false)}
+        clients={clientNames}
+      />
     </div>
   );
 }

@@ -15,6 +15,8 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { InformationSection } from "./InformationSection";
 import { pstDate } from "../../utils/helperFunctions";
+import { useSelector } from "react-redux";
+import Api from "../../reduxStore/lib/api";
 
 const baseURL = import.meta.env.VITE_API_URL;
 
@@ -46,6 +48,9 @@ export function CustomMonitoringForm() {
   const [selectedFormType, setSelectedFormType] = useState(
     formData.ticketTypes?.[0] || ""
   );
+
+  const userDetails = useSelector((state) => state.auth.user);
+
   function findMissingSections(schema, answers) {
     let missingSections = [];
 
@@ -133,9 +138,7 @@ export function CustomMonitoringForm() {
         );
         return;
       }
-      const userDetails = JSON.parse(
-        localStorage.getItem("user_details") || "{}"
-      );
+
       let submissionData = {
         event_type: selectedFormType,
         submitted_at: pstDate(),
@@ -174,8 +177,9 @@ export function CustomMonitoringForm() {
         };
       }
       // console.log("submissionData", submissionData);
-      const endPointUrl = `${baseURL}/openai/client_specific_forms`;
-      const response = await axios.post(endPointUrl, submissionData);
+      const endPointUrl = `/openai/client_specific_forms`;
+
+      const response = await Api.post(endPointUrl, submissionData);
       toast.success("Form submitted successfully!");
       let messageTimer = setTimeout(() => {
         window.location.reload();

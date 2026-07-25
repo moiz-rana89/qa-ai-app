@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import { Icon } from "@iconify/react";
 import { useDispatch, useSelector } from "react-redux";
+
 import { setIsAuthAction, setLoaderAction } from "../../reduxStore/action/auth";
 import SplashScreen from "../../layout/SplashScreen";
 import { useNavigate } from "react-router-dom";
@@ -20,50 +21,95 @@ export default function LoginPage() {
   const { isLoadingAuth } = useSelector((store) => store?.auth);
   const isPending = false;
   //   const { mutate, isError, isPending, error } = useLogin();
+  // const handleLogin = async () => {
+  //   if (!email || !password) {
+  //     alert("Enter email and password");
+  //     return;
+  //   }
+  //   try {
+  //     dispatch(setLoaderAction(true));
+  //     const form = new FormData();
+  //     form.append("username", email);
+  //     form.append("password", password);
+  //     const resp = await axios.post(
+  //       `${import.meta.env.VITE_API_URL}/login`,
+  //       form
+  //     );
+  //     localStorage.setItem("auth_token", resp?.data?.access_token);
+  //     localStorage.setItem("user_details", JSON.stringify(resp?.data?.user));
+  //     dispatch(setLoaderAction(false));
+  //     dispatch(setIsAuthAction(true));
+  //     navigate("/");
+  //   } catch (error) {
+  //     dispatch(setLoaderAction(false));
+  //     dispatch(setIsAuthAction(false));
+  //   }
+  // };
+
   const handleLogin = async () => {
     if (!email || !password) {
       alert("Enter email and password");
       return;
     }
+    dispatch({ type: "IS_LOADING_AUTH", data: true });
+
     try {
       dispatch(setLoaderAction(true));
+
       const form = new FormData();
       form.append("username", email);
       form.append("password", password);
-      const resp = await axios.post(
-        `${import.meta.env.VITE_API_URL}/login`,
-        form
+
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/login`, {
+        method: "POST",
+        body: form,
+        credentials: "include", // important: cookies
+      });
+
+      if (!res.ok) throw new Error();
+
+      const data = await res.json();
+      dispatch(setLoaderAction(false));
+      dispatch(
+        setIsAuthAction({
+          isAuthenticated: true,
+          user: data.user, // backend user info only
+        })
       );
-      localStorage.setItem("auth_token", resp?.data?.access_token);
-      localStorage.setItem("user_details", JSON.stringify(resp?.data?.user));
-      dispatch(setLoaderAction(false));
-      dispatch(setIsAuthAction(true));
-      navigate("/");
-    } catch (error) {
-      dispatch(setLoaderAction(false));
-      dispatch(setIsAuthAction(false));
-    }
-    // mutate({ email, password, setlogin, toast }); // Triggers the login API call
-  };
 
-  const checkLogin = async () => {
-    const token = await localStorage.getItem("auth_token");
-    if (token !== null) {
-      dispatch(setIsAuthAction(true));
+      navigate("/"); // redirect after login
+    } catch (err) {
+      dispatch(
+        setIsAuthAction({
+          isAuthenticated: false,
+          user: null,
+        })
+      );
+      dispatch(setLoaderAction(false));
+    } finally {
+      dispatch({ type: "IS_LOADING_AUTH", data: false });
+      dispatch(setLoaderAction(false));
     }
   };
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      checkLogin();
-      setLoading(false);
-    }, 2000); // Example delay
-    return () => clearTimeout(timeout);
-  }, []);
+  // const checkLogin = async () => {
+  //   const token = await localStorage.getItem("auth_token");
+  //   if (token !== null) {
+  //     dispatch(setIsAuthAction(true));
+  //   }
+  // };
 
-  if (loading) {
-    return <SplashScreen />;
-  }
+  // useEffect(() => {
+  //   const timeout = setTimeout(() => {
+  //     checkLogin();
+  //     setLoading(false);
+  //   }, 2000); // Example delay
+  //   return () => clearTimeout(timeout);
+  // }, []);
+
+  // if (loading) {
+  //   return <SplashScreen />;
+  // }
   //   useEffect(() => {
   //     if (error) {
   //       {

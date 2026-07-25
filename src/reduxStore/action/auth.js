@@ -13,6 +13,21 @@ export function setIsAuthAction(data) {
     data,
   };
 }
+export const logoutAction = () => ({
+  type: types.LOGOUT,
+});
+
+export const refreshTokenAuth = async () => {
+  const resp = await fetch(`${import.meta.env.VITE_API_URL}/refresh`, {
+    method: "POST",
+    credentials: "include",
+  });
+  if (!resp.ok && !(window.location.pathname == "/login")) {
+    window.location.href = "/login";
+    throw new Error("Session expired");
+  }
+};
+
 export const login = async (email, password) => {
   return async (dispatch) => {
     try {

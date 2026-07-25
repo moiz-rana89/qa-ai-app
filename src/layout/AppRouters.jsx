@@ -9,9 +9,11 @@ import LoginPage from "../pages/LoginPage";
 import EvaluateTickets from "../pages/EvaluateTickets";
 import { EvaluteForm } from "../pages/EvaluateTickets/EvaluteForm";
 import FormsManagement from "../pages/FormsManagement";
+import QASettings from "../pages/QASettings";
 import MainLayout from "./MainLayout";
 import FullWidthLayout from "./FullWidthLayout";
 import ProtectedRoute from "./ProtectedRoute";
+import { getDefaultRouteForRole } from "../utils/roleHelpers";
 import { setIsAuthAction } from "../reduxStore/action/auth";
 import RemoteTeamManagement from "../pages/WorkForceTeamDashboard/RemoteTeamManagement";
 import UnauthorizedPage from "./UnauthorizedPage";
@@ -21,19 +23,78 @@ import InternalTeamReporting from "../pages/WorkForceTeamDashboard/InternalTeamR
 import WFARemoteTeam from "../pages/WFAAttendanceManagement/WFARemoteTeam";
 import WFAInternalTeam from "../pages/WFAAttendanceManagement/WFAInternalTeam";
 import WFAAttendanceReporting from "../pages/WFAAttendanceManagement/WFAAttendanceReporting";
+import WFAOnTimeReporting from "../pages/WFAAttendanceManagement/WFAOnTimeReporting";
 import { DownloadReport } from "../pages/DownloadReport";
 import { TicketMonitoringForm } from "../pages/TicketMonitoringForm";
 import { PerformanceMonitoringForm } from "../pages/PerformanceMonitoringForm";
 import { CustomMonitoringForm } from "../pages/CustomMonitoringForm";
 import { OtherCoachingTypes } from "../pages/OtherCoachingTypes";
 import AdvanceNoticeSubmission from "../pages/AdvanceNoticeSubmission";
+import ScheduleManagement from "../pages/ScheduleManagement";
 import { DownloadClientFormReport } from "../pages/DownloadClientFormReport";
-
+import { QAAIReport } from "../pages/QAAIReport";
+import PerformanceReview from "../pages/PerformanceReview";
+import BugsFeatures from "../pages/BugsFeatures";
+import GoogleFormEmbed from "../pages/GoogleFormEmbed";
+import AttendanceInfractions from "../pages/AttendanceInfractions";
+import HubspotRoster from "../pages/HubspotRoster";
+import EndorsementReport from "../pages/EndorsementReport";
+import OnboardFromHubspot from "../pages/OnboardFromHubspot";
+import NeedHelpPage from "../pages/NeedHelp";
+import SandboxTickets from "../pages/Sandbox/SandboxTickets";
+import SandboxEvaluate from "../pages/Sandbox/SandboxEvaluate";
+import SandboxHistory from "../pages/Sandbox/SandboxHistory";
+import SandboxAdmin from "../pages/Sandbox/SandboxAdmin";
+import AuthProvider from "./AuthProvider";
+import { ENDORSEMENT_REPORT_EMAILS } from "../utils/accessLists";
+// admin download = wfa,om
 const ROUTE_ROLES = {
-  "evaluate-tickets": ["admin", "dev", "qas", "tl", "dtl"],
-  "forms-management": ["admin", "dev"],
-  "shadowing-form": ["admin", "dev", "qas", "tl"],
-  "evalute-form": ["admin", "dev", "tl", "dtl", "qas"],
+  "evaluate-tickets": [
+    "admin",
+    "dev",
+    "qas",
+    "tl",
+    "dtl",
+    "qa",
+    "qa-dm",
+    "qa-tl",
+    "om",
+    "aom",
+  ],
+  "forms-management": [
+    "admin",
+    "dev",
+    "qa",
+    "qa-dm",
+    "qa-tl",
+    "qas",
+    "om",
+    "aom",
+  ],
+  "qa-settings": ["admin", "dev", "om", "aom", "qa", "qa-dm", "qa-tl"],
+  "shadowing-form": [
+    "admin",
+    "dev",
+    "qas",
+    "tl",
+    "qa",
+    "qa-dm",
+    "qa-tl",
+    "om",
+    "aom",
+  ],
+  "evalute-form": [
+    "admin",
+    "dev",
+    "tl",
+    "dtl",
+    "qa",
+    "qa-dm",
+    "qa-tl",
+    "qas",
+    "om",
+    "aom",
+  ],
   "workforce-remote-team-attendance": [
     "dev",
     "csm",
@@ -48,10 +109,45 @@ const ROUTE_ROLES = {
     "dm",
     "dtl",
   ],
-  "download-report": ["admin", "dev", "tl", "aom"],
-  "download-client-specific-report": ["admin", "dev", "dtl", "aom", "om"],
+  "download-report": [
+    "admin",
+    "dev",
+    "qa-tl",
+    "qa-dm",
+    "tl",
+    "aom",
+    "dtl",
+    "wfa",
+    "om",
+    "qas",
+  ],
+  "download-client-specific-report": [
+    "admin",
+    "dev",
+    "dtl",
+    "tl",
+    "qa-tl",
+    "qa-dm",
+    "aom",
+    "wfa",
+    "om",
+    "qas",
+  ],
+  "qa-ai-report": [
+    "admin",
+    "dev",
+    "qa-tl",
+    "qa-dm",
+    "tl",
+    "aom",
+    "dtl",
+    "wfa",
+    "om",
+    "qas",
+  ],
   "ticket-monitoring-form": [
     "dev",
+    "qa-tl",
     "tl",
     "om",
     "admin",
@@ -60,6 +156,7 @@ const ROUTE_ROLES = {
     "som",
     "aom",
     "dtl",
+    "qas",
   ],
   "performance-monitoring-form": [
     "om",
@@ -70,9 +167,11 @@ const ROUTE_ROLES = {
     "csm",
     "cstm",
     "tl",
+    "qa-tl",
     "dtl",
+    "qas",
   ],
-  "custom-monitoring-form": ["admin", "dev", "dtl", "om", "aom"],
+  "custom-monitoring-form": ["admin", "dev", "dtl", "om", "aom", "tl"],
   "other-coaching-types": [
     "om",
     "som",
@@ -82,271 +181,595 @@ const ROUTE_ROLES = {
     "csm",
     "cstm",
     "tl",
+    "qa-tl",
     "dtl",
+    "qas",
   ],
   "advance-notice": ["admin", "dev", "tl"],
+  "workforce-remote-team-attendance-report": [
+    "dev",
+    "csm",
+    "om",
+    "som",
+    "aom",
+    "admin",
+    "tl",
+    "dtl",
+  ],
+  "workforce-internal-team-attendance": [
+    "dev",
+    "om",
+    "som",
+    "aom",
+    "admin",
+    "itl",
+    "dm",
+    "dd",
+    "qa-dm",
+    "qa-tl",
+  ],
+  "workforce-internal-team-attendance-report": [
+    "dev",
+    "om",
+    "som",
+    "aom",
+    "admin",
+    "itl",
+    "dm",
+    "dd",
+    "qa-dm",
+    "qa-tl",
+  ],
+  "wfa-remote-team-attendance": ["dev", "wfa", "admin"],
+  "wfa-internal-team-attendance": ["dev", "wfa", "admin"],
+  "wfa-attendance-reporting": ["dev", "wfa", "admin"],
+  "wfa-ontime-reporting": ["dev", "wfa", "admin"],
+  "schedule-management": [
+    "dev",
+    "admin",
+    "om",
+    "aom",
+    "tl",
+    "csm",
+    "wfa",
+    "itl",
+    "dtl",
+  ],
+  "performance-review": ["dev", "admin", "tl"],
+  "bugs-features": ["dev", "admin", "om", "qa-dm"],
+  "google-form": [
+    "admin",
+    "dev",
+    "qa-tl",
+    "tl",
+    "om",
+    "csm",
+    "cstm",
+    "som",
+    "aom",
+    "dtl",
+    "qas",
+  ],
+  "attendance-infractions": ["admin", "dev", "wfa"],
+  "hubspot-roster": ["admin", "dev", "wfa"],
+  "onboard-from-hubspot": ["admin", "dev"],
+  // Need Help — Bug & Feature reporting. Backend auto-scopes per role
+  // (mine/team/all) so the page is safe to expose to everyone.
+  "need-help": [
+    "admin",
+    "dev",
+    "wfa",
+    "tl",
+    "dtl",
+    "itl",
+    "dd",
+    "dm",
+    "om",
+    "som",
+    "aom",
+    "csm",
+    "cstm",
+    "qa",
+    "qa-dm",
+    "qa-tl",
+    "qas",
+  ],
+  "endorsement-report": [
+    "admin",
+    "dev",
+    "wfa",
+    "om",
+    "som",
+    "aom",
+    "csm",
+    "cstm",
+    "tl",
+    "dtl",
+  ],
+  // QA Sandbox — trainee-facing pages broadly available to QA-touching roles.
+  "sandbox-tickets": [
+    "admin",
+    "dev",
+    "qa",
+    "qa-tl",
+    "qa-dm",
+    "qas",
+    "tl",
+    "dtl",
+  ],
+  "sandbox-evaluate": [
+    "admin",
+    "dev",
+    "qa",
+    "qa-tl",
+    "qa-dm",
+    "qas",
+    "tl",
+    "dtl",
+  ],
+  "sandbox-history": [
+    "admin",
+    "dev",
+    "qa",
+    "qa-tl",
+    "qa-dm",
+    "qas",
+    "tl",
+    "dtl",
+  ],
+  // Admin sub-page — gated tighter (curator action).
+  "sandbox-admin": ["admin", "dev", "qa-dm", "qa-tl"],
 };
 
+function DefaultRedirect() {
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  const defaultRoute = getDefaultRouteForRole(user?.role);
+  return <Navigate to={defaultRoute} replace />;
+}
+
 export default function AppRouter() {
-  const dispatch = useDispatch();
-  const { isAuthInitialized } = useSelector((state) => state.auth);
+  // const dispatch = useDispatch();
+  // const { isAuthInitialized } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    const token = localStorage.getItem("auth_token");
-    const user = localStorage.getItem("user_details");
+  // useEffect(() => {
+  //   const token = localStorage.getItem("auth_token");
+  //   const user = localStorage.getItem("user_details");
 
-    dispatch(setIsAuthAction(!!(token && user)));
-  }, [dispatch]);
+  //   dispatch(setIsAuthAction(!!(token && user)));
+  // }, [dispatch]);
 
-  // Prevent route evaluation before auth init
-  if (!isAuthInitialized) {
-    return null; // or loader
-  }
-
+  // // Prevent route evaluation before auth init
+  // if (!isAuthInitialized) {
+  //   return null; // or loader
+  // }
   return (
-    <BrowserRouter>
-      <Toaster />
-      <Routes>
-        {/* Public */}
-        <Route path="/login" element={<LoginPage />} />
+    <AuthProvider>
+      <BrowserRouter>
+        <Toaster />
+        <Routes>
+          {/* Public */}
+          <Route path="/login" element={<LoginPage />} />
 
-        {/* WITH SIDEBAR */}
-        <Route
-          element={
-            <ProtectedRoute>
-              <MainLayout />
-            </ProtectedRoute>
-          }
-        >
+          {/* WITH SIDEBAR */}
           <Route
-            path="/evaluate-tickets"
             element={
-              <ProtectedRoute
-                requiredRoles={ROUTE_ROLES["evaluate-tickets"]}
-                routeRoles={ROUTE_ROLES}
-              >
-                <EvaluateTickets />
+              <ProtectedRoute>
+                <MainLayout />
               </ProtectedRoute>
             }
-          />
-          <Route
-            path="/forms-management"
-            element={
-              <ProtectedRoute
-                requiredRoles={ROUTE_ROLES["forms-management"]}
-                routeRoles={ROUTE_ROLES}
-              >
-                <FormsManagement />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/shadowing-form"
-            element={
-              <ProtectedRoute
-                requiredRoles={ROUTE_ROLES["shadowing-form"]}
-                routeRoles={ROUTE_ROLES}
-              >
-                <div />
-              </ProtectedRoute>
-            }
-          />
+          >
+            <Route
+              path="/evaluate-tickets"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["evaluate-tickets"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <EvaluateTickets />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/forms-management"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["forms-management"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <FormsManagement />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/qa-settings"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["qa-settings"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <QASettings />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/shadowing-form"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["shadowing-form"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <div />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/workforce-remote-team-attendance"
-            element={
-              <ProtectedRoute
-                requiredRoles={ROUTE_ROLES["workforce-remote-team-attendance"]}
-                routeRoles={ROUTE_ROLES}
-              >
-                <RemoteTeamManagement />
-                {/* <></> */}
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/workforce-remote-team-attendance-report"
-            element={
-              <ProtectedRoute
-                requiredRoles={
-                  ROUTE_ROLES["workforce-remote-team-attendance-report"]
-                }
-                routeRoles={ROUTE_ROLES}
-              >
-                <RemoteTeamReporting />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/workforce-remote-team-attendance"
+              element={
+                <ProtectedRoute
+                  requiredRoles={
+                    ROUTE_ROLES["workforce-remote-team-attendance"]
+                  }
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <RemoteTeamManagement />
+                  {/* <></> */}
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/workforce-remote-team-attendance-report"
+              element={
+                <ProtectedRoute
+                  requiredRoles={
+                    ROUTE_ROLES["workforce-remote-team-attendance-report"]
+                  }
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <RemoteTeamReporting />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/workforce-internal-team-attendance"
-            element={
-              <ProtectedRoute
-                requiredRoles={
-                  ROUTE_ROLES["workforce-internal-team-attendance"]
-                }
-                routeRoles={ROUTE_ROLES}
-              >
-                <InternalTeamManagement />
-                <></>
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/workforce-internal-team-attendance"
+              element={
+                <ProtectedRoute
+                  requiredRoles={
+                    ROUTE_ROLES["workforce-internal-team-attendance"]
+                  }
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <InternalTeamManagement />
+                  <></>
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/workforce-internal-team-attendance-report"
-            element={
-              <ProtectedRoute
-                requiredRoles={
-                  ROUTE_ROLES["workforce-internal-team-attendance-report"]
-                }
-                routeRoles={ROUTE_ROLES}
-              >
-                <InternalTeamReporting />
-                <></>
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/workforce-internal-team-attendance-report"
+              element={
+                <ProtectedRoute
+                  requiredRoles={
+                    ROUTE_ROLES["workforce-internal-team-attendance-report"]
+                  }
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <InternalTeamReporting />
+                  <></>
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/wfa-remote-team-attendance"
-            element={
-              <ProtectedRoute
-                requiredRoles={ROUTE_ROLES["wfa-remote-team-attendance"]}
-                routeRoles={ROUTE_ROLES}
-              >
-                <WFARemoteTeam />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/wfa-internal-team-attendance"
-            element={
-              <ProtectedRoute
-                requiredRoles={ROUTE_ROLES["wfa-internal-team-attendance"]}
-                routeRoles={ROUTE_ROLES}
-              >
-                <WFAInternalTeam />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/wfa-remote-team-attendance"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["wfa-remote-team-attendance"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <WFARemoteTeam />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/wfa-internal-team-attendance"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["wfa-internal-team-attendance"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <WFAInternalTeam />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/wfa-attendance-reporting"
-            element={
-              <ProtectedRoute
-                requiredRoles={ROUTE_ROLES["wfa-attendance-reporting"]}
-                routeRoles={ROUTE_ROLES}
-              >
-                <WFAAttendanceReporting />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/download-report"
-            element={
-              <ProtectedRoute
-                requiredRoles={ROUTE_ROLES["download-report"]}
-                routeRoles={ROUTE_ROLES}
-              >
-                <DownloadReport />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/download-client-specific-report"
-            element={
-              <ProtectedRoute
-                requiredRoles={ROUTE_ROLES["download-client-specific-report"]}
-                routeRoles={ROUTE_ROLES}
-              >
-                <DownloadClientFormReport />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/wfa-attendance-reporting"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["wfa-attendance-reporting"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <WFAAttendanceReporting />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/wfa-ontime-reporting"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["wfa-ontime-reporting"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <WFAOnTimeReporting />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/download-report"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["download-report"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <DownloadReport />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/download-client-specific-report"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["download-client-specific-report"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <DownloadClientFormReport />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/qa-ai-report"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["qa-ai-report"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <QAAIReport />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/ticket-monitoring-form"
-            element={
-              <ProtectedRoute
-                requiredRoles={ROUTE_ROLES["ticket-monitoring-form"]}
-                routeRoles={ROUTE_ROLES}
-              >
-                <TicketMonitoringForm />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/ticket-monitoring-form"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["ticket-monitoring-form"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <TicketMonitoringForm />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/performance-monitoring-form"
-            element={
-              <ProtectedRoute
-                requiredRoles={ROUTE_ROLES["performance-monitoring-form"]}
-                routeRoles={ROUTE_ROLES}
-              >
-                <PerformanceMonitoringForm />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/performance-monitoring-form"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["performance-monitoring-form"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <PerformanceMonitoringForm />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/custom-monitoring-form"
-            element={
-              <ProtectedRoute
-                requiredRoles={ROUTE_ROLES["custom-monitoring-form"]}
-                routeRoles={ROUTE_ROLES}
-              >
-                <CustomMonitoringForm />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/other-coaching-types"
-            element={
-              <ProtectedRoute
-                requiredRoles={ROUTE_ROLES["other-coaching-types"]}
-                routeRoles={ROUTE_ROLES}
-              >
-                <OtherCoachingTypes />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/advance-notice"
-            element={
-              <ProtectedRoute
-                requiredRoles={ROUTE_ROLES["advance-notice"]}
-                routeRoles={ROUTE_ROLES}
-              >
-                <AdvanceNoticeSubmission />
-              </ProtectedRoute>
-            }
-          />
-        </Route>
+            <Route
+              path="/custom-monitoring-form"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["custom-monitoring-form"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <CustomMonitoringForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/other-coaching-types"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["other-coaching-types"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <OtherCoachingTypes />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/advance-notice"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["advance-notice"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <AdvanceNoticeSubmission />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/schedule-management"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["schedule-management"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <ScheduleManagement />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/performance-review"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["performance-review"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <PerformanceReview />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/bugs-features"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["bugs-features"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <BugsFeatures />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/google-form"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["google-form"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <GoogleFormEmbed />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/attendance-infractions"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["attendance-infractions"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <AttendanceInfractions />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/hubspot-roster"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["hubspot-roster"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <HubspotRoster />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/onboard-from-hubspot"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["onboard-from-hubspot"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <OnboardFromHubspot />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/need-help"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["need-help"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <NeedHelpPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/endorsement-report"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["endorsement-report"]}
+                  requiredEmails={ENDORSEMENT_REPORT_EMAILS}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <EndorsementReport />
+                </ProtectedRoute>
+              }
+            />
 
-        {/* WITHOUT SIDEBAR */}
-        <Route
-          element={
-            <ProtectedRoute>
-              <FullWidthLayout />
-            </ProtectedRoute>
-          }
-        >
+            {/* QA Sandbox routes */}
+            <Route
+              path="/sandbox-tickets"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["sandbox-tickets"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <SandboxTickets />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/sandbox-evaluate"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["sandbox-evaluate"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <SandboxEvaluate />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/sandbox-history"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["sandbox-history"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <SandboxHistory />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/sandbox-admin"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["sandbox-admin"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <SandboxAdmin />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
+
+          {/* WITHOUT SIDEBAR */}
           <Route
-            path="/evalute-form"
             element={
-              <ProtectedRoute
-                requiredRoles={ROUTE_ROLES["evalute-form"]}
-                routeRoles={ROUTE_ROLES}
-              >
-                <EvaluteForm />
+              <ProtectedRoute>
+                <FullWidthLayout />
               </ProtectedRoute>
             }
-          />
-        </Route>
+          >
+            <Route
+              path="/evalute-form"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["evalute-form"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <EvaluteForm />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
 
-        <Route path="*" element={<Navigate to="/forms-management" replace />} />
-      </Routes>
-    </BrowserRouter>
+          <Route path="*" element={<DefaultRedirect />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
