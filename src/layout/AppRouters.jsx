@@ -234,6 +234,7 @@ const ROUTE_ROLES = {
     "wfa",
     "itl",
     "dtl",
+    "qa-tl",
   ],
   "performance-review": ["dev", "admin", "tl"],
   "bugs-features": ["dev", "admin", "om", "qa-dm"],
