@@ -2,6 +2,7 @@
 import { Select, Input } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 import CustomSelect from "../../../components/CustomSelect";
+import { NA_SCORE } from "../../../utils/helperFunctions";
 
 const { TextArea } = Input;
 
@@ -24,6 +25,8 @@ const QuestionItem = ({
         label: i.toFixed(step < 1 ? 1 : 0),
       });
     }
+
+    options.push({ value: NA_SCORE, label: NA_SCORE });
 
     return options;
   };

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Tabs } from "antd";
 import CategorySection from "./CategorySection";
 import { TicketDetails } from "./TicketDetails";
+import { NA_SCORE } from "../../../utils/helperFunctions";
 
 const QAForm = ({
   initialData,
@@ -21,7 +22,9 @@ const QAForm = ({
     if (data?.categories) {
       data.categories.forEach((category) => {
         category.questions.forEach((question) => {
-          initialScores[question.question_id] = question.score ?? "";
+          initialScores[question.question_id] = question.not_applicable
+            ? NA_SCORE
+            : question.score ?? "";
           initialNotes[question.question_id] = question.note ?? "";
         });
       });
@@ -59,14 +62,19 @@ const QAForm = ({
         categories: formData.categories.map((category) => ({
           category_name: category.category_name,
           category_index: category.category_index,
-          questions: category.questions.map((question) => ({
-            question_id: question.question_id,
-            text: question.text,
-            score: scores[question.question_id] ?? question.score,
-            max_points: question.max_points,
-            note: notes[question.question_id] ?? question.note,
-            optional: question.optional,
-          })),
+          questions: category.questions.map((question) => {
+            const rawScore = scores[question.question_id];
+            const isNA = rawScore === NA_SCORE;
+            return {
+              question_id: question.question_id,
+              text: question.text,
+              score: isNA ? 0 : rawScore ?? question.score,
+              max_points: isNA ? 0 : question.max_points,
+              note: notes[question.question_id] ?? question.note,
+              optional: question.optional,
+              not_applicable: isNA,
+            };
+          }),
         })),
       };
 
@@ -93,11 +101,12 @@ const QAForm = ({
     let maxScore = 0;
 
     category.questions.forEach((question) => {
-      const score = Number.parseFloat(scores[question.question_id] || 0);
-      totalScore += score;
-      if (!question.optional || score > 0) {
-        maxScore += question.max_points;
+      const rawScore = scores[question.question_id];
+      if (rawScore === NA_SCORE) {
+        return;
       }
+      totalScore += Number.parseFloat(rawScore || 0);
+      maxScore += question.max_points;
     });
 
     return { totalScore, maxScore };

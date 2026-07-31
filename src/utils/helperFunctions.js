@@ -1,3 +1,9 @@
+// Sentinel score value for "N/A" — question doesn't apply to this ticket.
+// Contributes 0 to the score and its max_points is excluded from every
+// total (category subtotal, AI score, Your Score) so it doesn't drag the
+// average down.
+export const NA_SCORE = "N/A";
+
 export const humanizeKey = (key) =>
   key &&
   key
