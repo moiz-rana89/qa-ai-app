@@ -41,10 +41,11 @@ import HubspotRoster from "../pages/HubspotRoster";
 import EndorsementReport from "../pages/EndorsementReport";
 import OnboardFromHubspot from "../pages/OnboardFromHubspot";
 import NeedHelpPage from "../pages/NeedHelp";
-import SandboxTickets from "../pages/Sandbox/SandboxTickets";
-import SandboxEvaluate from "../pages/Sandbox/SandboxEvaluate";
-import SandboxHistory from "../pages/Sandbox/SandboxHistory";
-import SandboxAdmin from "../pages/Sandbox/SandboxAdmin";
+// QA Sandbox — temporarily disabled. Uncomment to restore.
+// import SandboxTickets from "../pages/Sandbox/SandboxTickets";
+// import SandboxEvaluate from "../pages/Sandbox/SandboxEvaluate";
+// import SandboxHistory from "../pages/Sandbox/SandboxHistory";
+// import SandboxAdmin from "../pages/Sandbox/SandboxAdmin";
 import AuthProvider from "./AuthProvider";
 import { ENDORSEMENT_REPORT_EMAILS } from "../utils/accessLists";
 // admin download = wfa,om
@@ -287,39 +288,38 @@ const ROUTE_ROLES = {
     "tl",
     "dtl",
   ],
-  // QA Sandbox — trainee-facing pages broadly available to QA-touching roles.
-  "sandbox-tickets": [
-    "admin",
-    "dev",
-    "qa",
-    "qa-tl",
-    "qa-dm",
-    "qas",
-    "tl",
-    "dtl",
-  ],
-  "sandbox-evaluate": [
-    "admin",
-    "dev",
-    "qa",
-    "qa-tl",
-    "qa-dm",
-    "qas",
-    "tl",
-    "dtl",
-  ],
-  "sandbox-history": [
-    "admin",
-    "dev",
-    "qa",
-    "qa-tl",
-    "qa-dm",
-    "qas",
-    "tl",
-    "dtl",
-  ],
-  // Admin sub-page — gated tighter (curator action).
-  "sandbox-admin": ["admin", "dev", "qa-dm", "qa-tl"],
+  // QA Sandbox — temporarily disabled. Uncomment to restore route access.
+  // "sandbox-tickets": [
+  //   "admin",
+  //   "dev",
+  //   "qa",
+  //   "qa-tl",
+  //   "qa-dm",
+  //   "qas",
+  //   "tl",
+  //   "dtl",
+  // ],
+  // "sandbox-evaluate": [
+  //   "admin",
+  //   "dev",
+  //   "qa",
+  //   "qa-tl",
+  //   "qa-dm",
+  //   "qas",
+  //   "tl",
+  //   "dtl",
+  // ],
+  // "sandbox-history": [
+  //   "admin",
+  //   "dev",
+  //   "qa",
+  //   "qa-tl",
+  //   "qa-dm",
+  //   "qas",
+  //   "tl",
+  //   "dtl",
+  // ],
+  // "sandbox-admin": ["admin", "dev", "qa-dm", "qa-tl"],
 };
 
 function DefaultRedirect() {
@@ -700,7 +700,8 @@ export default function AppRouter() {
               }
             />
 
-            {/* QA Sandbox routes */}
+            {/* QA Sandbox routes — temporarily disabled. Uncomment (and
+            restore the imports/ROUTE_ROLES entries above) to re-enable.
             <Route
               path="/sandbox-tickets"
               element={
@@ -744,7 +745,7 @@ export default function AppRouter() {
                   <SandboxAdmin />
                 </ProtectedRoute>
               }
-            />
+            /> */}
           </Route>
 
           {/* WITHOUT SIDEBAR */}

@@ -415,36 +415,37 @@ const menuList = [
       "qas",
     ],
   },
-  {
-    // QA Sandbox — training environment. Distinct icon so the section
-    // reads as "practice / experiment" at a glance.
-    title: "QA Sandbox",
-    icon: "mdi:test-tube",
-    route: "sandbox",
-    roles: ["admin", "dev", "qa", "qa-tl", "qa-dm", "qas", "tl", "dtl"],
-    submenu: [
-      {
-        title: "Practice Tickets",
-        route: "sandbox-tickets",
-        roles: ["admin", "dev", "qa", "qa-tl", "qa-dm", "qas", "tl", "dtl"],
-      },
-      {
-        title: "Evaluate Ticket",
-        route: "sandbox-evaluate",
-        roles: ["admin", "dev", "qa", "qa-tl", "qa-dm", "qas", "tl", "dtl"],
-      },
-      {
-        title: "My Practice History",
-        route: "sandbox-history",
-        roles: ["admin", "dev", "qa", "qa-tl", "qa-dm", "qas", "tl", "dtl"],
-      },
-      {
-        title: "Admin (Flag Tickets)",
-        route: "sandbox-admin",
-        roles: ["admin", "dev", "qa-dm", "qa-tl"],
-      },
-    ],
-  },
+  // QA Sandbox — temporarily disabled. Uncomment to restore the menu group.
+  // {
+  //   // QA Sandbox — training environment. Distinct icon so the section
+  //   // reads as "practice / experiment" at a glance.
+  //   title: "QA Sandbox",
+  //   icon: "mdi:test-tube",
+  //   route: "sandbox",
+  //   roles: ["admin", "dev", "qa", "qa-tl", "qa-dm", "qas", "tl", "dtl"],
+  //   submenu: [
+  //     {
+  //       title: "Practice Tickets",
+  //       route: "sandbox-tickets",
+  //       roles: ["admin", "dev", "qa", "qa-tl", "qa-dm", "qas", "tl", "dtl"],
+  //     },
+  //     {
+  //       title: "Evaluate Ticket",
+  //       route: "sandbox-evaluate",
+  //       roles: ["admin", "dev", "qa", "qa-tl", "qa-dm", "qas", "tl", "dtl"],
+  //     },
+  //     {
+  //       title: "My Practice History",
+  //       route: "sandbox-history",
+  //       roles: ["admin", "dev", "qa", "qa-tl", "qa-dm", "qas", "tl", "dtl"],
+  //     },
+  //     {
+  //       title: "Admin (Flag Tickets)",
+  //       route: "sandbox-admin",
+  //       roles: ["admin", "dev", "qa-dm", "qa-tl"],
+  //     },
+  //   ],
+  // },
 ];
 
 export default function Sidebar() {
