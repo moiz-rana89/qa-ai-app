@@ -15,8 +15,8 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const FIELDS = [
   { key: "helpdesk_user_id", label: "Helpdesk User ID" },
-  { key: "helpdesk_user_email", label: "Hub Desk User Email" },
-  { key: "helpdesk_client_id", label: "Hub Desk Client ID" },
+  { key: "helpdesk_user_email", label: "Helpdesk User Email" },
+  { key: "helpdesk_client_id", label: "Helpdesk Client ID" },
 ];
 
 const Avatar = ({ name }) => {

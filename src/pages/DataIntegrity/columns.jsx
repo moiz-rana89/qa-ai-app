@@ -36,11 +36,11 @@ export const getDataIntegrityColumns = ({ showIssueFlag = false } = {}) => {
     textColumn("CSM Name", "csm_name"),
     textColumn("Client Name", "client_name"),
     textColumn("Helpdesk User ID", "helpdesk_user_id"),
-    textColumn("Hub Desk User Email", "helpdesk_user_email"),
-    textColumn("Hub Desk Client ID", "helpdesk_client_id"),
-    // Hub Staff ids are bigints past Number.MAX_SAFE_INTEGER — the API
+    textColumn("Helpdesk User Email", "helpdesk_user_email"),
+    textColumn("Helpdesk Client ID", "helpdesk_client_id"),
+    // Hubstaff ids are bigints past Number.MAX_SAFE_INTEGER — the API
     // sends them as strings; render as-is, never coerce with Number()/parseInt.
-    textColumn("Hub Staff User ID", "hubstaff_user_id"),
+    textColumn("Hubstaff User ID", "hubstaff_user_id"),
     textColumn("Hubstaff Client ID", "hubstaff_client_id"),
     {
       title: "HubSpot Ticket",
