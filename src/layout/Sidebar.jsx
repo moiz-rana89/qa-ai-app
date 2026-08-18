@@ -332,6 +332,12 @@ const menuList = [
     roles: ["admin", "dev", "om", "qa-dm"],
   },
   {
+    title: "Data Integrity",
+    icon: "mdi:database-check-outline",
+    route: "data-integrity",
+    roles: ["admin", "dev", "tl", "om"],
+  },
+  {
     title: "Quality Assurance",
     icon: "icon-park-outline:success",
     route: "quality-assurance",

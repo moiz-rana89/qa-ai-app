@@ -9,6 +9,7 @@ import scheduleManagementReducer from "./scheduleManagement";
 import performanceReviewReducer from "./performanceReview";
 import bugsFeaturesReducer from "./bugsFeatures";
 import attendanceInfractionsReducer from "./attendanceInfractions";
+import dataIntegrityReducer from "./dataIntegrity";
 export default combineReducers(
   Object.assign({
     auth: auth,
@@ -20,5 +21,6 @@ export default combineReducers(
     performanceReview: performanceReviewReducer,
     bugsFeatures: bugsFeaturesReducer,
     attendanceInfractions: attendanceInfractionsReducer,
+    dataIntegrity: dataIntegrityReducer,
   })
 );
