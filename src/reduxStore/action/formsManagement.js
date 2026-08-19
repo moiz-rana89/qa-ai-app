@@ -1,6 +1,7 @@
 import axios from "axios";
 import Api from "../lib/api";
 import * as types from "./types";
+import { extractApiError } from "../../utils/helperFunctions";
 export function setLoaderAction(data) {
   return {
     type: types.IS_LOADING,
@@ -122,7 +123,10 @@ export const createForms = (formsBody, AntDNotification) => {
         AntDNotification({
           status: "error",
           title: "Error adding form",
-          description: "Failed to add form, please try again",
+          description: extractApiError(
+            error,
+            "Failed to add form, please try again"
+          ),
           duration: 5,
         });
       });
@@ -147,8 +151,11 @@ export const updateForms = (id, formsBody, AntDNotification) => {
         dispatch(setLoaderAction(false));
         AntDNotification({
           status: "error",
-          title: "Error adding form",
-          description: "Failed to add form, please try again",
+          title: "Error updating form",
+          description: extractApiError(
+            error,
+            "Failed to update form, please try again"
+          ),
           duration: 5,
         });
       });
