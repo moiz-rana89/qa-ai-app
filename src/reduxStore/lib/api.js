@@ -191,8 +191,8 @@ class Api {
       accept: "application/json",
     };
   }
-  static get(route, queryParams) {
-    return this.xhr(route, null, "GET", queryParams);
+  static get(route, queryParams, options) {
+    return this.xhr(route, null, "GET", queryParams, true, options);
   }
 
   static post(route, params) {
@@ -244,7 +244,7 @@ class Api {
     return resp.json();
   }
 
-  static async xhr(route, params, verb, queryParams, retry = true) {
+  static async xhr(route, params, verb, queryParams, retry = true, xhrOptions) {
     let url = `${API_BASE_URL}${route}`;
 
     if (verb === "GET" && queryParams) {
@@ -261,29 +261,36 @@ class Api {
       }
     }
 
-    const options = {
+    const fetchOptions = {
       method: verb,
       headers: await Api.headers(),
       credentials: "include",
     };
 
     if (params && verb !== "GET") {
-      options.body = JSON.stringify(params);
+      fetchOptions.body = JSON.stringify(params);
     }
 
-    return fetch(url, options)
+    // Optional AbortController signal, e.g. { signal } — lets a caller cancel
+    // an in-flight request (used by the Reporting page so a slow response
+    // can't overwrite a newer one after a filter change).
+    if (xhrOptions?.signal) {
+      fetchOptions.signal = xhrOptions.signal;
+    }
+
+    return fetch(url, fetchOptions)
       .then(async (resp) => {
         const contentType = resp.headers.get("Content-Type") || "";
 
         if (resp.ok) {
           if (contentType.includes("text/csv")) {
             const blob = await resp.blob();
-            return { data: blob, contentType: contentType };
+            return { data: blob, contentType: contentType, headers: resp.headers };
           } else if (resp.status === 204) {
-            return { data: {}, contentType: contentType };
+            return { data: {}, contentType: contentType, headers: resp.headers };
           } else {
             const json = await resp.json();
-            return { data: json, contentType: contentType };
+            return { data: json, contentType: contentType, headers: resp.headers };
           }
         } else {
           const errorData = await resp.json().catch(() => resp.text());
@@ -298,7 +305,7 @@ class Api {
           error.data = errorData;
           if (resp.status === 401 && retry) {
             await Api.refreshToken();
-            return Api.xhr(route, params, verb, queryParams, false);
+            return Api.xhr(route, params, verb, queryParams, false, xhrOptions);
           }
           if (resp?.status == 409) {
             throw { ...errorData, status: resp?.status };

@@ -42,6 +42,7 @@ import EndorsementReport from "../pages/EndorsementReport";
 import OnboardFromHubspot from "../pages/OnboardFromHubspot";
 import NeedHelpPage from "../pages/NeedHelp";
 import DataIntegrity from "../pages/DataIntegrity";
+import ReportingPage from "../pages/Reporting";
 // QA Sandbox — temporarily disabled. Uncomment to restore.
 // import SandboxTickets from "../pages/Sandbox/SandboxTickets";
 // import SandboxEvaluate from "../pages/Sandbox/SandboxEvaluate";
@@ -280,6 +281,10 @@ const ROUTE_ROLES = {
   // Data Integrity — restricted to Team Lead, OM, and Admin (+ dev for
   // engineering access), unlike most of the backend's own role table.
   "data-integrity": ["admin", "dev", "tl", "om"],
+  // Reporting — same restriction as Data Integrity. The backend does not
+  // enforce per-role data scope itself (it accepts whatever team_lead_id/
+  // om_id is sent); the frontend enforces it via resolveReportingScope.
+  "reporting": ["admin", "dev", "tl", "om"],
   "endorsement-report": [
     "admin",
     "dev",
@@ -699,6 +704,17 @@ export default function AppRouter() {
                   routeRoles={ROUTE_ROLES}
                 >
                   <DataIntegrity />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/reporting/*"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["reporting"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <ReportingPage />
                 </ProtectedRoute>
               }
             />

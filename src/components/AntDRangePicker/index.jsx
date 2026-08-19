@@ -3,7 +3,7 @@
 import { Icon } from "@iconify/react";
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const { RangePicker } = DatePicker;
 
@@ -28,9 +28,21 @@ export default function AntDRangePicker({
   endPlaceholder,
   className,
   defaultValue,
+  // Optional controlled value — e.g. [dayjs, dayjs] | null. Every existing
+  // call site omits this and keeps the old display-only-controlled
+  // behavior; passing it lets a parent restore/reset the visible range
+  // (used by the Reporting page to persist each submenu's date range
+  // across a tab switch, and to reset it on a cadence change).
+  value: controlledValue,
 }) {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(defaultValue || null);
+  const [value, setValue] = useState(controlledValue || defaultValue || null);
+
+  useEffect(() => {
+    if (controlledValue !== undefined) {
+      setValue(controlledValue);
+    }
+  }, [controlledValue]);
 
   const hasEndDate = Boolean(value?.[1]);
 

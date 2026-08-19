@@ -338,6 +338,12 @@ const menuList = [
     roles: ["admin", "dev", "tl", "om"],
   },
   {
+    title: "Reporting",
+    icon: "mdi:chart-box-outline",
+    route: "reporting",
+    roles: ["admin", "dev", "tl", "om"],
+  },
+  {
     title: "Quality Assurance",
     icon: "icon-park-outline:success",
     route: "quality-assurance",

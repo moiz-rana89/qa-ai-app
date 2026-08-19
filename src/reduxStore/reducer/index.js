@@ -10,6 +10,7 @@ import performanceReviewReducer from "./performanceReview";
 import bugsFeaturesReducer from "./bugsFeatures";
 import attendanceInfractionsReducer from "./attendanceInfractions";
 import dataIntegrityReducer from "./dataIntegrity";
+import reportingReducer from "./reporting";
 export default combineReducers(
   Object.assign({
     auth: auth,
@@ -22,5 +23,6 @@ export default combineReducers(
     bugsFeatures: bugsFeaturesReducer,
     attendanceInfractions: attendanceInfractionsReducer,
     dataIntegrity: dataIntegrityReducer,
+    reporting: reportingReducer,
   })
 );
