@@ -34,7 +34,7 @@ const makeInitialState = (extra = {}) => ({
 });
 
 const DEFAULT_SUBMENUS = [
-  { label: "Hub Desk Reporting", path: "hub-desk", status: "active" },
+  { label: "Helpdesk Reporting", path: "hub-desk", status: "active" },
   { label: "Attendance Reporting", path: "attendance", status: "active" },
   {
     label: "Ticket Monitoring Reporting",
@@ -135,7 +135,7 @@ export default function ReportingPage() {
           <Routes>
             <Route
               index
-              element={<Navigate to={`/reporting/${firstActivePath}`} replace />}
+              element={<Navigate to={firstActivePath} replace />}
             />
             <Route
               path="hub-desk"
@@ -161,7 +161,7 @@ export default function ReportingPage() {
             />
             <Route
               path="*"
-              element={<Navigate to={`/reporting/${firstActivePath}`} replace />}
+              element={<Navigate to={firstActivePath} replace />}
             />
           </Routes>
         </div>

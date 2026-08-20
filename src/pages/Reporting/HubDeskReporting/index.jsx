@@ -306,7 +306,7 @@ export default function HubDeskReporting({
         {!unsupportedDismissed && unsupported.length > 0 && (
           <div className="flex items-start justify-between gap-3 bg-[#FFF7D8] border border-[#F5E7A8] rounded-[10px] px-3 py-2 mb-3 text-[12px] text-[#163143]">
             <span>
-              {formatCount(unsupportedTotal)} clients have no Hub Desk data (
+              {formatCount(unsupportedTotal)} clients have no Helpdesk data (
               {unsupported.map((u) => `${u.platform_label} ${u.clients}`).join(", ")})
             </span>
             <button
@@ -327,7 +327,7 @@ export default function HubDeskReporting({
           />
         ) : (
           <ReportingTable
-            caption="Hub Desk — Client view"
+            caption="Helpdesk — Client view"
             columns={columns}
             data={rows}
             loading={summary.loading}
@@ -346,7 +346,7 @@ export default function HubDeskReporting({
               })
             }
             fetchCsv={fetchCsv}
-            csvFilenameFallback={`hub_desk_client_${state.cadence}.csv`}
+            csvFilenameFallback={`helpdesk_client_${state.cadence}.csv`}
           />
         )}
       </div>
@@ -505,7 +505,7 @@ export default function HubDeskReporting({
           />
         ) : (
           <ReportingTable
-            caption="Hub Desk — Agent view"
+            caption="Helpdesk — Agent view"
             columns={columns}
             data={rows}
             loading={breakdown.loading}
@@ -524,7 +524,7 @@ export default function HubDeskReporting({
               })
             }
             fetchCsv={fetchCsv}
-            csvFilenameFallback={`hub_desk_agent_${state.cadence}.csv`}
+            csvFilenameFallback={`helpdesk_agent_${state.cadence}.csv`}
           />
         )}
       </div>
