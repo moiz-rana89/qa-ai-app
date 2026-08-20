@@ -22,6 +22,14 @@ const isDisabledStatus = (status) => {
   return DISABLED_STATUS_HINTS.some((hint) => s.includes(hint));
 };
 
+// The backend's own submenu labels still say "Hub Desk" — we don't control
+// that text, so relabel it client-side rather than only fixing our own
+// hardcoded copy (which was already renamed elsewhere on this page).
+const relabel = (text) =>
+  text
+    ? text.replace(/hub desk/gi, "Helpdesk").replace(/hub staff/gi, "Hubstaff")
+    : text;
+
 // Left sub-nav for the Reporting page — driven entirely by GET /reporting/nav
 // (label/path/status), never hardcoded, so a new submenu or a "coming soon"
 // status shows up without a frontend change.
@@ -48,7 +56,7 @@ export default function ReportingNav({ submenus }) {
                   : "text-[#9CA3AF] cursor-not-allowed"
               }`}
             >
-              {item.label}
+              {relabel(item.label)}
             </button>
           );
           return (

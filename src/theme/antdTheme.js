@@ -47,6 +47,11 @@ const antdTheme = {
     Input: {
       borderRadius: 32,
     },
+    Segmented: {
+      itemSelectedBg: "#DBFFDF",
+      itemSelectedColor: "#163143",
+      trackBg: "#F1F5F5",
+    },
     Modal: {
       borderRadius: 32,
     },
