@@ -2,6 +2,7 @@
 import { DynamicFormSection } from "./DynamicFormSection.jsx";
 import { getFormTypeById } from "../../utils/custom-form-data.js";
 import { DynamicFormExtraQuestion } from "./DynamicFormExtraQuestion.jsx";
+import { AutoFailSection } from "./AutoFailSection.jsx";
 
 export function CustomerServiceSection({
   selectedFormType,
@@ -62,6 +63,13 @@ export function CustomerServiceSection({
             setQuestions={setQuestions}
           />
         ))}
+        {formType.autoFailSection && (
+          <AutoFailSection
+            section={formType.autoFailSection}
+            responses={responses}
+            onResponseChange={onResponseChange}
+          />
+        )}
         {(formType.extraSections ?? []).map((section) => (
           <DynamicFormExtraQuestion
             key={section.id}

@@ -5965,6 +5965,425 @@ export const formTypes = [
       },
     ],
   },
+
+  // gamer supps 125369
+
+  {
+    id: "email-chat-qa-form-gamer-supps",
+    title: "Email/Chat Quality Form",
+    clientId: 125369,
+    clientName: "Gamer Supps",
+    sections: [
+      {
+        id: "greeting",
+        title: "GREETING",
+        // Source sheet references "A4 - Not applicable for Empathy" in this
+        // section, but A1-A3 are all greeting-related (no empathy question)
+        // and no other question references it either — left unresolved,
+        // confirm with Gamer Supps which question this should belong to.
+        questions: [
+          {
+            id: "A1",
+            label:
+              "Did agent properly greet, thank, and address the customer?",
+            sublabel: "(A1)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+          },
+          {
+            id: "A2",
+            label: "Did agent acknowledge the customer's concern?",
+            sublabel: "(A2)",
+            points: 10,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "10.00", label: "10.00" },
+            ],
+            inputType: "select",
+            comments: true,
+          },
+          {
+            id: "A3",
+            label:
+              "Did the agent include a statement that reassures customers of the team's willingness and commitment to assist.",
+            sublabel: "(A3)",
+            points: 10,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "10.00", label: "10.00" },
+            ],
+            inputType: "select",
+            comments: true,
+          },
+        ],
+      },
+      {
+        id: "verification",
+        title: "VERIFICATION",
+        questions: [
+          {
+            id: "B1",
+            label:
+              "Did agent take time to verify Customer and their account details?",
+            sublabel: "(B1)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            // "Not Applicable for Customer Verification (Concerns/Issue not
+            // related to orders/Generic Question)" — modeled as the
+            // existing include/exclude toggle rather than a 3rd dropdown
+            // option, since the scoring engine only reads that toggle.
+            isOptional: true,
+          },
+        ],
+      },
+      {
+        id: "communication",
+        title: "COMMUNICATION",
+        questions: [
+          {
+            id: "C1",
+            label:
+              "Did the agent effectively communicate with the customer and follow appropriate email communication best practices?",
+            sublabel: "(C1)",
+            points: 10,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "10.00", label: "10.00" },
+            ],
+            inputType: "select",
+            comments: true,
+          },
+        ],
+      },
+      {
+        id: "follow-client-sop",
+        title: "FOLLOW CLIENT SOP",
+        questions: [
+          {
+            id: "D1",
+            label:
+              "Did the agent ensure all actions are aligned to the clients SOP/CS best practices?",
+            sublabel: "(D1)",
+            points: 10,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "10.00", label: "10.00" },
+            ],
+            inputType: "select",
+            comments: true,
+          },
+        ],
+      },
+      {
+        id: "problem-identification",
+        title: "PROBLEM IDENTIFICATION",
+        questions: [
+          {
+            id: "E1",
+            label:
+              "Did the agent ask relevant questions to identify the concern?",
+            sublabel: "(E1)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            // "Not Applicable as client concern was clear"
+            isOptional: true,
+          },
+        ],
+      },
+      {
+        id: "resolution",
+        title: "RESOLUTION",
+        questions: [
+          {
+            id: "F1",
+            label:
+              "Did the agent educate the customer about the issue and highlighted what he/she can do?",
+            sublabel: "(F1)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+          },
+          {
+            id: "F2",
+            label: "Did the agent use the correct macro when handling the customer?",
+            sublabel: "(F2)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            // "Not Applicable as no macro was used and message was
+            // personalized accurately"
+            isOptional: true,
+          },
+          {
+            id: "F3",
+            label:
+              "Did the agent offer options when trying to solve the customer's concern?",
+            sublabel: "(F3)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            // "Not Applicable for offering options when solving agent's
+            // concern"
+            isOptional: true,
+          },
+          {
+            id: "F4",
+            label: "Did the agent provide a complete and accurate resolution?",
+            sublabel: "(F4)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+          },
+          {
+            id: "F5",
+            label:
+              "Did the agent showcase proper attention to detail when handling their concern?",
+            sublabel: "(F5)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+          },
+          {
+            id: "F6",
+            label: "Did the agent go above and beyond to support the customer?",
+            sublabel: "(F6)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+          },
+          {
+            id: "F7",
+            label:
+              "Did the agent escalate the concern to client/manager? (If applicable)",
+            sublabel: "(F7)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            // "Not Applicable for Client/Manager Escalation"
+            isOptional: true,
+          },
+        ],
+      },
+      {
+        id: "grammar",
+        title: "GRAMMAR",
+        questions: [
+          {
+            id: "G1",
+            label:
+              "Did the agent have multiple spelling, capitalization, punctuation mark, excessive spacing, formatting or other grammatical mistakes? (More than 2 instances of these examples is a markdown)",
+            sublabel: "(G1)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
+            comments: true,
+          },
+        ],
+      },
+      {
+        id: "closing",
+        title: "CLOSING",
+        questions: [
+          {
+            id: "H1",
+            label:
+              "Did the agent provide any reference or self-help resources to solve their situation in the future? Agents should proactively offer self-service options or provide assistance in managing subscriptions whenever applicable.",
+            sublabel: "(H1)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            // "Not Applicable (No Self-Help Option Required)"
+            isOptional: true,
+          },
+          {
+            id: "H2",
+            label:
+              "Did the agent offer further assistance and/or ask if concerns were resolved?",
+            sublabel: "(H2)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+          },
+          {
+            id: "H3",
+            label:
+              "Did the agent have a personalized closing to the customer communication?",
+            sublabel: "(H3)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+          },
+        ],
+      },
+      {
+        id: "tools-utilization",
+        title: "TOOLS UTILIZATION",
+        questions: [
+          {
+            id: "I1",
+            label:
+              "Did the agent use the CS Platform tools properly (Tags, Merging, Snooze)",
+            sublabel: "(I1)",
+            points: 10,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "10.00", label: "10.00" },
+            ],
+            inputType: "select",
+            comments: true,
+          },
+          {
+            id: "I2",
+            label:
+              "Did agent properly leave notes and document the conversation in all applicable channels (Shopify/Gorgias etc)?",
+            sublabel: "(I2)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+          },
+        ],
+      },
+    ],
+    // Zero-tolerance / auto-fail checklist — unscored (points: 0, doesn't
+    // count toward the 100-point total) but each answer can carry a
+    // negative deduction subtracted from the earned score. J1/J2 are
+    // phrased as "did the agent do the right thing" (Yes = correct, so No
+    // costs -10); J3 is phrased as "did a violation happen" (Yes = bad, so
+    // Yes costs -10) — opposite polarity from J1/J2, confirmed with the
+    // client.
+    autoFailSection: {
+      id: "zero-tolerance",
+      title: "ZERO TOLERANCE / AUTO FAIL",
+      questions: [
+        {
+          id: "J1",
+          label: "Verify Order ID number (if needed)",
+          sublabel: "(J1)",
+          points: 0,
+          options: [
+            { value: "0", label: "Yes" },
+            { value: "-10", label: "No" },
+          ],
+          inputType: "select",
+        },
+        {
+          id: "J2",
+          label:
+            "Did the agent uncheck the restock box in Shopify if the customer requested a cancellation of a specific item?",
+          sublabel: "(J2)",
+          points: 0,
+          options: [
+            { value: "0", label: "Yes" },
+            { value: "-10", label: "No" },
+          ],
+          inputType: "select",
+        },
+        {
+          id: "J3",
+          label: "Inaccurate Information",
+          sublabel: "(J3)",
+          points: 0,
+          options: [
+            { value: "-10", label: "Yes" },
+            { value: "0", label: "No" },
+          ],
+          inputType: "select",
+        },
+      ],
+    },
+    extraSections: [
+      {
+        id: "summary-notes",
+        title: "SUMMARY NOTES",
+        required: true,
+        questions: [
+          {
+            id: "opportunities",
+            label: "OPPORTUNITIES",
+            sublabel: "",
+            points: 0,
+            inputType: "textarea",
+          },
+          {
+            id: "wins",
+            label: "WINS",
+            sublabel: "",
+            points: 0,
+            inputType: "textarea",
+          },
+          {
+            id: "recommendations",
+            label: "RECOMMENDATIONS",
+            sublabel: "",
+            points: 0,
+            inputType: "textarea",
+          },
+        ],
+      },
+    ],
+  },
 ];
 export function getFormTypeById(id) {
   return formTypes.find((type) => type.id === id);
@@ -6017,6 +6436,34 @@ export function calculateSectionScore(
   return { current, total };
 }
 
+// Zero-tolerance / auto-fail checklist (currently only Gamer Supps).
+// Each question's response carries a negative point value ("No" = -10,
+// etc.) when it represents a violation — this sums those and returns a
+// positive deduction. Forms without an autoFailSection (every other
+// client today) never call this.
+export function calculateAutoFailDeduction(autoFailSection, responses) {
+  if (!autoFailSection) return 0;
+
+  let deduction = 0;
+  autoFailSection.questions.forEach((question) => {
+    const response = responses[question.id];
+    if (!response) return;
+
+    let numericValue;
+    if (isNumericString(response)) {
+      numericValue = Number.parseFloat(response);
+    } else if (isPlainObject(response)) {
+      numericValue = Number.parseFloat(response.value);
+    }
+
+    if (!Number.isNaN(numericValue) && numericValue < 0) {
+      deduction += Math.abs(numericValue);
+    }
+  });
+
+  return deduction;
+}
+
 export function calculateTotalFormScore(
   formType,
   responses,
@@ -6034,6 +6481,17 @@ export function calculateTotalFormScore(
     totalCurrent += current;
     totalPossible += total;
   });
+
+  // Auto-fail deductions reduce the earned score only — the max stays the
+  // same, so a violation actually lowers the percentage instead of being
+  // invisible. Clamped at 0 rather than allowing a negative score.
+  if (formType.autoFailSection) {
+    const deduction = calculateAutoFailDeduction(
+      formType.autoFailSection,
+      responses
+    );
+    totalCurrent = Math.max(0, totalCurrent - deduction);
+  }
 
   return { current: totalCurrent, total: totalPossible };
 }
