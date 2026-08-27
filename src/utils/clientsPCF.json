@@ -1,5 +1,33 @@
 [
   {
+    "client": "CALPAK",
+    "client_id": 435726
+  },
+  {
+    "client": "Scentiment",
+    "client_id": 426941
+  },
+  {
+    "client": "Hammitt",
+    "client_id": 418613
+  },
+  {
+    "client": "Women's Best",
+    "client_id": 151610
+  },
+  {
+    "client": "Moose Knuckles",
+    "client_id": 344467
+  },
+  {
+    "client": "Open Farm",
+    "client_id": 347053
+  },
+  {
+    "client": "US Luggage",
+    "client_id": 168387
+  },
+  {
     "client": "Hello Molly",
     "client_id": 183502
   },
