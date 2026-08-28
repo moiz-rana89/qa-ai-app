@@ -1824,353 +1824,393 @@ export const formTypes = [
       },
     ],
   },
+  // simplehuman 170380 — Email Quality Form V2 replaces the retired
+  // email-qa-form-simplehuman entry (same client, superseded rubric).
+
   {
-    id: "email-qa-form-simplehuman",
-    title: "Email QA Form",
+    id: "simplehuman-email-quality-form-v2",
+    title: "Email Quality Form (V2)",
     clientId: 170380,
-    clientName: "simplehuman",
+    clientName: "Simplehuman",
     sections: [
       {
-        id: "greeting",
-        title: "Greeting",
+        id: "greetings-personalization",
+        title: "GREETINGS & PERSONALIZATION",
         questions: [
           {
             id: "A1",
             label: "Did agent properly greet, thank, and address the customer?",
-            sublabel: "(2 point) (A1)",
-            points: 2,
-            inputType: "checkbox",
+            sublabel: "(A1)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
             comments: true,
+            isOptional: false,
           },
           {
             id: "A2",
             label: "Did agent acknowledge the customer's concern?",
-            sublabel: "(2 point) (A2)",
-            points: 2,
-            inputType: "checkbox",
+            sublabel: "(A2)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
             comments: true,
+            isOptional: false,
           },
           {
             id: "A3",
-            label: "Did agent empathize with the customer on their concern(s)?",
-            sublabel: "(2 point) (A3)",
-            points: 2,
-            inputType: "checkbox",
+            label:
+              "When appropriate, did the agent demonstrate empathy that matched the customer's situation?",
+            sublabel: "(A3)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
             comments: true,
             isOptional: true,
           },
-          {
-            id: "A4",
-            label: "Did agent use client's Brand Tone during discussion?",
-            sublabel: "(2 point) (A4)",
-            points: 2,
-            inputType: "checkbox",
-            comments: true,
-            isOptional: true,
-          },
-          // {
-          //   id: "A5",
-          //   label: "Not applicable for Brand Tone",
-          //   sublabel: "(2 point) (A5)",
-          //   points: 2,
-          //   inputType: "checkbox",
-          //   comments: true,
-          //   isOptional: true,
-          // },
-          // {
-          //   id: "A6",
-          //   label: "Not applicable for Empathy",
-          //   sublabel: "(2 point) (A6)",
-          //   points: 2,
-          //   inputType: "checkbox",
-          //   comments: true,
-          //   isOptional: true,
-          // },
         ],
       },
       {
-        id: "verification",
-        title: "Verification",
+        id: "verification-and-case-review",
+        title: "VERIFICATION AND CASE REVIEW",
         questions: [
           {
             id: "B1",
             label:
-              "Did agent take time to verify Customer and their account details?",
-            sublabel: "(5 point) (B1)",
-            points: 5,
-            inputType: "checkbox",
+              "Did the agent complete the required customer/account verification (when applicable)?",
+            sublabel: "(B1)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
             comments: true,
+            isOptional: true,
           },
           {
             id: "B2",
             label:
-              "Not Applicable for Customer Verification (Concerns/Issue not related to orders/Generic Question)",
-            sublabel: "(5 point) (B2)",
-            points: 5,
-            inputType: "checkbox",
+              "Did the agent review the customer's previous interactions before proceeding (when applicable)?",
+            sublabel: "(B2)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "B3",
+            label: "Did the agent merge related tickets when appropriate?",
+            sublabel: "(B3)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
             comments: true,
             isOptional: true,
           },
         ],
       },
       {
-        id: "communication",
-        title: "Communication",
+        id: "communication-effectiveness",
+        title: "COMMUNICATION EFFECTIVENESS",
         questions: [
           {
             id: "C1",
             label:
-              "Did the agent effectively communicate with the customer and follow appropriate email communication best practices?",
-            sublabel: "(5 point) (C1)",
+              "Did the agent communicate in a clear, organized, and easy-to-understand manner?",
+            sublabel: "(C1)",
             points: 5,
-            inputType: "checkbox",
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
             comments: true,
+            isOptional: false,
+          },
+          {
+            id: "C2",
+            label:
+              "Did the agent maintain the brand's tone and voice by communicating in a customer-centric manner throughout the interaction?",
+            sublabel: "(C2)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "C3",
+            label:
+              "When additional research or follow-up was needed, did the agent set clear expectations with the customer?",
+            sublabel: "(C3)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
           },
         ],
       },
       {
-        id: "follow-client-sop",
-        title: "Follow Client Sop",
+        id: "process-sop-compliance",
+        title: "PROCESS & SOP COMPLIANCE",
         questions: [
           {
             id: "D1",
-            label:
-              "Did the agent ensure all actions are aligned to the clients SOP/CS best practices?",
-            sublabel: "(10 point) (D1)",
-            points: 10,
-            inputType: "checkbox",
+            label: "Did the agent follow all applicable client policies and SOPs?",
+            sublabel: "(D1)",
+            points: 8,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "8.00", label: "8.00" },
+            ],
+            inputType: "select",
             comments: true,
+            isOptional: false,
+          },
+          {
+            id: "D2",
+            label:
+              "Did the agent fulfill or properly document all commitments made to the customer (if applicable)?",
+            sublabel: "(D2)",
+            points: 7,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "7.00", label: "7.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
           },
         ],
       },
       {
         id: "problem-identification",
-        title: "Problem Identification",
+        title: "PROBLEM IDENTIFICATION",
         questions: [
           {
             id: "E1",
             label:
-              "Did the agent ask relevant questions to identify the concern?",
-            sublabel: "(4 point) (E1)",
-            points: 4,
-            inputType: "checkbox",
+              "Did the agent gather or confirm all information needed to understand the customer's concern?",
+            sublabel: "(E1)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
             comments: true,
             isOptional: true,
           },
-          // {
-          //   id: "E2",
-          //   label: "Not Applicable as client concern was clear",
-          //   sublabel: "(4 point) (E2)",
-          //   points: 4,
-          //   inputType: "checkbox",
-          //   comments: true,
-          //   isOptional: true,
-          // },
         ],
       },
       {
         id: "resolution",
-        title: "Resolution",
+        title: "RESOLUTION",
         questions: [
           {
             id: "F1",
             label:
-              "Did the agent inform the customer about any next steps and offer a potential resolution?",
-            sublabel: "(5 point) (F1)",
-            points: 5,
-            inputType: "checkbox",
+              "Did the agent provide the correct resolution based on the customer's concern and company policy?",
+            sublabel: "(F1)",
+            points: 10,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "10.00", label: "10.00" },
+            ],
+            inputType: "select",
             comments: true,
+            isOptional: false,
           },
           {
             id: "F2",
             label:
-              "Did the agent educate the customer about the issue and highlighted what he/she can do?",
-            sublabel: "(5 point) (F2)",
-            points: 5,
-            inputType: "checkbox",
+              "Did the agent completely address all customer concerns within the interaction?",
+            sublabel: "(F2)",
+            points: 7,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "7.00", label: "7.00" },
+            ],
+            inputType: "select",
             comments: true,
+            isOptional: false,
           },
           {
             id: "F3",
             label:
-              "Did the agent place the resolution effectively within their response?",
-            sublabel: "(5 point) (F3)",
-            points: 5,
-            inputType: "checkbox",
+              "Did the agent provide appropriate next steps when additional action was required?",
+            sublabel: "(F3)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
             comments: true,
+            isOptional: true,
           },
           {
             id: "F4",
             label:
-              "Did the agent use the correct macro when handling the customer?",
-            sublabel: "(5 point) (F4)",
-            points: 5,
-            inputType: "checkbox",
+              "When appropriate, did the agent provide proactive guidance or education that helped the customer better understand the issue or prevent future concerns?",
+            sublabel: "(F4)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
             comments: true,
             isOptional: true,
           },
           {
             id: "F5",
             label:
-              "Did the agent offer options when trying to solve the customer's concern?",
-            sublabel: "(5 point) (F5)",
+              "When the customer's requested resolution could not be directly fulfilled, did the agent take the most appropriate next course of action in accordance with company policy (e.g., escalation, offering available alternatives, or explaining policy limitations)?",
+            sublabel: "(F5)",
             points: 5,
-            inputType: "checkbox",
-            comments: true,
-            isOptional: true,
-          },
-          {
-            id: "F6",
-            label: "Did the agent provide a complete and accurate resolution?",
-            sublabel: "(5 point) (F6)",
-            points: 5,
-            inputType: "checkbox",
-            comments: true,
-          },
-          {
-            id: "F7",
-            label:
-              "Did the agent showcase proper attention to detail when handling their concern?",
-            sublabel: "(10 point) (F7)",
-            points: 10,
-            inputType: "checkbox",
-            comments: true,
-          },
-          {
-            id: "F8",
-            label: "Did the agent go above and beyond to support the customer?",
-            sublabel: "(5 point) (F8)",
-            points: 5,
-            inputType: "checkbox",
-            comments: true,
-          },
-          {
-            id: "F9",
-            label:
-              "Did the agent escalate the concern to client/manager? (If applicable)",
-            sublabel: "(5 point) (F9)",
-            points: 5,
-            inputType: "checkbox",
-            comments: true,
-          },
-          // {
-          //   id: "F10",
-          //   label:
-          //     "Not Applicable as no macro was used and message was personalized accurately",
-          //   sublabel: "(5 point) (F10)",
-          //   points: 5,
-          //   inputType: "checkbox",
-          //   comments: true,
-          //   isOptional: true,
-          // },
-          // {
-          //   id: "F11",
-          //   label:
-          //     "Not Applicable for offering options when solving agent's concern",
-          //   sublabel: "(5 point) (F11)",
-          //   points: 5,
-          //   inputType: "checkbox",
-          //   comments: true,
-          //   isOptional: true,
-          // },
-          {
-            id: "F12",
-            label: "Not Applicable for Client/Manager Escalation",
-            sublabel: "(5 point) (F12)",
-            points: 5,
-            inputType: "checkbox",
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
             comments: true,
             isOptional: true,
           },
         ],
       },
       {
-        id: "grammar",
-        title: "Grammar",
+        id: "professional-writing",
+        title: "PROFESSIONAL WRITING",
         questions: [
           {
             id: "G1",
             label:
-              "Did the agent have multiple spelling, capitalization, punctuation mark, excessive spacing, formatting or other grammatical mistakes? (More than 2 instances of these examples is a markdown)",
-            sublabel: "(5 point) (G1)",
+              "Did the response maintain professional grammar, spelling, punctuation, and formatting?",
+            sublabel: "(G1)",
             points: 5,
-            inputType: "checkbox",
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
             comments: true,
+            isOptional: false,
           },
         ],
       },
       {
         id: "closing",
-        title: "Closing",
+        title: "CLOSING",
         questions: [
           {
             id: "H1",
-            label:
-              "Did the agent provide any reference or self-help resources to solve their situation in the future?",
-            sublabel: "(2 points) (H1)",
-            points: 2,
-            inputType: "checkbox",
+            label: "Did the agent offer further assistance before ending the interaction?",
+            sublabel: "(H1)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
             comments: true,
-            isOptional: true,
+            isOptional: false,
           },
           {
             id: "H2",
-            label:
-              "Did the agent offer further assistance and/or ask if concerns were resolved?",
-            sublabel: "(2 points) (H2)",
-            points: 2,
-            inputType: "checkbox",
+            label: "Did the agent end the interaction with a professional closing?",
+            sublabel: "(H2)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
             comments: true,
+            isOptional: false,
           },
-          {
-            id: "H3",
-            label:
-              "Did the agent have a personalized closing to the customer communication?",
-            sublabel: "(4 points) (H3)",
-            points: 4,
-            inputType: "checkbox",
-            comments: true,
-          },
-          // {
-          //   id: "H4",
-          //   label: "Not Applicable (No Self-Help Option Required)",
-          //   sublabel: "(2 points) (H4)",
-          //   points: 2,
-          //   inputType: "checkbox",
-          //   comments: true,
-          //   isOptional: true,
-          // },
         ],
       },
       {
         id: "tools-utilization",
-        title: "Tools Utilization",
+        title: "TOOLS UTILIZATION",
         questions: [
           {
             id: "I1",
-            label:
-              "Did the agent use the CS Platform tools properly (Tags, Merging, Snooze)",
-            sublabel: "(3 point) (I1)",
+            label: "Did the agent use the CS Platform tools properly (Tags, Snooze)?",
+            sublabel: "(I1)",
             points: 3,
-            inputType: "checkbox",
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
             comments: true,
+            isOptional: false,
           },
           {
             id: "I2",
             label:
               "Did agent properly leave notes and document the conversation in all applicable channels (Shopify/Gorgias etc)?",
-            sublabel: "(2 point) (I2)",
+            sublabel: "(I2)",
             points: 2,
-            inputType: "checkbox",
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
             comments: true,
+            isOptional: false,
           },
         ],
       },
     ],
+    autoFailSection: {
+      id: "zero-tolerance",
+      title: "ZERO TOLERANCE / AUTO FAIL",
+      questions: [
+        {
+          id: "J1",
+          label:
+            "Did the agent avoid any critical execution errors that materially impacted the customer experience, business operations, or policy compliance?",
+          sublabel: "(J1)",
+          points: 0,
+          options: [
+            { value: "0", label: "Yes" },
+            { value: "-100", label: "No" },
+          ],
+          inputType: "select",
+        },
+      ],
+    },
     extraSections: [
       {
         id: "summary-notes",
-        title: "Summary Notes",
+        title: "SUMMARY NOTES",
         required: true,
         questions: [
           {
@@ -2198,410 +2238,406 @@ export const formTypes = [
       },
     ],
   },
+  // simplehuman 170380 — Phone Quality Form V2 replaces the retired
+  // phone-quality-form-simplehuman entry (same client, superseded rubric).
+
   {
-    id: "phone-quality-form-simplehuman",
-    title: "Phone Quality Form",
+    id: "simplehuman-phone-quality-form-v2",
+    title: "Phone Quality Form (V2)",
     clientId: 170380,
-    clientName: "simplehuman",
+    clientName: "Simplehuman",
     sections: [
       {
-        id: "greeting",
-        title: "Greeting",
+        id: "greetings-personalization",
+        title: "GREETINGS & PERSONALIZATION",
         questions: [
           {
             id: "A1",
-            label:
-              "Did agent properly thank the customer for calling, mention company name, their name and greet the customer?",
-            sublabel: "(3 points) (A1)",
+            label: "Did agent properly greet, thank, and address the customer?",
+            sublabel: "(A1)",
             points: 3,
-            inputType: "checkbox",
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
             comments: true,
+            isOptional: false,
           },
           {
             id: "A2",
             label: "Did agent acknowledge the customer's concern?",
-            sublabel: "(3 points) (A2)",
+            sublabel: "(A2)",
             points: 3,
-            inputType: "checkbox",
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
             comments: true,
+            isOptional: false,
           },
           {
             id: "A3",
             label:
-              "Did agent take time to paraphrase concern to confirm understanding?",
-            sublabel: "(3 points) (A3)",
+              "When appropriate, did the agent demonstrate empathy that matched the customer's situation?",
+            sublabel: "(A3)",
             points: 3,
-            inputType: "checkbox",
-            comments: true,
-          },
-          {
-            id: "A4",
-            label: "Did agent empathize with the customer on their concern(s)?",
-            sublabel: "(3 points) (A4)",
-            points: 3,
-            inputType: "checkbox",
-            comments: true,
-          },
-          {
-            id: "A5",
-            label: "Did agent use client's Brand Tone during discussion?",
-            sublabel: "(3 points) (A5)",
-            points: 3,
-            inputType: "checkbox",
-            comments: true,
-            isOptional: true,
-          },
-          // {
-          //   id: "A6",
-          //   label: "Not applicable for Brand Tone",
-          //   sublabel: "(3 points) (A6)",
-          //   points: 3,
-          //   inputType: "checkbox",
-          //   comments: true,
-          //   isOptional: true,
-          // },
-          {
-            id: "A7",
-            label: "Not applicable for Empathy",
-            sublabel: "(3 points) (A7)",
-            points: 3,
-            inputType: "checkbox",
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
             comments: true,
             isOptional: true,
           },
         ],
       },
       {
-        id: "verification",
-        title: "Verification",
+        id: "verification-and-case-review",
+        title: "VERIFICATION AND CASE REVIEW",
         questions: [
           {
             id: "B1",
             label:
-              "Did agent take time to verify Customer and their account details?",
-            sublabel: "(3 point) (B1)",
-            points: 3,
-            inputType: "checkbox",
+              "Did the agent complete the required customer/account verification (when applicable)?",
+            sublabel: "(B1)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
             comments: true,
             isOptional: true,
           },
           {
             id: "B2",
             label:
-              "Not Applicable for Customer Verification (Concerns/Issue not related to orders/Generic Question)",
-            sublabel: "(3 point) (B2)",
-            points: 3,
-            inputType: "checkbox",
+              "Did the agent review the customer's previous interactions before proceeding (when applicable)?",
+            sublabel: "(B2)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "B3",
+            label: "Did the agent merge related tickets when appropriate?",
+            sublabel: "(B3)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
             comments: true,
             isOptional: true,
           },
         ],
       },
       {
-        id: "communication",
-        title: "Communication",
+        id: "communication-effectiveness",
+        title: "COMMUNICATION EFFECTIVENESS",
         questions: [
           {
             id: "C1",
             label:
-              "Did the agent effectively communicate and handle the call confidently with the customer?",
-            sublabel: "(7 point) (C1)",
-            points: 7,
-            inputType: "checkbox",
+              "Did the agent communicate in a clear, organized, and easy-to-understand manner?",
+            sublabel: "(C1)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
             comments: true,
+            isOptional: false,
+          },
+          {
+            id: "C2",
+            label:
+              "Did the agent maintain the brand's tone and voice by communicating in a customer-centric manner throughout the interaction?",
+            sublabel: "(C2)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
           },
         ],
       },
       {
-        id: "follow-client-sop",
-        title: "Follow Client Sop",
+        id: "interaction-handling",
+        title: "INTERACTION HANDLING",
         questions: [
           {
             id: "D1",
-            label:
-              "Did the agent ensure all actions are aligned to the clients SOP/CS best practices?",
-            sublabel: "(5 point) (D1)",
+            label: "Did the agent avoid unnecessary dead air during the interaction?",
+            sublabel: "(D1)",
             points: 5,
-            inputType: "checkbox",
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
             comments: true,
+            isOptional: false,
+          },
+          {
+            id: "D2",
+            label:
+              "When additional research or action was required, did the agent follow the proper hold procedure by informing the customer, setting expectations, and returning to the customer within the committed timeframe?",
+            sublabel: "(D2)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "D3",
+            label:
+              "When applicable, did the agent follow the correct transfer and/or callback procedures?",
+            sublabel: "(D3)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+        ],
+      },
+      {
+        id: "process-sop-compliance",
+        title: "PROCESS & SOP COMPLIANCE",
+        questions: [
+          {
+            id: "E1",
+            label: "Did the agent follow all applicable client policies and SOPs?",
+            sublabel: "(E1)",
+            points: 8,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "8.00", label: "8.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "E2",
+            label:
+              "Did the agent fulfill or properly document all commitments made to the customer (if applicable)?",
+            sublabel: "(E2)",
+            points: 7,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "7.00", label: "7.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
           },
         ],
       },
       {
         id: "problem-identification",
-        title: "Problem Identification",
-        questions: [
-          {
-            id: "E1",
-            label:
-              "Did the agent ask relevant questions to identify the concern?",
-            sublabel: "(5 point) (E1)",
-            points: 5,
-            inputType: "checkbox",
-            comments: true,
-            isOptional: true,
-          },
-          // {
-          //   id: "E2",
-          //   label: "Not Applicable as client concern was clear",
-          //   sublabel: "(5 point) (E2)",
-          //   points: 5,
-          //   inputType: "checkbox",
-          //   comments: true,
-          //   isOptional: true,
-          // },
-        ],
-      },
-      {
-        id: "resolution",
-        title: "Resolution",
+        title: "PROBLEM IDENTIFICATION",
         questions: [
           {
             id: "F1",
             label:
-              "Did the agent inform the customer about any next steps and offer a potential resolution?",
-            sublabel: "(5 points) (F1)",
+              "Did the agent gather or confirm all information needed to understand the customer's concern?",
+            sublabel: "(F1)",
             points: 5,
-            inputType: "checkbox",
-            comments: true,
-          },
-          {
-            id: "F2",
-            label:
-              "Did the agent educate the customer about the issue and highlighted what he/she can do?",
-            sublabel: "(5 points) (F2)",
-            points: 5,
-            inputType: "checkbox",
-            comments: true,
-          },
-          {
-            id: "F3",
-            label:
-              "Did the agent place the resolution effectively within their response?",
-            sublabel: "(5 points) (F3)",
-            points: 5,
-            inputType: "checkbox",
-            comments: true,
-          },
-          {
-            id: "F4",
-            label:
-              "Did the agent offer options when trying to solve the customer's concern?",
-            sublabel: "(5 points) (F4)",
-            points: 5,
-            inputType: "checkbox",
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
             comments: true,
             isOptional: true,
           },
-          {
-            id: "F5",
-            label: "Did the agent provide a complete and accurate resolution?",
-            sublabel: "(5 points) (F5)",
-            points: 5,
-            inputType: "checkbox",
-            comments: true,
-          },
-          {
-            id: "F6",
-            label:
-              "Did the agent showcase proper attention to detail when handling their concern?",
-            sublabel: "(5 points) (F6)",
-            points: 5,
-            inputType: "checkbox",
-            comments: true,
-          },
-          {
-            id: "F7",
-            label: "Did the agent go above and beyond to support the customer?",
-            sublabel: "(5 points) (F7)",
-            points: 5,
-            inputType: "checkbox",
-            comments: true,
-          },
-          {
-            id: "F8",
-            label:
-              "Did the agent escalate the concern to client/manager? (If applicable)",
-            sublabel: "(5 points) (F8)",
-            points: 5,
-            inputType: "checkbox",
-            comments: true,
-            isOptional: true,
-          },
-          // {
-          //   id: "F9",
-          //   label:
-          //     "Not Applicable for offering options when solving agent's concern",
-          //   sublabel: "(5 points) (F9)",
-          //   points: 5,
-          //   inputType: "checkbox",
-          //   comments: true,
-          //   isOptional: true,
-          // },
-          // {
-          //   id: "F10",
-          //   label: "Not Applicable for Client/Manager Escalation",
-          //   sublabel: "(5 points) (F10)",
-          //   points: 5,
-          //   inputType: "checkbox",
-          //   comments: true,
-          //   isOptional: true,
-          // },
         ],
       },
       {
-        id: "closing",
-        title: "Closing",
+        id: "resolution",
+        title: "RESOLUTION",
         questions: [
           {
             id: "G1",
             label:
-              "Did the agent provide a recap regarding the customer issue and a resolution to their issue?",
-            sublabel: "(2 points) (G1)",
-            points: 2,
-            inputType: "checkbox",
+              "Did the agent provide the correct resolution based on the customer's concern and company policy?",
+            sublabel: "(G1)",
+            points: 10,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "10.00", label: "10.00" },
+            ],
+            inputType: "select",
             comments: true,
+            isOptional: false,
           },
           {
             id: "G2",
             label:
-              "Did the agent provide any reference or self-help resources to solve their situation in the future?",
-            sublabel: "(2 points) (G2)",
-            points: 2,
-            inputType: "checkbox",
+              "Did the agent completely address all customer concerns within the interaction?",
+            sublabel: "(G2)",
+            points: 7,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "7.00", label: "7.00" },
+            ],
+            inputType: "select",
             comments: true,
-            isOptional: true,
+            isOptional: false,
           },
           {
             id: "G3",
             label:
-              "Did the agent offer further assistance and/or ask if concerns were resolved?",
-            sublabel: "(3 points) (G3)",
-            points: 3,
-            inputType: "checkbox",
+              "Did the agent provide appropriate next steps when additional action was required?",
+            sublabel: "(G3)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
             comments: true,
+            isOptional: true,
           },
           {
             id: "G4",
             label:
-              "Did the agent have a personalized closing to the customer communication?",
-            sublabel: "(3 points) (G4)",
-            points: 3,
-            inputType: "checkbox",
+              "When appropriate, did the agent provide proactive guidance or education that helped the customer better understand the issue or prevent future concerns?",
+            sublabel: "(G4)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
             comments: true,
+            isOptional: true,
           },
-          // {
-          //   id: "G5",
-          //   label: "Not applicable (No Self-Help Option Required)",
-          //   sublabel: "(2 points) (G5)",
-          //   points: 2,
-          //   inputType: "checkbox",
-          //   comments: true,
-          //   isOptional: true,
-          // },
+          {
+            id: "G5",
+            label:
+              "When the customer's requested resolution could not be directly fulfilled, did the agent take the most appropriate next course of action in accordance with company policy (e.g., escalation, offering available alternatives, or explaining policy limitations)?",
+            sublabel: "(G5)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
         ],
       },
       {
-        id: "call-handling",
-        title: "Call Handling",
+        id: "closing",
+        title: "CLOSING",
         questions: [
           {
             id: "H1",
-            label:
-              "Was there minimal to no dead air throughout the call? (Average Handling Time - max 6 min)",
-            sublabel: "(5 points) (H1)",
-            points: 5,
-            inputType: "checkbox",
+            label: "Did the agent offer further assistance before ending the interaction?",
+            sublabel: "(H1)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
             comments: true,
+            isOptional: false,
           },
           {
             id: "H2",
-            label:
-              "Did the agent follow the correct hold procedure? (If applicable)",
-            sublabel: "(2 points) (H2)",
+            label: "Did the agent end the interaction with a professional closing?",
+            sublabel: "(H2)",
             points: 2,
-            inputType: "checkbox",
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
             comments: true,
-            isOptional: true,
+            isOptional: false,
           },
-          {
-            id: "H3",
-            label:
-              "Did the agent follow the correct transfer procedure? (If applicable)",
-            sublabel: "(2 points) (H3)",
-            points: 2,
-            inputType: "checkbox",
-            comments: true,
-            isOptional: true,
-          },
-          {
-            id: "H4",
-            label:
-              "Did the agent follow the correct call back procedure? (If applicable)",
-            sublabel: "(1 point) (H4)",
-            points: 1,
-            inputType: "checkbox",
-            comments: true,
-            isOptional: true,
-          },
-          // {
-          //   id: "H5",
-          //   label: "Not Applicable for Correct Hold Procedure",
-          //   sublabel: "(2 points) (H5)",
-          //   points: 2,
-          //   inputType: "checkbox",
-          //   comments: true,
-          //   isOptional: true,
-          // },
-          // {
-          //   id: "H6",
-          //   label: "Not Applicable for Correct Transfer Procedure",
-          //   sublabel: "(2 points) (H6)",
-          //   points: 2,
-          //   inputType: "checkbox",
-          //   comments: true,
-          //   isOptional: true,
-          // },
-          // {
-          //   id: "H7",
-          //   label: "Not Applicable for Correct Call Back Procedure",
-          //   sublabel: "(1 point) (H7)",
-          //   points: 1,
-          //   inputType: "checkbox",
-          //   comments: true,
-          //   isOptional: true,
-          // },
         ],
       },
       {
         id: "tools-utilization",
-        title: "Tools Utilization",
+        title: "TOOLS UTILIZATION",
         questions: [
           {
             id: "I1",
-            label:
-              "Did the agent properly leave notes and document all relevant details throughout the conversation?",
-            sublabel: "(3 points) (I1)",
+            label: "Did the agent use the CS Platform tools properly (Tags, Snooze)?",
+            sublabel: "(I1)",
             points: 3,
-            inputType: "checkbox",
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
             comments: true,
+            isOptional: false,
           },
           {
             id: "I2",
             label:
-              "Did the agent use the CS Platform tools properly (Tags, Snooze, Merge)",
-            sublabel: "(2 points) (I2)",
+              "Did agent properly leave notes and document the conversation in all applicable channels (Shopify/Gorgias etc)?",
+            sublabel: "(I2)",
             points: 2,
-            inputType: "checkbox",
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
             comments: true,
+            isOptional: false,
           },
         ],
       },
     ],
+    autoFailSection: {
+      id: "zero-tolerance",
+      title: "ZERO TOLERANCE / AUTO FAIL",
+      questions: [
+        {
+          id: "J1",
+          label:
+            "Did the agent avoid any critical execution errors that materially impacted the customer experience, business operations, or policy compliance?",
+          sublabel: "(J1)",
+          points: 0,
+          options: [
+            { value: "0", label: "Yes" },
+            { value: "-100", label: "No" },
+          ],
+          inputType: "select",
+        },
+      ],
+    },
     extraSections: [
       {
         id: "summary-notes",
-        title: "Summary Notes",
+        title: "SUMMARY NOTES",
         required: true,
         questions: [
           {
@@ -11043,6 +11079,1691 @@ export const formTypes = [
           options: [
             { value: "0", label: "No" },
             { value: "-123", label: "Yes" },
+          ],
+          inputType: "select",
+        },
+      ],
+    },
+    extraSections: [
+      {
+        id: "summary-notes",
+        title: "SUMMARY NOTES",
+        required: true,
+        questions: [
+          {
+            id: "opportunities",
+            label: "OPPORTUNITIES",
+            sublabel: "",
+            points: 0,
+            inputType: "textarea",
+          },
+          {
+            id: "wins",
+            label: "WINS",
+            sublabel: "",
+            points: 0,
+            inputType: "textarea",
+          },
+          {
+            id: "recommendations",
+            label: "RECOMMENDATIONS",
+            sublabel: "",
+            points: 0,
+            inputType: "textarea",
+          },
+        ],
+      },
+    ],
+  },
+
+  // oneractive 236616
+
+  {
+    id: "oneractive-email-quality-form",
+    title: "Email Quality Form",
+    clientId: 236616,
+    clientName: "OnerActive",
+    sections: [
+      {
+        id: "greeting",
+        title: "GREETING",
+        questions: [
+          {
+            id: "A1",
+            label:
+              "Did agent properly greet, thank, and address the customer?",
+            sublabel: "(A1)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "A2",
+            label: "Did agent acknowledge the customer's concern?",
+            sublabel: "(A2)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "A3",
+            label: "Did agent empathize with the customer on their concern(s)?",
+            sublabel: "(A3)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "A4",
+            label: "Did agent use client's Brand Tone during discussion?",
+            sublabel: "(A4)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+        ],
+      },
+      {
+        id: "verification",
+        title: "VERIFICATION",
+        questions: [
+          {
+            id: "B1",
+            label:
+              "Did agent take time to verify Customer and their account details?",
+            sublabel: "(B1)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+        ],
+      },
+      {
+        id: "communication",
+        title: "COMMUNICATION",
+        questions: [
+          {
+            id: "C1",
+            label:
+              "Did the agent effectively communicate with the customer and follow appropriate email communication best practices?",
+            sublabel: "(C1)",
+            points: 10,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "10.00", label: "10.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+        ],
+      },
+      {
+        id: "follow-client-sop",
+        title: "FOLLOW CLIENT SOP",
+        questions: [
+          {
+            id: "D1",
+            label:
+              "Did the agent ensure all actions are aligned to the clients SOP/CS best practices?",
+            sublabel: "(D1)",
+            points: 10,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "10.00", label: "10.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+        ],
+      },
+      {
+        id: "problem-identification",
+        title: "PROBLEM IDENTIFICATION",
+        questions: [
+          {
+            id: "E1",
+            label:
+              "Did the agent ask relevant questions to identify the concern?",
+            sublabel: "(E1)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+        ],
+      },
+      {
+        id: "resolution",
+        title: "RESOLUTION",
+        questions: [
+          {
+            id: "F1",
+            label:
+              "Did the agent inform the customer about any next steps and offer a potential resolution?",
+            sublabel: "(F1)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "F2",
+            label:
+              "Did the agent educate the customer about the issue and highlight what he/she can do?",
+            sublabel: "(F2)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "F3",
+            label: "Did the agent use the correct macro when handling the customer?",
+            sublabel: "(F3)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "F4",
+            label:
+              "Did the agent offer options when trying to solve the customer's concern?",
+            sublabel: "(F4)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "F5",
+            label: "Did the agent provide a complete and accurate resolution?",
+            sublabel: "(F5)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "F6",
+            label:
+              "Did the agent showcase proper attention to detail when handling their concern?",
+            sublabel: "(F6)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "F7",
+            label: "Did the agent go above and beyond to support the customer?",
+            sublabel: "(F7)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "F8",
+            label:
+              "Did the agent escalate the concern to client/manager? (If applicable)",
+            sublabel: "(F8)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+        ],
+      },
+      {
+        id: "grammar",
+        title: "GRAMMAR",
+        questions: [
+          {
+            id: "G1",
+            label:
+              "Did the agent avoid multiple spelling, capitalization, punctuation, excessive spacing, formatting or other grammatical mistakes? (More than 2 instances is a markdown)",
+            sublabel: "(G1)",
+            points: 10,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "10.00", label: "10.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+        ],
+      },
+      {
+        id: "closing",
+        title: "CLOSING",
+        questions: [
+          {
+            id: "H1",
+            label:
+              "Did the agent provide any reference or self-help resources to solve their situation in the future?",
+            sublabel: "(H1)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "H2",
+            label:
+              "Did the agent offer further assistance and/or ask if concerns were resolved?",
+            sublabel: "(H2)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "H3",
+            label:
+              "Did the agent have a personalized closing to the customer communication?",
+            sublabel: "(H3)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+        ],
+      },
+      {
+        id: "tools-utilization",
+        title: "TOOLS UTILIZATION",
+        questions: [
+          {
+            id: "I1",
+            label:
+              "Did the agent use the CS Platform tools properly (Tags, Merging, Snooze)?",
+            sublabel: "(I1)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "I2",
+            label:
+              "Did agent properly leave notes and document the conversation in all applicable channels (Shopify/Gorgias etc)?",
+            sublabel: "(I2)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+        ],
+      },
+    ],
+    extraSections: [
+      {
+        id: "summary-notes",
+        title: "SUMMARY NOTES",
+        required: true,
+        questions: [
+          {
+            id: "opportunities",
+            label: "OPPORTUNITIES",
+            sublabel: "",
+            points: 0,
+            inputType: "textarea",
+          },
+          {
+            id: "wins",
+            label: "WINS",
+            sublabel: "",
+            points: 0,
+            inputType: "textarea",
+          },
+          {
+            id: "recommendations",
+            label: "RECOMMENDATIONS",
+            sublabel: "",
+            points: 0,
+            inputType: "textarea",
+          },
+        ],
+      },
+    ],
+  },
+
+  // maxwood furniture 437252
+
+  {
+    id: "maxwood-furniture-phone-quality-form",
+    title: "Phone Quality Form",
+    clientId: 437252,
+    clientName: "Maxwood Furniture",
+    sections: [
+      {
+        id: "greeting",
+        title: "GREETING",
+        questions: [
+          {
+            id: "A1",
+            label:
+              "Did the agent thank the customer for contacting support and introduce themselves?",
+            sublabel: "(A1)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "A2",
+            label: "Did the agent mention the brand name during the greeting?",
+            sublabel: "(A2)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "A3",
+            label:
+              "Did the agent provide an eager offer of assistance and sound confident at the onset of the call?",
+            sublabel: "(A3)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "A4",
+            label:
+              "Did the agent demonstrate and maintain appropriate tone and professionalism throughout the call?",
+            sublabel: "(A4)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+        ],
+      },
+      {
+        id: "personalization",
+        title: "PERSONALIZATION",
+        questions: [
+          {
+            id: "B1",
+            label: "Did the agent address the customer by their name?",
+            sublabel: "(B1)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "B2",
+            label:
+              "Did the agent acknowledge and restate the customer's concern or issue?",
+            sublabel: "(B2)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "B3",
+            label: "Did the agent provide empathy when needed?",
+            sublabel: "(B3)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "B4",
+            label:
+              "Did the agent provide assurance that they would assist in resolving the issue?",
+            sublabel: "(B4)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "B5",
+            label:
+              "Did the agent maintain a conversational and natural communication style throughout the call?",
+            sublabel: "(B5)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+        ],
+      },
+      {
+        id: "problem-solving",
+        title: "PROBLEM SOLVING",
+        questions: [
+          {
+            id: "C1",
+            label:
+              "Did the agent ask relevant probing questions to fully understand the issue?",
+            sublabel: "(C1)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "C2",
+            label:
+              "Did the agent obtain the necessary information (e.g., order number, account details) to check the customer's account?",
+            sublabel: "(C2)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "C3",
+            label:
+              "Did the agent provide the correct resolution according to the client's SOP?",
+            sublabel: "(C3)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "C4",
+            label:
+              "Did the agent follow the required process and procedures accurately?",
+            sublabel: "(C4)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "C5",
+            label: "Did the agent address all of the customer's concerns?",
+            sublabel: "(C5)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "C6",
+            label:
+              "If the agent committed to sending a follow-up email, was the email sent within the required or promised timeframe?",
+            sublabel: "(C6)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "C7",
+            label:
+              "Did the agent escalate the case appropriately when necessary (including adding clear and relevant internal notes)?",
+            sublabel: "(C7)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+        ],
+      },
+      {
+        id: "phone-specifics",
+        title: "PHONE SPECIFICS",
+        questions: [
+          {
+            id: "D1",
+            label:
+              "Did the agent minimize dead air and maintain engagement during the call?",
+            sublabel: "(D1)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "D2",
+            label:
+              "Did the agent follow the proper hold procedure (ask permission and return within 5 minutes)?",
+            sublabel: "(D2)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "D3",
+            label:
+              "Did the agent follow the correct call back procedure (if the call got disconnected / if system issues occurred at the start of the call)?",
+            sublabel: "(D3)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+        ],
+      },
+      {
+        id: "closing",
+        title: "CLOSING",
+        questions: [
+          {
+            id: "E1",
+            label:
+              "Did the agent set proper expectations regarding resolution or timelines?",
+            sublabel: "(E1)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "E2",
+            label:
+              "Did the agent clearly explain the next steps for resolution or prevention of the issue?",
+            sublabel: "(E2)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "E3",
+            label:
+              "Did the agent offer self-help resources for future reference when applicable?",
+            sublabel: "(E3)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "E4",
+            label: "Did the agent provide a personalized closing statement?",
+            sublabel: "(E4)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "E5",
+            label: "Did the agent offer further assistance before ending the call?",
+            sublabel: "(E5)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+        ],
+      },
+      {
+        id: "documentation",
+        title: "DOCUMENTATION",
+        questions: [
+          {
+            id: "F1",
+            label:
+              "When placing an order on hold for changes or cancellation, did the agent follow the correct hold documentation process in SP by entering the required hold reason (e.g., HOLD CANCEL, HOLD (date of hold), HOLD CHANGE) in the left column?",
+            sublabel: "(F1)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "F2",
+            label:
+              "Did the agent use the correct merging/snoozing process in the CS platform when applicable?",
+            sublabel: "(F2)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+        ],
+      },
+    ],
+    extraSections: [
+      {
+        id: "summary-notes",
+        title: "SUMMARY NOTES",
+        required: true,
+        questions: [
+          {
+            id: "opportunities",
+            label: "OPPORTUNITIES",
+            sublabel: "",
+            points: 0,
+            inputType: "textarea",
+          },
+          {
+            id: "wins",
+            label: "WINS",
+            sublabel: "",
+            points: 0,
+            inputType: "textarea",
+          },
+          {
+            id: "recommendations",
+            label: "RECOMMENDATIONS",
+            sublabel: "",
+            points: 0,
+            inputType: "textarea",
+          },
+        ],
+      },
+    ],
+  },
+
+  // maxwood furniture 437252
+
+  {
+    id: "maxwood-furniture-email-chat-sms-quality-form",
+    title: "Email/Chat/SMS Quality Form",
+    clientId: 437252,
+    clientName: "Maxwood Furniture",
+    sections: [
+      {
+        id: "greeting",
+        title: "GREETING",
+        questions: [
+          {
+            id: "A1",
+            label: "Did the agent thank the customer for reaching out?",
+            sublabel: "(A1)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "A2",
+            label:
+              "Did the agent verify and update the customer's information as needed?",
+            sublabel: "(A2)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "A3",
+            label:
+              "Did the agent demonstrate attentiveness when reading the customer's email/chat?",
+            sublabel: "(A3)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+        ],
+      },
+      {
+        id: "customer-service",
+        title: "CUSTOMER SERVICE",
+        questions: [
+          {
+            id: "B1",
+            label:
+              "Did the agent personalize the email/chat by acknowledging the customer's issue or concern?",
+            sublabel: "(B1)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "B2",
+            label: "Did the agent demonstrate empathy toward the customer?",
+            sublabel: "(B2)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "B3",
+            label:
+              "Did the agent use a friendly and professional tone throughout the interaction?",
+            sublabel: "(B3)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "B4",
+            label:
+              "Did the agent respond in a timely manner, including sending the first response promptly?",
+            sublabel: "(B4)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "B5",
+            label:
+              "Did the agent use appropriate language (no slang, colloquialisms, or unprofessional terms)?",
+            sublabel: "(B5)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+        ],
+      },
+      {
+        id: "procedural-requirements",
+        title: "PROCEDURAL REQUIREMENTS",
+        questions: [
+          {
+            id: "C1",
+            label: "Did the agent inform the customer of expected turnaround times?",
+            sublabel: "(C1)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "C2",
+            label:
+              "Did the agent acknowledge any objections or concerns raised by the customer?",
+            sublabel: "(C2)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "C3",
+            label: "Did the agent ask probing questions to clarify the issue?",
+            sublabel: "(C3)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "C4",
+            label:
+              "Did the agent provide the correct solution and follow all SOP processes?",
+            sublabel: "(C4)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "C5",
+            label:
+              "Did the agent escalate or transfer the ticket to the correct department when necessary?",
+            sublabel: "(C5)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "C6",
+            label: "Did the agent address all of the customer's concerns?",
+            sublabel: "(C6)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+        ],
+      },
+      {
+        id: "email-chat-sms-socmed-specifics",
+        title: "EMAIL/CHAT/SMS/SOCMED SPECIFICS",
+        questions: [
+          {
+            id: "D1",
+            label:
+              "Did the agent maintain correct spelling, capitalization, punctuation, and formatting, and avoid excessive spacing?",
+            sublabel: "(D1)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "D2",
+            label:
+              "Did the agent provide working links relevant to resolving the customer's issue?",
+            sublabel: "(D2)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "D3",
+            label:
+              "Did the agent tailor the macro or response template to fit the specific customer interaction?",
+            sublabel: "(D3)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "D4",
+            label:
+              "If the email failed to deliver, did the agent attempt to resend or use an alternate email associated with the customer account?",
+            sublabel: "(D4)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+        ],
+      },
+      {
+        id: "closing",
+        title: "CLOSING",
+        questions: [
+          {
+            id: "E1",
+            label:
+              "Did the agent close the interaction effectively with a personal and friendly touch?",
+            sublabel: "(E1)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "E2",
+            label: "Did the agent offer further assistance?",
+            sublabel: "(E2)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "E3",
+            label: "Did the agent provide self-help resources for future reference?",
+            sublabel: "(E3)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "E4",
+            label: "Did the agent provide a personalized closing statement?",
+            sublabel: "(E4)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+        ],
+      },
+      {
+        id: "documentation",
+        title: "DOCUMENTATION",
+        questions: [
+          {
+            id: "F1",
+            label:
+              "When placing an order on hold for changes or cancellations, did the agent follow the correct hold documentation process in SP (e.g., entering HOLD CANCEL, HOLD (date), HOLD CHANGE in the left column)?",
+            sublabel: "(F1)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "F2",
+            label:
+              "Did the agent use the correct merging/snoozing process in the CS platform?",
+            sublabel: "(F2)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "F3",
+            label:
+              "When escalating or assigning the ticket to another team (e.g., Refund, Replacement, Order Change), did the agent include clear and relevant internal notes?",
+            sublabel: "(F3)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+        ],
+      },
+    ],
+    extraSections: [
+      {
+        id: "summary-notes",
+        title: "SUMMARY NOTES",
+        required: true,
+        questions: [
+          {
+            id: "opportunities",
+            label: "OPPORTUNITIES",
+            sublabel: "",
+            points: 0,
+            inputType: "textarea",
+          },
+          {
+            id: "wins",
+            label: "WINS",
+            sublabel: "",
+            points: 0,
+            inputType: "textarea",
+          },
+          {
+            id: "recommendations",
+            label: "RECOMMENDATIONS",
+            sublabel: "",
+            points: 0,
+            inputType: "textarea",
+          },
+        ],
+      },
+    ],
+  },
+
+  // simplehuman 170380
+
+  {
+    id: "simplehuman-chat-sms-quality-form-v2",
+    title: "Chat/SMS Quality Form (V2)",
+    clientId: 170380,
+    clientName: "Simplehuman",
+    sections: [
+      {
+        id: "greetings-personalization",
+        title: "GREETINGS & PERSONALIZATION",
+        questions: [
+          {
+            id: "A1",
+            label: "Did agent properly greet, thank, and address the customer?",
+            sublabel: "(A1)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "A2",
+            label: "Did agent acknowledge the customer's concern?",
+            sublabel: "(A2)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "A3",
+            label:
+              "When appropriate, did the agent demonstrate empathy that matched the customer's situation?",
+            sublabel: "(A3)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+        ],
+      },
+      {
+        id: "verification-and-case-review",
+        title: "VERIFICATION AND CASE REVIEW",
+        questions: [
+          {
+            id: "B1",
+            label:
+              "Did the agent complete the required customer/account verification (when applicable)?",
+            sublabel: "(B1)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "B2",
+            label:
+              "Did the agent review the customer's previous interactions before proceeding (when applicable)?",
+            sublabel: "(B2)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "B3",
+            label: "Did the agent merge related tickets when appropriate?",
+            sublabel: "(B3)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+        ],
+      },
+      {
+        id: "communication-effectiveness",
+        title: "COMMUNICATION EFFECTIVENESS",
+        questions: [
+          {
+            id: "C1",
+            label:
+              "Did the agent communicate in a clear, organized, and easy-to-understand manner?",
+            sublabel: "(C1)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "C2",
+            label:
+              "Did the agent maintain the brand's tone and voice by communicating in a customer-centric manner throughout the interaction?",
+            sublabel: "(C2)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+        ],
+      },
+      {
+        id: "interaction-handling",
+        title: "INTERACTION HANDLING",
+        questions: [
+          {
+            id: "D1",
+            label:
+              "Did the agent maintain the required response time by responding to the customer within 2 minutes throughout the active interaction?",
+            sublabel: "(D1)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "D2",
+            label:
+              "When additional research or action was required, did the agent inform the customer before exceeding the 2-minute response time and return to the customer within the committed timeframe?",
+            sublabel: "(D2)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+        ],
+      },
+      {
+        id: "process-sop-compliance",
+        title: "PROCESS & SOP COMPLIANCE",
+        questions: [
+          {
+            id: "E1",
+            label: "Did the agent follow all applicable client policies and SOPs?",
+            sublabel: "(E1)",
+            points: 8,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "8.00", label: "8.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "E2",
+            label:
+              "Did the agent fulfill or properly document all commitments made to the customer (if applicable)?",
+            sublabel: "(E2)",
+            points: 7,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "7.00", label: "7.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+        ],
+      },
+      {
+        id: "problem-identification",
+        title: "PROBLEM IDENTIFICATION",
+        questions: [
+          {
+            id: "F1",
+            label:
+              "Did the agent gather or confirm all information needed to understand the customer's concern?",
+            sublabel: "(F1)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+        ],
+      },
+      {
+        id: "resolution",
+        title: "RESOLUTION",
+        questions: [
+          {
+            id: "G1",
+            label:
+              "Did the agent provide the correct resolution based on the customer's concern and company policy?",
+            sublabel: "(G1)",
+            points: 10,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "10.00", label: "10.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "G2",
+            label:
+              "Did the agent completely address all customer concerns within the interaction?",
+            sublabel: "(G2)",
+            points: 7,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "7.00", label: "7.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "G3",
+            label:
+              "Did the agent provide appropriate next steps when additional action was required?",
+            sublabel: "(G3)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "G4",
+            label:
+              "When appropriate, did the agent provide proactive guidance or education that helped the customer better understand the issue or prevent future concerns?",
+            sublabel: "(G4)",
+            points: 4,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.00", label: "4.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "G5",
+            label:
+              "When the customer's requested resolution could not be directly fulfilled, did the agent take the most appropriate next course of action in accordance with company policy (e.g., escalation, offering available alternatives, or explaining policy limitations)?",
+            sublabel: "(G5)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+        ],
+      },
+      {
+        id: "professional-writing",
+        title: "PROFESSIONAL WRITING",
+        questions: [
+          {
+            id: "H1",
+            label:
+              "Did the response maintain professional grammar, spelling, punctuation, and formatting?",
+            sublabel: "(H1)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+        ],
+      },
+      {
+        id: "closing",
+        title: "CLOSING",
+        questions: [
+          {
+            id: "I1",
+            label: "Did the agent offer further assistance before ending the interaction?",
+            sublabel: "(I1)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "I2",
+            label: "Did the agent end the interaction with a professional closing?",
+            sublabel: "(I2)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+        ],
+      },
+      {
+        id: "tools-utilization",
+        title: "TOOLS UTILIZATION",
+        questions: [
+          {
+            id: "J1",
+            label: "Did the agent use the CS Platform tools properly (Tags, Snooze)?",
+            sublabel: "(J1)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "J2",
+            label:
+              "Did agent properly leave notes and document the conversation in all applicable channels (Shopify/Gorgias etc)?",
+            sublabel: "(J2)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+        ],
+      },
+    ],
+    autoFailSection: {
+      id: "zero-tolerance",
+      title: "ZERO TOLERANCE / AUTO FAIL",
+      questions: [
+        {
+          id: "K1",
+          label:
+            "Did the agent avoid any critical execution errors that materially impacted the customer experience, business operations, or policy compliance?",
+          sublabel: "(K1)",
+          points: 0,
+          options: [
+            { value: "0", label: "Yes" },
+            { value: "-100", label: "No" },
           ],
           inputType: "select",
         },

@@ -253,9 +253,9 @@ export default function CategoryWithQuestion() {
   };
 
   const handleRemarkChange = (index, value) => {
-    const updatedCriteria = [...gradingCriteria];
-    updatedCriteria[index].remarks = value;
-    setGradingCriteria(updatedCriteria);
+    setGradingCriteria((prev) =>
+      prev.map((item, i) => (i === index ? { ...item, remarks: value } : item))
+    );
   };
 
   // Toggle category expansion
@@ -333,7 +333,11 @@ export default function CategoryWithQuestion() {
         { score: 0, remarks: "" },
       ];
     }
-    setGradingCriteria(incomingCriteria);
+    // Editable state and the diff-snapshot below must never share object
+    // references — grading-criteria edits mutate items in place elsewhere,
+    // and if both pointed at the same objects that mutation would silently
+    // "update" the snapshot too, making the save diff always see no change.
+    setGradingCriteria(incomingCriteria.map((c) => ({ ...c })));
     setSelectOption(question?.select_options ?? []);
 
     // Snapshot the question in API-shaped form so we can diff on save.
@@ -346,7 +350,7 @@ export default function CategoryWithQuestion() {
       select_options: question?.select_options ?? [],
       // Snapshot the same normalized array so the JSON.stringify diff
       // compares apples to apples on save.
-      grading_criteria: incomingCriteria,
+      grading_criteria: incomingCriteria.map((c) => ({ ...c })),
     });
 
     setDrawerType("editQuestion");
@@ -1128,9 +1132,14 @@ export default function CategoryWithQuestion() {
                           placeholder="Explain how this question should be assessed..."
                           value={item.explanation || ""}
                           onChange={(e) => {
-                            const updated = [...gradingCriteria];
-                            updated[originalIndex].explanation = e.target.value;
-                            setGradingCriteria(updated);
+                            const value = e.target.value;
+                            setGradingCriteria((prev) =>
+                              prev.map((c, i) =>
+                                i === originalIndex
+                                  ? { ...c, explanation: value }
+                                  : c
+                              )
+                            );
                           }}
                           className="!pt-[30px] !bg-[#fbfbfb] !border-[#efefef] !rounded-[12px] pt-10 overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                           autoSize={{ minRows: 3, maxRows: 5 }}
@@ -1148,9 +1157,10 @@ export default function CategoryWithQuestion() {
                         max={formData.questionPoints || 0}
                         value={item?.score}
                         onChange={(val) => {
-                          const updated = [...gradingCriteria];
-                          updated[index].score = val || 0;
-                          setGradingCriteria(updated);
+                          const score = val || 0;
+                          setGradingCriteria((prev) =>
+                            prev.map((c, i) => (i === index ? { ...c, score } : c))
+                          );
                         }}
                         className="!w-[120px] !rounded-[8px]"
                         style={{ height: "36px" }}
