@@ -342,6 +342,28 @@ const menuList = [
     icon: "mdi:chart-box-outline",
     route: "reporting",
     roles: ["admin", "dev", "tl", "om"],
+    submenu: [
+      {
+        title: "Helpdesk Reporting",
+        route: "reporting/hub-desk",
+        roles: ["admin", "dev", "tl", "om"],
+      },
+      {
+        title: "Attendance Reporting",
+        route: "reporting/attendance",
+        roles: ["admin", "dev", "tl", "om"],
+      },
+      {
+        title: "Ticket Monitoring Reporting",
+        route: "reporting/ticket-monitoring",
+        roles: ["admin", "dev", "tl", "om"],
+      },
+      {
+        title: "Performance Coaching Reporting",
+        route: "reporting/performance-coaching",
+        roles: ["admin", "dev", "tl", "om"],
+      },
+    ],
   },
   {
     title: "Quality Assurance",

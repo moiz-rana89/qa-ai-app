@@ -10,7 +10,6 @@ import { getReportingNav, getReportingFilters } from "../../reduxStore/action/re
 import { extractApiError } from "../../utils/helperFunctions";
 import { resolveReportingScope } from "../../utils/reportingHelpers";
 import Skeleton from "../../components/Skeleton";
-import ReportingNav from "./ReportingNav";
 import ReportingEmptyState from "./components/ReportingEmptyState";
 import HubDeskReporting from "./HubDeskReporting";
 import AttendanceReporting from "./AttendanceReporting";
@@ -126,46 +125,32 @@ export default function ReportingPage() {
 
   return (
     <div className="m-[25px]">
-      <div className="mb-4">
-        <span className="text-xl font-semibold text-[#163143]">Reporting</span>
-      </div>
-      <div className="flex gap-6">
-        <ReportingNav submenus={submenus} />
-        <div className="flex-1 min-w-0">
-          <Routes>
-            <Route
-              index
-              element={<Navigate to={firstActivePath} replace />}
+      <Routes>
+        <Route index element={<Navigate to={firstActivePath} replace />} />
+        <Route
+          path="hub-desk"
+          element={<HubDeskReporting {...sharedProps("hub-desk")} />}
+        />
+        <Route
+          path="attendance"
+          element={<AttendanceReporting {...sharedProps("attendance")} />}
+        />
+        <Route
+          path="ticket-monitoring"
+          element={
+            <TicketMonitoringReporting {...sharedProps("ticket-monitoring")} />
+          }
+        />
+        <Route
+          path="performance-coaching"
+          element={
+            <PerformanceCoachingReporting
+              {...sharedProps("performance-coaching")}
             />
-            <Route
-              path="hub-desk"
-              element={<HubDeskReporting {...sharedProps("hub-desk")} />}
-            />
-            <Route
-              path="attendance"
-              element={<AttendanceReporting {...sharedProps("attendance")} />}
-            />
-            <Route
-              path="ticket-monitoring"
-              element={
-                <TicketMonitoringReporting {...sharedProps("ticket-monitoring")} />
-              }
-            />
-            <Route
-              path="performance-coaching"
-              element={
-                <PerformanceCoachingReporting
-                  {...sharedProps("performance-coaching")}
-                />
-              }
-            />
-            <Route
-              path="*"
-              element={<Navigate to={firstActivePath} replace />}
-            />
-          </Routes>
-        </div>
-      </div>
+          }
+        />
+        <Route path="*" element={<Navigate to={firstActivePath} replace />} />
+      </Routes>
     </div>
   );
 }
