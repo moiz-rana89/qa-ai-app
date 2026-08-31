@@ -258,8 +258,7 @@ A screenshot of the agents claim that their HS stopped working can suffic as an 
   {
     reason: "PTO",
     validity: "VALID",
-    description:
-      "Used when Agent is on PTO",
+    description: "Used when Agent is on PTO",
     fileReqMessage: `Include "Time off Request" screenshot in hubstaff`,
     isFileReq: true,
   },
@@ -354,7 +353,7 @@ A screenshot of the agents claim that their HS stopped working can suffic as an 
       "Applied when the agent is unable to log in, continue, or complete their shift due to an unexpected power outage or internet service provider (ISP) interruption beyond the agent’s control.",
     fileReqMessage: `if ISP intrerruption, a proof from provider or ticket raising the concern
 Power interruption, a raised ticket on any electric company or proof that there's a power incident.`,
-    isFileReq: true,
+    isFileReq: false,
   },
   {
     reason: "Agent Device Issue",
