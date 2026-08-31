@@ -55,6 +55,8 @@ export default function ConsolidatedCountPage({
     om_id: scopedIdParam(scope, "om_id", state.selectedOms),
     client_id: scopedIdParam(scope, "client_id", state.selectedClients),
     csm_id: scopedIdParam(scope, "csm_id", state.selectedCsms),
+    // AOM names, not ids — sent through as-is (see reporting.js addParam).
+    aom: state.selectedAoms,
   });
 
   const summaryDeps = [
@@ -65,6 +67,7 @@ export default function ConsolidatedCountPage({
     state.selectedOms,
     state.selectedClients,
     state.selectedCsms,
+    state.selectedAoms,
   ];
 
   const summary = useReport(
@@ -100,7 +103,8 @@ export default function ConsolidatedCountPage({
     state.selectedTeamLeads.length ||
     state.selectedOms.length ||
     state.selectedClients.length ||
-    state.selectedCsms.length;
+    state.selectedCsms.length ||
+    state.selectedAoms.length;
 
   const clearFilters = () =>
     setState({
@@ -109,6 +113,7 @@ export default function ConsolidatedCountPage({
       selectedOms: [],
       selectedClients: [],
       selectedCsms: [],
+      selectedAoms: [],
     });
 
   let breakdownRows = breakdown.data?.data || [];
@@ -207,6 +212,9 @@ export default function ConsolidatedCountPage({
         setSelectedClients={(v) => setState({ selectedClients: v, page: 1 })}
         selectedCsms={state.selectedCsms}
         setSelectedCsms={(v) => setState({ selectedCsms: v, page: 1 })}
+        aomOptions={filters?.aoms}
+        selectedAoms={state.selectedAoms}
+        setSelectedAoms={(v) => setState({ selectedAoms: v, page: 1 })}
       />
 
       {summary.loading ? (

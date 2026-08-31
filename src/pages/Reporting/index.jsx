@@ -25,6 +25,7 @@ const makeInitialState = (extra = {}) => ({
   selectedOms: [],
   selectedClients: [],
   selectedCsms: [],
+  selectedAoms: [],
   sortBy: undefined,
   sortOrder: undefined,
   page: 1,

@@ -1,4 +1,5 @@
 import { Icon } from "@iconify/react";
+import { formatDateTimeEnglish } from "../../utils/helperFunctions";
 
 // Whitelisted sortable fields per the API spec — sending any other
 // sort_by value gets a 400 back, so every other column must disable
@@ -16,12 +17,63 @@ export const SORTABLE_FIELDS = [
   "updated_at",
 ];
 
+const emptyDash = <span className="text-[#7F8A92]">—</span>;
+
 const textColumn = (title, dataIndex) => ({
   title,
   dataIndex,
   key: dataIndex,
   disableSort: !SORTABLE_FIELDS.includes(dataIndex),
-  render: (value) => value || <span className="text-[#7F8A92]">—</span>,
+  render: (value) => value || emptyDash,
+});
+
+// Like textColumn, but for numeric fields — falls back to the dash only
+// on null/undefined, since a real 0 (e.g. zero schedule rows) is itself
+// meaningful and shouldn't render the same as "no data".
+const numberColumn = (title, dataIndex) => ({
+  title,
+  dataIndex,
+  key: dataIndex,
+  disableSort: !SORTABLE_FIELDS.includes(dataIndex),
+  render: (value) => (value == null ? emptyDash : value),
+});
+
+// Comma-joined list column — for array fields like schedule_clients /
+// schedule_projects. Not in SORTABLE_FIELDS (arrays aren't sortable
+// server-side), so always disableSort.
+const listColumn = (title, dataIndex) => ({
+  title,
+  dataIndex,
+  key: dataIndex,
+  disableSort: true,
+  render: (value) =>
+    Array.isArray(value) && value.length ? value.join(", ") : emptyDash,
+});
+
+// Same shape as listColumn, but renders each entry as a small tag —
+// used for the *_missing_fields arrays so a row's specific gaps (e.g.
+// "helpdesk_user_email", "schedule_projects") are visible at a glance
+// instead of just a generic "has an issue" flag.
+const missingFieldsColumn = (title, dataIndex) => ({
+  title,
+  dataIndex,
+  key: dataIndex,
+  disableSort: true,
+  render: (value) =>
+    Array.isArray(value) && value.length ? (
+      <div className="flex flex-wrap gap-1">
+        {value.map((field) => (
+          <span
+            key={field}
+            className="inline-flex items-center px-2 py-[1px] rounded-full text-[11px] font-medium bg-[#FFF3D8] text-[#B86E00] whitespace-nowrap"
+          >
+            {field}
+          </span>
+        ))}
+      </div>
+    ) : (
+      emptyDash
+    ),
 });
 
 // Shared by Roster and Issues — same page-column mapping. `showIssueFlag`
@@ -55,11 +107,25 @@ export const getDataIntegrityColumns = ({ showIssueFlag = false } = {}) => {
             rel="noopener noreferrer"
             className="text-[#1A56DB] underline"
           >
-            View Ticket
+            {record.hubspot_ticket_name || "View Ticket"}
           </a>
         ) : (
           <span className="text-[#7F8A92]">—</span>
         ),
+    },
+    textColumn("Helpdesk Platform", "cs_helpdesk"),
+    missingFieldsColumn("Missing Helpdesk Fields", "missing_fields"),
+    textColumn("Agent Status", "agent_status"),
+    listColumn("Schedule Client(s)", "schedule_clients"),
+    listColumn("Schedule Project(s)", "schedule_projects"),
+    numberColumn("Schedule Rows", "schedule_row_count"),
+    missingFieldsColumn("Missing Schedule Fields", "schedule_missing_fields"),
+    {
+      title: "Last Updated",
+      dataIndex: "updated_at",
+      key: "updated_at",
+      disableSort: !SORTABLE_FIELDS.includes("updated_at"),
+      render: (value) => (value ? formatDateTimeEnglish(value) : emptyDash),
     },
   ];
 

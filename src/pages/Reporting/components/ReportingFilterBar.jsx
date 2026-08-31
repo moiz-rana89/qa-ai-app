@@ -28,6 +28,13 @@ export default function ReportingFilterBar({
   setSelectedClients,
   selectedCsms,
   setSelectedCsms,
+  // Plain strings, not {id, name} objects — AOM names are matched exactly
+  // by the backend, so UnifiedDropdown is fed (and returns) the raw
+  // strings unchanged. `aomOptions` defaults to filters.aoms but callers
+  // scoped to an "internal" view can pass filters.internal.aoms instead.
+  aomOptions,
+  selectedAoms,
+  setSelectedAoms,
   extra,
 }) {
   const isTLLocked = scope?.lockedField === "team_lead_id";
@@ -135,6 +142,19 @@ export default function ReportingFilterBar({
           displayKey="name"
           valueKey="id"
           searchKeys={["name"]}
+          className="h-9 border-[#d9d9d9] bg-white"
+        />
+      )}
+
+      {setSelectedAoms && (
+        <UnifiedDropdown
+          placeholder="Search AOMs"
+          name="AOM"
+          data={aomOptions ?? filters?.aoms ?? []}
+          isLoading={isLoadingFilters}
+          selectedList={selectedAoms}
+          setselectedList={setSelectedAoms}
+          multiSelect={true}
           className="h-9 border-[#d9d9d9] bg-white"
         />
       )}

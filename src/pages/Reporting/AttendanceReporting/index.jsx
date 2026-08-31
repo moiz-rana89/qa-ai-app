@@ -1,108 +1,22 @@
 "use client";
 
-import { Tooltip } from "antd";
+import { useState } from "react";
 import dayjs from "dayjs";
-import toast from "react-hot-toast";
 
-import {
-  getAttendanceSummary,
-  getAttendanceTotals,
-} from "../../../reduxStore/action/reporting";
-import { extractApiError } from "../../../utils/helperFunctions";
+import { getAttendanceTotals } from "../../../reduxStore/action/reporting";
 import {
   formatCount,
   formatRate,
   scopedIdParam,
-  toApiSortOrder,
 } from "../../../utils/reportingHelpers";
 import useReport from "../hooks/useReport";
 import ReportingFilterBar from "../components/ReportingFilterBar";
-import ReportingTable from "../components/ReportingTable";
 import ReportingEmptyState from "../components/ReportingEmptyState";
 import KpiTiles from "../components/KpiTiles";
 import Skeleton from "../../../components/Skeleton";
-
-const dash = (v) => v ?? <span className="text-[#7F8A92]">—</span>;
-
-const columns = [
-  {
-    title: "Agent",
-    dataIndex: "agent_name",
-    key: "agent_name",
-    disableSort: false,
-    render: (v) =>
-      v === "Unattributed" ? (
-        <Tooltip title="Agent record no longer exists; counts are still included.">
-          <span className="italic text-[#9CA3AF]">Unattributed</span>
-        </Tooltip>
-      ) : (
-        dash(v)
-      ),
-  },
-  {
-    title: "Team Lead",
-    dataIndex: "team_lead",
-    key: "team_lead",
-    disableSort: false,
-    render: dash,
-  },
-  {
-    title: "OM",
-    dataIndex: "operations_manager",
-    key: "operations_manager",
-    disableSort: false,
-    render: dash,
-  },
-  {
-    title: "Client",
-    dataIndex: "client_name",
-    key: "client_name",
-    disableSort: false,
-    render: dash,
-  },
-  {
-    title: "Late",
-    dataIndex: "late",
-    key: "late",
-    disableSort: false,
-    render: formatCount,
-  },
-  {
-    title: "Abandoned",
-    dataIndex: "abandoned",
-    key: "abandoned",
-    disableSort: false,
-    render: formatCount,
-  },
-  {
-    title: "Missed",
-    dataIndex: "missed",
-    key: "missed",
-    disableSort: false,
-    render: formatCount,
-  },
-  {
-    title: "On Time",
-    dataIndex: "ontime",
-    key: "ontime",
-    disableSort: false,
-    render: formatCount,
-  },
-  {
-    title: "Attendance Points",
-    dataIndex: "attendance_points",
-    key: "attendance_points",
-    disableSort: false,
-    render: formatCount,
-  },
-  {
-    title: "Green Cards",
-    dataIndex: "green_cards",
-    key: "green_cards",
-    disableSort: false,
-    render: formatCount,
-  },
-];
+import { Tab, Tabs } from "../../../components/Tabs/Tabs";
+import AttendanceOverviewSection from "../../EndorsementReport/AttendanceOverviewSection";
+import ActivityOverviewSection from "../../EndorsementReport/ActivityOverviewSection";
 
 export default function AttendanceReporting({
   filters,
@@ -119,6 +33,8 @@ export default function AttendanceReporting({
     om_id: scopedIdParam(scope, "om_id", state.selectedOms),
     client_id: scopedIdParam(scope, "client_id", state.selectedClients),
     csm_id: scopedIdParam(scope, "csm_id", state.selectedCsms),
+    // AOM names, not ids — sent through as-is (see reporting.js addParam).
+    aom: state.selectedAoms,
   });
 
   const filterDeps = [
@@ -129,6 +45,7 @@ export default function AttendanceReporting({
     state.selectedOms,
     state.selectedClients,
     state.selectedCsms,
+    state.selectedAoms,
   ];
 
   const totalsReport = useReport(
@@ -138,44 +55,15 @@ export default function AttendanceReporting({
     filterDeps
   );
 
-  const summaryParams = {
-    ...buildBaseParams(),
-    page: state.page,
-    size: state.size,
-    sort_by: state.sortBy || "attendance_points",
-    sort_order: toApiSortOrder(state.sortOrder) || "desc",
-  };
-
-  const summaryReport = useReport(
-    getAttendanceSummary,
-    summaryParams,
-    !scope?.blocked,
-    [...filterDeps, state.page, state.size, state.sortBy, state.sortOrder]
-  );
+  // Tab state for the Attendance Overview / Hubstaff Activity Overview
+  // tabs below — mirrors the pattern EndorsementReport itself uses.
+  const [, setActiveTab] = useState("Attendance Overview");
 
   if (scope?.blocked) {
     return <ReportingEmptyState variant="blocked" />;
   }
 
   const totals = totalsReport.data?.totals;
-  const hasAnyFilters =
-    state.selectedAgents.length ||
-    state.selectedTeamLeads.length ||
-    state.selectedOms.length ||
-    state.selectedClients.length ||
-    state.selectedCsms.length;
-
-  const clearFilters = () =>
-    setState({
-      selectedAgents: [],
-      selectedTeamLeads: [],
-      selectedOms: [],
-      selectedClients: [],
-      selectedCsms: [],
-    });
-
-  const rows = summaryReport.data?.data || [];
-  const showEmptyState = !summaryReport.loading && rows.length === 0;
 
   const tiles = totals
     ? [
@@ -194,18 +82,18 @@ export default function AttendanceReporting({
       ]
     : [];
 
-  const fetchCsv = (handleResponse) => {
-    getAttendanceSummary(
-      { ...summaryParams, csv: true, page: undefined, size: undefined },
-      (success, result) => {
-        if (!success) {
-          toast.error(extractApiError(result, "Failed to export CSV."));
-          handleResponse(false, result);
-          return;
-        }
-        handleResponse(true, result);
-      }
-    );
+  // Same two sections the Endorsement Report page renders, reused as-is —
+  // each fetches and paginates independently, scoped to these filters.
+  // (Endorsement Report also has a Senior CSM filter that this page's
+  // shared filter bar doesn't expose, so senior_csm_id is left unset here.)
+  const tabFilters = {
+    agent_id: scopedIdParam(scope, "agent_id", state.selectedAgents),
+    client_id: scopedIdParam(scope, "client_id", state.selectedClients),
+    tl_id: scopedIdParam(scope, "team_lead_id", state.selectedTeamLeads),
+    om_id: scopedIdParam(scope, "om_id", state.selectedOms),
+    csm_id: scopedIdParam(scope, "csm_id", state.selectedCsms),
+    startdate: state.dateRange?.[0],
+    enddate: state.dateRange?.[1],
   };
 
   return (
@@ -221,19 +109,21 @@ export default function AttendanceReporting({
               strDates?.[0] && strDates?.[1]
                 ? [dayjs(strDates[0]), dayjs(strDates[1])]
                 : null,
-            page: 1,
           })
         }
         selectedAgents={state.selectedAgents}
-        setSelectedAgents={(v) => setState({ selectedAgents: v, page: 1 })}
+        setSelectedAgents={(v) => setState({ selectedAgents: v })}
         selectedTeamLeads={state.selectedTeamLeads}
-        setSelectedTeamLeads={(v) => setState({ selectedTeamLeads: v, page: 1 })}
+        setSelectedTeamLeads={(v) => setState({ selectedTeamLeads: v })}
         selectedOms={state.selectedOms}
-        setSelectedOms={(v) => setState({ selectedOms: v, page: 1 })}
+        setSelectedOms={(v) => setState({ selectedOms: v })}
         selectedClients={state.selectedClients}
-        setSelectedClients={(v) => setState({ selectedClients: v, page: 1 })}
+        setSelectedClients={(v) => setState({ selectedClients: v })}
         selectedCsms={state.selectedCsms}
-        setSelectedCsms={(v) => setState({ selectedCsms: v, page: 1 })}
+        setSelectedCsms={(v) => setState({ selectedCsms: v })}
+        aomOptions={filters?.aoms}
+        selectedAoms={state.selectedAoms}
+        setSelectedAoms={(v) => setState({ selectedAoms: v })}
       />
 
       {totalsReport.loading ? (
@@ -242,38 +132,14 @@ export default function AttendanceReporting({
         <KpiTiles tiles={tiles} />
       )}
 
-      {showEmptyState ? (
-        <ReportingEmptyState
-          variant={hasAnyFilters ? "filtered" : "no-data"}
-          onClearFilters={hasAnyFilters ? clearFilters : undefined}
-        />
-      ) : (
-        <ReportingTable
-          caption="Attendance by agent"
-          columns={columns}
-          data={rows}
-          loading={summaryReport.loading}
-          rowKey="agent_id"
-          current={summaryReport.data?.page || state.page}
-          pageSize={summaryReport.data?.size || state.size}
-          total={summaryReport.data?.total || 0}
-          sorting={{
-            sort_by: state.sortBy || "attendance_points",
-            sort_order: state.sortOrder || "descend",
-          }}
-          onPageChange={(page) => setState({ page })}
-          onPageSizeChange={(size) => setState({ size, page: 1 })}
-          onSortChange={(field, order) =>
-            setState({
-              sortBy: order ? field : undefined,
-              sortOrder: order || undefined,
-              page: 1,
-            })
-          }
-          fetchCsv={fetchCsv}
-          csvFilenameFallback="attendance_reporting.csv"
-        />
-      )}
+      <Tabs setCurrntActiveTab={setActiveTab}>
+        <Tab data-label="Attendance Overview" labelData="">
+          <AttendanceOverviewSection filters={tabFilters} />
+        </Tab>
+        <Tab data-label="Hubstaff Activity Overview" labelData="">
+          <ActivityOverviewSection filters={tabFilters} />
+        </Tab>
+      </Tabs>
     </div>
   );
 }

@@ -45,6 +45,7 @@ const AGENT_SORTABLE = [
   "messages_sent",
   "tickets_replied",
   "avg_csat",
+  "aom",
 ];
 
 export default function HubDeskReporting({
@@ -64,6 +65,8 @@ export default function HubDeskReporting({
     om_id: scopedIdParam(scope, "om_id", state.selectedOms),
     client_id: scopedIdParam(scope, "client_id", state.selectedClients),
     csm_id: scopedIdParam(scope, "csm_id", state.selectedCsms),
+    // AOM names, not ids — sent through as-is (see reporting.js addParam).
+    aom: state.selectedAoms,
     cadence: state.cadence,
   });
 
@@ -75,6 +78,7 @@ export default function HubDeskReporting({
     state.selectedOms,
     state.selectedClients,
     state.selectedCsms,
+    state.selectedAoms,
     state.cadence,
   ];
 
@@ -124,7 +128,8 @@ export default function HubDeskReporting({
     state.selectedTeamLeads.length ||
     state.selectedOms.length ||
     state.selectedClients.length ||
-    state.selectedCsms.length;
+    state.selectedCsms.length ||
+    state.selectedAoms.length;
 
   const clearFilters = () =>
     setState({
@@ -133,6 +138,7 @@ export default function HubDeskReporting({
       selectedOms: [],
       selectedClients: [],
       selectedCsms: [],
+      selectedAoms: [],
     });
 
   const includesToday =
@@ -163,6 +169,9 @@ export default function HubDeskReporting({
       setSelectedClients={(v) => setState({ selectedClients: v, page: 1 })}
       selectedCsms={state.selectedCsms}
       setSelectedCsms={(v) => setState({ selectedCsms: v, page: 1 })}
+      aomOptions={filters?.aoms}
+      selectedAoms={state.selectedAoms}
+      setSelectedAoms={(v) => setState({ selectedAoms: v, page: 1 })}
       extra={
         <Segmented
           options={CADENCE_OPTIONS}
@@ -389,6 +398,14 @@ export default function HubDeskReporting({
         dataIndex: "operations_manager",
         key: "operations_manager",
         disableSort: true,
+        render: (v) => v ?? "—",
+      },
+      {
+        title: "AOM",
+        dataIndex: "aom",
+        key: "aom",
+        // Nullable — populated for only some agents, not an "issue" to filter.
+        disableSort: !AGENT_SORTABLE.includes("aom"),
         render: (v) => v ?? "—",
       },
       {

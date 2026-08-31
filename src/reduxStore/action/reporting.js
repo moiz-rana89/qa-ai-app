@@ -26,6 +26,9 @@ export const buildReportingParams = (params = {}) => {
   addParam("client_id", params.client_id);
   addParam("client_name", params.client_name);
   addParam("csm_id", params.csm_id);
+  // Carries AOM names, not ids — the backend matches on exact normalized
+  // name, so these must pass through unchanged (no case/whitespace rewrite).
+  addParam("aom", params.aom);
   if (params.page !== undefined) {
     queryParams.page = Math.max(1, params.page);
   }

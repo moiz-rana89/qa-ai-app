@@ -156,6 +156,7 @@ export const PERFORMANCE_COACHING_SOURCE_LABELS = {
 
 export const GROUP_BY_LABELS = {
   agent: "Agent",
+  aom: "AOM",
   team_lead: "Team Lead",
   om: "OM",
   client: "Client",

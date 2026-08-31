@@ -297,26 +297,28 @@ const menuList = [
           "qas",
         ],
       },
-      {
-        title: "Endorsement Report",
-        route: "endorsement-report",
-        roles: [
-          "admin",
-          "dev",
-          "wfa",
-          "om",
-          "som",
-          "aom",
-          "csm",
-          "cstm",
-          "tl",
-          "dtl",
-        ],
-        // Additional fine-grained gate — even if the user's role is in the
-        // `roles` list above, the entry is only shown when their email is
-        // in this allowlist.
-        emails: ENDORSEMENT_REPORT_EMAILS,
-      },
+      // Endorsement Report — hidden from the sidebar for all users.
+      // Uncomment to restore the menu entry.
+      // {
+      //   title: "Endorsement Report",
+      //   route: "endorsement-report",
+      //   roles: [
+      //     "admin",
+      //     "dev",
+      //     "wfa",
+      //     "om",
+      //     "som",
+      //     "aom",
+      //     "csm",
+      //     "cstm",
+      //     "tl",
+      //     "dtl",
+      //   ],
+      //   // Additional fine-grained gate — even if the user's role is in the
+      //   // `roles` list above, the entry is only shown when their email is
+      //   // in this allowlist.
+      //   emails: ENDORSEMENT_REPORT_EMAILS,
+      // },
     ],
   },
   // {
