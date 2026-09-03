@@ -1,5 +1,6 @@
 "use client";
 
+import { useDispatch } from "react-redux";
 import { Segmented } from "antd";
 import { Icon } from "@iconify/react";
 import { Tooltip } from "antd";
@@ -47,6 +48,7 @@ export default function ConsolidatedCountPage({
   state,
   setState,
 }) {
+  const dispatch = useDispatch();
   const buildBaseParams = () => ({
     start_date: state.dateRange?.[0]?.format("YYYY-MM-DD"),
     end_date: state.dateRange?.[1]?.format("YYYY-MM-DD"),
@@ -170,16 +172,18 @@ export default function ConsolidatedCountPage({
   ];
 
   const fetchCsv = (handleResponse) => {
-    breakdownThunk(
-      { ...breakdownParams, csv: true, page: undefined, size: undefined },
-      (success, result) => {
-        if (!success) {
-          toast.error(extractApiError(result, "Failed to export CSV."));
-          handleResponse(false, result);
-          return;
+    dispatch(
+      breakdownThunk(
+        { ...breakdownParams, csv: true, page: undefined, size: undefined },
+        (success, result) => {
+          if (!success) {
+            toast.error(extractApiError(result, "Failed to export CSV."));
+            handleResponse(false, result);
+            return;
+          }
+          handleResponse(true, result);
         }
-        handleResponse(true, result);
-      }
+      )
     );
   };
 

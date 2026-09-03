@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { Segmented, Switch, Tooltip } from "antd";
 import { Icon } from "@iconify/react";
 import dayjs from "dayjs";
@@ -55,6 +56,7 @@ export default function HubDeskReporting({
   state,
   setState,
 }) {
+  const dispatch = useDispatch();
   const [unsupportedDismissed, setUnsupportedDismissed] = useState(false);
 
   const buildBaseParams = () => ({
@@ -279,16 +281,18 @@ export default function HubDeskReporting({
     ];
 
     const fetchCsv = (handleResponse) => {
-      getHubDeskSummary(
-        { ...summaryParams, csv: true, page: undefined, size: undefined },
-        (success, result) => {
-          if (!success) {
-            toast.error(extractApiError(result, "Failed to export CSV."));
-            handleResponse(false, result);
-            return;
+      dispatch(
+        getHubDeskSummary(
+          { ...summaryParams, csv: true, page: undefined, size: undefined },
+          (success, result) => {
+            if (!success) {
+              toast.error(extractApiError(result, "Failed to export CSV."));
+              handleResponse(false, result);
+              return;
+            }
+            handleResponse(true, result);
           }
-          handleResponse(true, result);
-        }
+        )
       );
     };
 
@@ -467,16 +471,18 @@ export default function HubDeskReporting({
     ];
 
     const fetchCsv = (handleResponse) => {
-      getHubDeskBreakdown(
-        { ...breakdownParams, csv: true, page: undefined, size: undefined },
-        (success, result) => {
-          if (!success) {
-            toast.error(extractApiError(result, "Failed to export CSV."));
-            handleResponse(false, result);
-            return;
+      dispatch(
+        getHubDeskBreakdown(
+          { ...breakdownParams, csv: true, page: undefined, size: undefined },
+          (success, result) => {
+            if (!success) {
+              toast.error(extractApiError(result, "Failed to export CSV."));
+              handleResponse(false, result);
+              return;
+            }
+            handleResponse(true, result);
           }
-          handleResponse(true, result);
-        }
+        )
       );
     };
 
