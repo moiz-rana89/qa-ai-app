@@ -1,94 +1,29 @@
 
 export const formTypes = [
   {
-    id: "customer-service-email",
-    title: "Email QA Form",
+    id: "olukai-email-monitoring-form",
+    title: "Email Monitoring Form",
     clientId: 150365,
-    clientName: "Olukai",
+    clientName: "OLUKAI",
     sections: [
       {
-        id: "greeting",
-        title: "GREETING",
+        id: "opening",
+        title: "OPENING",
         questions: [
           {
             id: "A1",
-            label: "Did agent properly greet, thank, and address the customer?",
-            sublabel: "(2 point) (A1)",
-            points: 2,
-            inputType: "checkbox",
-
-            comments: true,
-          },
-          {
-            id: "A2",
-            label: "Did agent acknowledge the customer's concern?",
-            sublabel: "(2 point) (A2)",
-            points: 2,
-            inputType: "checkbox",
-            comments: true,
-          },
-          {
-            id: "A3",
-            label: "Did agent empathize with the customer on their concern(s)?",
-            sublabel: "(2 point) (A3)",
-            points: 2,
-            inputType: "checkbox",
-            comments: true,
-            isOptional: true,
-          },
-          {
-            id: "A4",
-            label: "Did agent use client's Brand Tone during discussion?",
-            sublabel: "(2 point) (A4)",
-            points: 2,
-            inputType: "checkbox",
-            comments: true,
-            isOptional: true,
-          },
-          // {
-          //   id: "A5",
-          //   label: "Not applicable for Brand Tone",
-          //   sublabel: "(2 point) (A5)",
-          //   points: 2,
-          //   inputType: "checkbox",
-          //   comments: true,
-          //   isOptional: true,
-          // },
-          // {
-          //   id: "A6",
-          //   label: "Not applicable for Empathy",
-          //   sublabel: "(2 point) (A6)",
-          //   points: 2,
-          //   inputType: "checkbox",
-          //   comments: true,
-          //   isOptional: true,
-          // },
-        ],
-      },
-      {
-        id: "verification",
-        title: "VERIFICATION",
-        questions: [
-          {
-            id: "B1",
             label:
-              "Did the agent collect and verify all account information details needed to proceed with the process?",
-            sublabel: "(3 point) (B1)",
-            points: 3,
-            inputType: "checkbox",
+              "Opening — all criteria met: used proper brand greeting; addressed customer by name.",
+            sublabel: "(A1)",
+            points: 2.5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.50", label: "2.50" },
+            ],
+            inputType: "select",
             comments: true,
-            isOptional: true,
+            isOptional: false,
           },
-          // {
-          //   id: "B2",
-          //   label:
-          //     "Not Applicable for Customer Verification (Concerns/Issue not related to orders/Generic Question)",
-          //   sublabel: "(3 point) (B2)",
-          //   points: 3,
-          //   inputType: "checkbox",
-          //   comments: true,
-          //   isOptional: true,
-          // },
         ],
       },
       {
@@ -96,169 +31,98 @@ export const formTypes = [
         title: "COMMUNICATION",
         questions: [
           {
-            id: "C1",
+            id: "B1",
             label:
-              "Did we provide effective, clear, and concise communication?",
-            sublabel: "(10 point) (C1)",
+              "Communication — all criteria met: communicated professionally with customer; wrote with a warm, empathetic & professional tone; addressed all questions and concerns raised in the customer's email; restated the issue to confirm understanding.",
+            sublabel: "(B1)",
             points: 10,
-            inputType: "checkbox",
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "10.00", label: "10.00" },
+            ],
+            inputType: "select",
             comments: true,
+            isOptional: false,
           },
         ],
       },
       {
-        id: "follow-client-sop",
-        title: "FOLLOW CLIENT SOP",
+        id: "brand-champion",
+        title: "BRAND CHAMPION",
+        questions: [
+          {
+            id: "C1",
+            label:
+              "Brand Champion — all criteria met: represented brand with enthusiasm; demonstrated strong product knowledge; acted on all sales opportunities; reinforced order with compliment.",
+            sublabel: "(C1)",
+            points: 10,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "10.00", label: "10.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+        ],
+      },
+      {
+        id: "email-management",
+        title: "EMAIL MANAGEMENT",
         questions: [
           {
             id: "D1",
-            label: "Were SOPs located in trainual and followed properly?",
-            sublabel: "(10 point) (D1)",
-            points: 10,
-            inputType: "checkbox",
+            label:
+              "Email Management — all criteria met: response was sent within time/SLA standards; followed escalation & transfer/routing policies; kept it friendly, but controlled; proofread email for spelling, grammar & formatting before sending.",
+            sublabel: "(D1)",
+            points: 15,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "15.00", label: "15.00" },
+            ],
+            inputType: "select",
             comments: true,
+            isOptional: false,
           },
         ],
       },
       {
-        id: "problem-identification",
-        title: "PROBLEM IDENTIFICATION",
+        id: "accuracy-completion",
+        title: "ACCURACY & COMPLETION",
         questions: [
           {
             id: "E1",
             label:
-              "Did we ask relevant, proactive questions when needed (i.e. if travel/moving is mentioned, did we ask for a date to provide the best service)?",
-            sublabel: "(4 point) (E1)",
-            points: 4,
-            inputType: "checkbox",
+              "Accuracy & Completion — all criteria met: took ownership of all concerns, steps, research & follow through; provided correct information; set appropriate customer expectations; completed all steps for interaction; created or updated ticket accurately, used correct tags and wrap up reason; reached outcome that mutually benefited the customer & brand.",
+            sublabel: "(E1)",
+            points: 30,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "30.00", label: "30.00" },
+            ],
+            inputType: "select",
             comments: true,
-            isOptional: true,
+            isOptional: false,
           },
-          // {
-          //   id: "E2",
-          //   label: "Not Applicable as client concern was clear",
-          //   sublabel: "(4 point) (E2)",
-          //   points: 4,
-          //   inputType: "checkbox",
-          //   isOptional: true,
-          // },
         ],
       },
       {
-        id: "resolution",
-        title: "RESOLUTION",
+        id: "first-contact-resolution",
+        title: "1ST CONTACT RESOLUTION",
         questions: [
           {
             id: "F1",
             label:
-              "Did we clearly state what is needed to proceed and what we can offer?",
-            sublabel: "(5 point) (F1)",
-            points: 5,
-            inputType: "checkbox",
+              "Addressed all concerns to prevent an unnecessary follow-up email for the same issue.",
+            sublabel: "(F1)",
+            points: 30,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "30.00", label: "30.00" },
+            ],
+            inputType: "select",
             comments: true,
-          },
-          {
-            id: "F2",
-            label:
-              "Did we explain to the consumer what our next steps will be in assisting them?",
-            sublabel: "(5 point) (F2)",
-            points: 5,
-            inputType: "checkbox",
-            comments: true,
-          },
-          {
-            id: "F3",
-            label: "Correct brand canned action selected and edited as needed",
-            sublabel: "(5 point) (F3)",
-            points: 5,
-            inputType: "checkbox",
-            isOptional: true,
-            comments: true,
-          },
-          {
-            id: "F4",
-            label: "Did we offer options of resolution if possible?",
-            sublabel: "(5 point) (F4)",
-            points: 5,
-            inputType: "checkbox",
-            isOptional: true,
-            comments: true,
-          },
-          {
-            id: "F5",
-            label:
-              "Did we offer a complete resolution? (making sure they hit every concern)",
-            sublabel: "(5 point) (F5)",
-            points: 5,
-            inputType: "checkbox",
-            comments: true,
-          },
-          {
-            id: "F6",
-            label: "Did we go the extra mile?",
-            sublabel: "(5 point) (F6)",
-            points: 5,
-            inputType: "checkbox",
-            comments: true,
-          },
-          {
-            id: "F7",
-            label: "Did the agent go above and beyond to support the customer?",
-            sublabel: "(5 point) (F7)",
-            points: 5,
-            inputType: "checkbox",
-            comments: true,
-          },
-          {
-            id: "F8",
-            label:
-              "Did the agent escalate the concern to client/manager? (If applicable)",
-            sublabel: "(5 point) (F8)",
-            points: 5,
-            inputType: "checkbox",
-            isOptional: true,
-            comments: true,
-          },
-          // {
-          //   id: "F9",
-          //   label:
-          //     "Not Applicable as no macro was used and message was personalized accurately",
-          //   sublabel: "(5 point) (F9)",
-          //   points: 5,
-          //   inputType: "checkbox",
-          //   isOptional: true,
-          // },
-          // {
-          //   id: "F10",
-          //   label:
-          //     "Not Applicable for offering options when solving agent's concern",
-          //   sublabel: "(5 point) (F10)",
-          //   points: 5,
-          //   inputType: "checkbox",
-          //   isOptional: true,
-          // },
-          // {
-          //   id: "F11",
-          //   label: "Not Applicable for Client/Manager Escalation",
-          //   sublabel: "(5 point) (F11)",
-          //   points: 5,
-          //   inputType: "checkbox",
-          //   isOptional: true,
-          // },
-        ],
-      },
-      {
-        id: "grammar",
-        title: "GRAMMAR",
-        questions: [
-          {
-            id: "G1",
-            label:
-              "Did the agent have multiple spelling, capitalization, punctuation mark, excessive spacing, formatting or other grammatical mistakes? (More than 2 instances of these examples is a markdown)",
-            sublabel: "(10 point) (G1)",
-            points: 10,
-            inputType: "checkbox",
-            comments: true,
+            isOptional: false,
           },
         ],
       },
@@ -267,64 +131,18 @@ export const formTypes = [
         title: "CLOSING",
         questions: [
           {
-            id: "H1",
+            id: "G1",
             label:
-              "Did we educate or provide resources to avoid this concern/issue in the future?",
-            sublabel: "(2 point) (H1)",
-            points: 2,
-            inputType: "checkbox",
-            isOptional: true,
+              "Closing — all criteria met: invited the customer to reply if further assistance was needed; thanked customer for contacting OLUKAI.",
+            sublabel: "(G1)",
+            points: 2.5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.50", label: "2.50" },
+            ],
+            inputType: "select",
             comments: true,
-          },
-          {
-            id: "H2",
-            label:
-              "Did the agent offer further assistance and/or ask if concerns were resolved?",
-            sublabel: "(4 point) (H2)",
-            points: 4,
-            inputType: "checkbox",
-            comments: true,
-          },
-          {
-            id: "H3",
-            label:
-              "Did the agent have a personalized closing to the customer communication?",
-            sublabel: "(4 point) (H3)",
-            points: 4,
-            inputType: "checkbox",
-            comments: true,
-          },
-          // {
-          //   id: "H4",
-          //   label: "Not Applicable (No Self-Help Option Required)",
-          //   sublabel: "(2 point) (H4)",
-          //   points: 2,
-          //   inputType: "checkbox",
-          //   isOptional: true,
-          // },
-        ],
-      },
-      {
-        id: "tools-utilization",
-        title: "TOOLS UTILIZATION ",
-        questions: [
-          {
-            id: "I1",
-            label:
-              "Did the agent use the CS Platform tools properly (Tags, Merging, Snooze)",
-            sublabel: "(3 point) (I1)",
-            points: 3,
-            inputType: "checkbox",
-            comments: true,
-          },
-          {
-            id: "I2",
-            label:
-              "Did agent properly leave notes and document the conversation in all applicable channels (Shopify/Gorgias etc)?",
-            sublabel: "(2 point) (I2)",
-            points: 2,
-            inputType: "checkbox",
-            comments: true,
+            isOptional: false,
           },
         ],
       },
@@ -336,22 +154,15 @@ export const formTypes = [
         required: true,
         questions: [
           {
-            id: "opportunities",
-            label: "OPPORTUNITIES",
-            sublabel: "",
-            points: 0,
-            inputType: "textarea",
-          },
-          {
             id: "wins",
-            label: "WINS",
+            label: "THIS IS WHY YOU'RE AWESOME",
             sublabel: "",
             points: 0,
             inputType: "textarea",
           },
           {
             id: "recommendations",
-            label: "RECOMMENDATIONS",
+            label: "ACTIONABLE GOAL FOR FUTURE CONTACTS",
             sublabel: "",
             points: 0,
             inputType: "textarea",
