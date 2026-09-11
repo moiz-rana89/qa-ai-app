@@ -75,9 +75,27 @@ function EvaluateTickets() {
   );
   const [isLoadingAgent, setIsLoadingAgent] = useState(false);
   const [isLoadingTL, setIsLoadingTL] = useState(false);
-  const [selectedOm, setSelectedOm] = useState([]);
-  const [selectedCsm, setSelectedCsm] = useState([]);
-  const [selectedAom, setSelectedAom] = useState([]);
+  // Locked to the logged-in OM's own id, same pattern as selectedQas/selectedTL
+  // above and the attendance pages (RemoteTeamReporting, WFAAttendanceReporting,
+  // etc.) — the OM dropdown is hidden below for this role, so without this the
+  // request would send no operations_manager_id at all and return everyone's data.
+  const [selectedOm, setSelectedOm] = useState(
+    userDetails?.role === "om"
+      ? [{ operations_manager_id: userDetails?.owner_id }]
+      : []
+  );
+  // Same lock, for the logged-in CSM's own id — the CSM dropdown is
+  // hidden below for this role.
+  const [selectedCsm, setSelectedCsm] = useState(
+    userDetails?.role === "csm" ? [{ csm_id: userDetails?.owner_id }] : []
+  );
+  // Same lock, for the logged-in AOM's own id. Note: despite the AOM
+  // dropdown using valueKey="name", the actual API param below reads
+  // item.id (confirmed against RemoteTeamReporting's aomFilters usage),
+  // not item.name — so the lock object must use `id`, not `name`.
+  const [selectedAom, setSelectedAom] = useState(
+    userDetails?.role === "aom" ? [{ id: userDetails?.owner_id }] : []
+  );
   const [isLoadingOm, setIsLoadingOm] = useState(false);
   const [isLoadingCsm, setIsLoadingCsm] = useState(false);
   const [isLoadingAom, setIsLoadingAom] = useState(false);
