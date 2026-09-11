@@ -12611,6 +12611,287 @@ export const formTypes = [
       },
     ],
   },
+
+  // redo 432474
+
+  {
+    id: "redo-agent-qa-scorecard",
+    title: "REDO Agent QA Scorecard",
+    clientId: 432474,
+    clientName: "REDO",
+    sections: [
+      {
+        id: "greeting-personalization",
+        title: "GREETING AND PERSONALIZATION",
+        questions: [
+          {
+            id: "A1",
+            label:
+              "Did the agent greet the customer warmly and use their name if known?",
+            sublabel: "(A1)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "A2",
+            label:
+              "Did the agent acknowledge the customer's situation and respond with empathy, tone, and understanding?",
+            sublabel: "(A2)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "A3",
+            label:
+              "Did the agent fully address all of the customer's questions or concerns in their reply?",
+            sublabel: "(A3)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "A4",
+            label:
+              "Did the agent use available context to personalize the response and demonstrate awareness of the customer's situation?",
+            sublabel: "(A4)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+        ],
+      },
+      {
+        id: "empathy-tone",
+        title: "EMPATHY AND TONE",
+        questions: [
+          {
+            id: "B1",
+            label:
+              "Did the agent maintain a friendly, professional, and engaging tone that aligned with the brand's voice?",
+            sublabel: "(B1)",
+            points: 8,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "8.00", label: "8.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "B2",
+            label:
+              'Did the agent keep the conversation opportunity-focused — never leading with limitations or a "no"?',
+            sublabel: "(B2)",
+            points: 8,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "8.00", label: "8.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "B3",
+            label:
+              "Did the agent demonstrate genuine empathy and care — helping the customer feel heard, supported, and valued?",
+            sublabel: "(B3)",
+            points: 8,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "8.00", label: "8.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+        ],
+      },
+      {
+        id: "knowledge-value-representation",
+        title: "KNOWLEDGE AND VALUE REPRESENTATION",
+        questions: [
+          {
+            id: "C1",
+            label:
+              "Did the agent demonstrate a clear understanding of Recover and Commerce Agent capabilities?",
+            sublabel: "(C1)",
+            points: 12,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "12.00", label: "12.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "C2",
+            label:
+              "Did the agent tailor their response based on the customer's issue and align their guidance accordingly?",
+            sublabel: "(C2)",
+            points: 12,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "12.00", label: "12.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+        ],
+      },
+      {
+        id: "communication",
+        title: "COMMUNICATION",
+        questions: [
+          {
+            id: "D1",
+            label:
+              "Did the agent explain discount information clearly and concisely, avoiding jargon?",
+            sublabel: "(D1)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "D2",
+            label:
+              "Did the agent use correct grammar, spelling, and punctuation throughout the conversation?",
+            sublabel: "(D2)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "D5",
+            label:
+              "Did the agent close the conversation by inviting the customer to place their order or directing them to support?",
+            sublabel: "(D5)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "D7",
+            label:
+              "If the issue wasn't fully resolved, did the agent clearly direct them to support, escalate, or hand off when applicable?",
+            sublabel: "(D7)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+        ],
+      },
+      {
+        id: "slack-awareness",
+        title: "SLACK AWARENESS",
+        questions: [
+          {
+            id: "F1",
+            label:
+              "If there was an active Slack report about this case, did the agent's response reflect awareness of that information?",
+            sublabel: "(F1)",
+            points: 10,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "10.00", label: "10.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "F2",
+            label:
+              "If clarification was needed before responding, did the agent report in Slack and tag the supervisor before sending?",
+            sublabel: "(F2)",
+            points: 10,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "10.00", label: "10.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+        ],
+      },
+    ],
+    extraSections: [
+      {
+        id: "summary-notes",
+        title: "SUMMARY NOTES",
+        required: true,
+        questions: [
+          {
+            id: "opportunities",
+            label: "OPPORTUNITIES",
+            sublabel: "",
+            points: 0,
+            inputType: "textarea",
+          },
+          {
+            id: "wins",
+            label: "WINS",
+            sublabel: "",
+            points: 0,
+            inputType: "textarea",
+          },
+          {
+            id: "recommendations",
+            label: "RECOMMENDATIONS",
+            sublabel: "",
+            points: 0,
+            inputType: "textarea",
+          },
+        ],
+      },
+    ],
+  },
 ];
 export function getFormTypeById(id) {
   return formTypes.find((type) => type.id === id);
