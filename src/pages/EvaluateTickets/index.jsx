@@ -63,13 +63,10 @@ function EvaluateTickets() {
   );
   const [selectedAgents, setSelectedAgents] = useState([]);
   const [selectedTL, setSelectedTL] = useState(
-    userDetails?.role == "admin" ||
-      userDetails?.role == "dev" ||
-      userDetails?.role == "qa" ||
-      userDetails?.role == "qa-tl" ||
-      userDetails?.role == "qa-dm"
-      ? []
-      : userDetails?.role != "qas"
+    // Was `role != "qas"` — true for every non-admin/qa/qas role, so an
+    // OM, CSM, or AOM's own id was being sent as assigned_to_tl too. Only
+    // an actual TL should be locked to their own teamlead_id.
+    userDetails?.role == "tl"
       ? [{ teamlead_id: userDetails?.owner_id }]
       : []
   );
