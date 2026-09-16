@@ -15,6 +15,7 @@ import {
 } from "../../reduxStore/action/evalute";
 import Skeleton from "../../components/Skeleton";
 import { AntDNotification } from "../../components/AntDNotification";
+import { extractApiError } from "../../utils/helperFunctions";
 import { useNavigate } from "react-router-dom";
 export const EvaluteForm = () => {
   // NEW: lifted states that QAForm previously kept
@@ -128,21 +129,24 @@ export const EvaluteForm = () => {
     navigate("/evaluate-tickets");
   }
 
-  const handleTicketSubmitSuccess = (status) => {
+  const handleTicketSubmitSuccess = (status, error) => {
     if (status) {
       AntDNotification({
         status: "success",
         title: "Ticket Submitted",
-        description: "Ticket Submitted successfully",
+        description: "Ticket submitted successfully.",
         duration: 5,
       });
       nextAndRemove();
     } else {
       AntDNotification({
         status: "error",
-        title: "Error Updating Ticket",
-        description: "Failed to submit Ticket, please try again",
-        duration: 5,
+        title: "Submission Failed",
+        description: extractApiError(
+          error,
+          "Failed to submit ticket. Please try again."
+        ),
+        duration: 6,
       });
     }
   };

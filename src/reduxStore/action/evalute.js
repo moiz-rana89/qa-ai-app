@@ -97,18 +97,22 @@ export const getTicketTagsAndAiGradedJson = (ticket_id, client_id) => {
 
 export const submitFormTicket = (params, handle) => {
   return (dispatch) => {
-    try {
-      dispatch(SetSubmitFormTicket(true));
+    dispatch(SetSubmitFormTicket(true));
 
-      const url = `/qa_ai_apis/update-ai-evaluation`;
-      Api.post(url, params).then((resp) => {
+    const url = `/qa_ai_apis/update-ai-evaluation`;
+    Api.post(url, params)
+      .then(() => {
         dispatch(SetSubmitFormTicket(false));
         handle(true);
+      })
+      .catch((error) => {
+        // Api.xhr rejects on non-OK responses — a plain try/catch around
+        // this async call never sees that rejection, so it was silently
+        // swallowed here before: handle(false) never ran and no failure
+        // toast ever showed.
+        console.log("error", error);
+        dispatch(SetSubmitFormTicket(false));
+        handle(false, error);
       });
-    } catch (error) {
-      console.log("error", error);
-      dispatch(SetSubmitFormTicket(false));
-      handle(false);
-    }
   };
 };
