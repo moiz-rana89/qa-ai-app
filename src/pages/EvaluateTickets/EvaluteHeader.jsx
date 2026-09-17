@@ -2,6 +2,7 @@ import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ArrayProgressBar from "../../components/ArrayProgressBar";
+import GenericAntDeleteModal from "../../components/GenericAntDeleteModal";
 import { roundTo } from "../../utils/helperFunctions";
 
 export default function EvaluteHeader({
@@ -21,6 +22,7 @@ export default function EvaluteHeader({
   isLoading,
 }) {
   const navigate = useNavigate();
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const calculateScores = (categories = []) => {
     return categories.reduce(
       (acc, category) => {
@@ -110,12 +112,28 @@ export default function EvaluteHeader({
 
       <div className=" flex items-center gap-4 mr-4">
         <div
-          onClick={() => submit(id)}
-          className=" w-[120px] h-[40px] text-[14px] cursor-pointer font-medium bg-[#69C920] text-white rounded-full flex items-center justify-center "
+          onClick={() => !isLoading && setConfirmOpen(true)}
+          className={`w-[120px] h-[40px] text-[14px] font-medium bg-[#69C920] text-white rounded-full flex items-center justify-center ${
+            isLoading ? "opacity-70 cursor-not-allowed" : "cursor-pointer"
+          }`}
         >
           {isLoading ? "Submitting..." : "Submit"}
         </div>
       </div>
+
+      <GenericAntDeleteModal
+        isOpen={confirmOpen}
+        title="Submit Audit?"
+        message="Are you sure you'd like to submit this audit now?"
+        confirmText="Submit"
+        cancelText="Cancel"
+        isLoading={isLoading}
+        onConfirm={() => {
+          setConfirmOpen(false);
+          submit(id);
+        }}
+        onCancel={() => setConfirmOpen(false)}
+      />
     </div>
   );
 }
