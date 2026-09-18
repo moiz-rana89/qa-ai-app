@@ -43,6 +43,7 @@ import OnboardFromHubspot from "../pages/OnboardFromHubspot";
 import NeedHelpPage from "../pages/NeedHelp";
 import DataIntegrity from "../pages/DataIntegrity";
 import ReportingPage from "../pages/Reporting";
+import QAFormCoveragePage from "../pages/QAFormCoverage";
 // QA Sandbox — temporarily disabled. Uncomment to restore.
 // import SandboxTickets from "../pages/Sandbox/SandboxTickets";
 // import SandboxEvaluate from "../pages/Sandbox/SandboxEvaluate";
@@ -75,6 +76,7 @@ const ROUTE_ROLES = {
     "aom",
   ],
   "qa-settings": ["admin", "dev", "om", "aom", "qa", "qa-dm", "qa-tl"],
+  "qa-form-coverage": ["admin", "dev", "om", "aom", "qa", "qa-dm", "qa-tl"],
   "shadowing-form": [
     "admin",
     "dev",
@@ -715,6 +717,17 @@ export default function AppRouter() {
                   routeRoles={ROUTE_ROLES}
                 >
                   <ReportingPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/qa-form-coverage/*"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["qa-form-coverage"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <QAFormCoveragePage />
                 </ProtectedRoute>
               }
             />

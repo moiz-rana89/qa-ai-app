@@ -23,6 +23,9 @@ const AntDTable = ({
   rowKey,
   sorting,
   onEdit = null,
+  // Override the action-column icon for onEdit — e.g. "mdi:eye-outline"
+  // for a read-only "view details" action instead of the default pencil.
+  editIcon = "lucide:edit",
 }) => {
   // --- Add sorting to columns dynamically ---
   // const enhancedColumns = columns.map((col, index) => ({
@@ -120,7 +123,7 @@ const AntDTable = ({
             className="w-[40px] flex justify-center"
             onClick={() => onEdit(record)}
           >
-            <Icon icon="lucide:edit" color="#69C920" fontSize={20} />
+            <Icon icon={editIcon} color="#69C920" fontSize={20} />
           </div>
         )
       ),

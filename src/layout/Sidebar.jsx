@@ -410,6 +410,11 @@ const menuList = [
         route: "qa-settings",
         roles: ["admin", "dev", "om", "aom", "qa", "qa-dm", "qa-tl"],
       },
+      {
+        title: "QA Form ↔ Client Coverage",
+        route: "qa-form-coverage",
+        roles: ["admin", "dev", "om", "aom", "qa", "qa-dm", "qa-tl"],
+      },
     ],
   },
   {
