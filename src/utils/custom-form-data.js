@@ -12621,18 +12621,18 @@ export const formTypes = [
     clientName: "REDO",
     sections: [
       {
-        id: "greeting-personalization",
-        title: "GREETING AND PERSONALIZATION",
+        id: "customer-engagement",
+        title: "SECTION A: CUSTOMER ENGAGEMENT",
         questions: [
           {
             id: "A1",
             label:
               "Did the agent greet the customer warmly and use their name if known?",
             sublabel: "(A1)",
-            points: 3,
+            points: 5,
             options: [
               { value: "0.00", label: "0.00" },
-              { value: "3.00", label: "3.00" },
+              { value: "5.00", label: "5.00" },
             ],
             inputType: "select",
             comments: true,
@@ -12641,12 +12641,12 @@ export const formTypes = [
           {
             id: "A2",
             label:
-              "Did the agent acknowledge the customer's situation and respond with empathy, tone, and understanding?",
+              "Did the agent appropriately acknowledge the customer's reason for reaching out and demonstrate an understanding of their situation?",
             sublabel: "(A2)",
-            points: 3,
+            points: 5,
             options: [
               { value: "0.00", label: "0.00" },
-              { value: "3.00", label: "3.00" },
+              { value: "5.00", label: "5.00" },
             ],
             inputType: "select",
             comments: true,
@@ -12655,12 +12655,12 @@ export const formTypes = [
           {
             id: "A3",
             label:
-              "Did the agent fully address all of the customer's questions or concerns in their reply?",
+              'Did the agent keep the conversation opportunity-focused — never leading with limitations or a "no"?',
             sublabel: "(A3)",
-            points: 3,
+            points: 5,
             options: [
               { value: "0.00", label: "0.00" },
-              { value: "3.00", label: "3.00" },
+              { value: "5.00", label: "5.00" },
             ],
             inputType: "select",
             comments: true,
@@ -12669,12 +12669,26 @@ export const formTypes = [
           {
             id: "A4",
             label:
-              "Did the agent use available context to personalize the response and demonstrate awareness of the customer's situation?",
+              "Did the agent demonstrate genuine empathy and care, helping the customer feel heard, supported, and valued?",
             sublabel: "(A4)",
-            points: 3,
+            points: 5,
             options: [
               { value: "0.00", label: "0.00" },
-              { value: "3.00", label: "3.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "A5",
+            label:
+              "Did the agent maintain a friendly, professional, and engaging tone aligned with the brand's voice, while using correct grammar, spelling, and punctuation?",
+            sublabel: "(A5)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
             ],
             inputType: "select",
             comments: true,
@@ -12683,18 +12697,18 @@ export const formTypes = [
         ],
       },
       {
-        id: "empathy-tone",
-        title: "EMPATHY AND TONE",
+        id: "context-role-awareness",
+        title: "SECTION B: CONTEXT & ROLE AWARENESS",
         questions: [
           {
             id: "B1",
             label:
-              "Did the agent maintain a friendly, professional, and engaging tone that aligned with the brand's voice?",
+              "Did the agent fully address all of the customer's questions or concerns, providing accurate and relevant guidance that was tailored to the customer's specific issue and circumstances?",
             sublabel: "(B1)",
-            points: 8,
+            points: 6,
             options: [
               { value: "0.00", label: "0.00" },
-              { value: "8.00", label: "8.00" },
+              { value: "6.00", label: "6.00" },
             ],
             inputType: "select",
             comments: true,
@@ -12703,12 +12717,12 @@ export const formTypes = [
           {
             id: "B2",
             label:
-              'Did the agent keep the conversation opportunity-focused — never leading with limitations or a "no"?',
+              "Did the agent demonstrate a clear understanding of Recover and Commerce Agent capabilities?",
             sublabel: "(B2)",
-            points: 8,
+            points: 6,
             options: [
               { value: "0.00", label: "0.00" },
-              { value: "8.00", label: "8.00" },
+              { value: "6.00", label: "6.00" },
             ],
             inputType: "select",
             comments: true,
@@ -12717,12 +12731,12 @@ export const formTypes = [
           {
             id: "B3",
             label:
-              "Did the agent demonstrate genuine empathy and care — helping the customer feel heard, supported, and valued?",
+              "Did the agent review the conversation and provide a relevant follow-up based on the customer's previous messages, concerns, and overall context?",
             sublabel: "(B3)",
-            points: 8,
+            points: 6,
             options: [
               { value: "0.00", label: "0.00" },
-              { value: "8.00", label: "8.00" },
+              { value: "6.00", label: "6.00" },
             ],
             inputType: "select",
             comments: true,
@@ -12731,110 +12745,28 @@ export const formTypes = [
         ],
       },
       {
-        id: "knowledge-value-representation",
-        title: "KNOWLEDGE AND VALUE REPRESENTATION",
+        id: "resolution-next-step",
+        title: "SECTION C: RESOLUTION & NEXT STEP",
         questions: [
           {
             id: "C1",
             label:
-              "Did the agent demonstrate a clear understanding of Recover and Commerce Agent capabilities?",
+              "Did the agent provide the correct discount amount/offer, applicable discount code and link, explain the relevant conditions (validity period, minimum spend, exclusions, if needed), and invite the customer to place the order?",
             sublabel: "(C1)",
-            points: 12,
+            points: 16,
             options: [
               { value: "0.00", label: "0.00" },
-              { value: "12.00", label: "12.00" },
+              { value: "16.00", label: "16.00" },
             ],
             inputType: "select",
             comments: true,
-            isOptional: false,
+            isOptional: true,
           },
           {
             id: "C2",
             label:
-              "Did the agent tailor their response based on the customer's issue and align their guidance accordingly?",
+              "Did the agent share the cart link — or the landing page if no cart or checkout link exists — invite the customer to place the order, or remind them to complete checkout?",
             sublabel: "(C2)",
-            points: 12,
-            options: [
-              { value: "0.00", label: "0.00" },
-              { value: "12.00", label: "12.00" },
-            ],
-            inputType: "select",
-            comments: true,
-            isOptional: false,
-          },
-        ],
-      },
-      {
-        id: "communication",
-        title: "COMMUNICATION",
-        questions: [
-          {
-            id: "D1",
-            label:
-              "Did the agent explain discount information clearly and concisely, avoiding jargon?",
-            sublabel: "(D1)",
-            points: 5,
-            options: [
-              { value: "0.00", label: "0.00" },
-              { value: "5.00", label: "5.00" },
-            ],
-            inputType: "select",
-            comments: true,
-            isOptional: false,
-          },
-          {
-            id: "D2",
-            label:
-              "Did the agent use correct grammar, spelling, and punctuation throughout the conversation?",
-            sublabel: "(D2)",
-            points: 5,
-            options: [
-              { value: "0.00", label: "0.00" },
-              { value: "5.00", label: "5.00" },
-            ],
-            inputType: "select",
-            comments: true,
-            isOptional: false,
-          },
-          {
-            id: "D5",
-            label:
-              "Did the agent close the conversation by inviting the customer to place their order or directing them to support?",
-            sublabel: "(D5)",
-            points: 5,
-            options: [
-              { value: "0.00", label: "0.00" },
-              { value: "5.00", label: "5.00" },
-            ],
-            inputType: "select",
-            comments: true,
-            isOptional: false,
-          },
-          {
-            id: "D7",
-            label:
-              "If the issue wasn't fully resolved, did the agent clearly direct them to support, escalate, or hand off when applicable?",
-            sublabel: "(D7)",
-            points: 5,
-            options: [
-              { value: "0.00", label: "0.00" },
-              { value: "5.00", label: "5.00" },
-            ],
-            inputType: "select",
-            comments: true,
-            isOptional: false,
-          },
-        ],
-      },
-      {
-        id: "slack-awareness",
-        title: "SLACK AWARENESS",
-        questions: [
-          {
-            id: "F1",
-            label:
-              "If there was an active Slack report about this case, did the agent's response reflect awareness of that information?",
-            sublabel: "(F1)",
             points: 10,
             options: [
               { value: "0.00", label: "0.00" },
@@ -12845,14 +12777,68 @@ export const formTypes = [
             isOptional: true,
           },
           {
-            id: "F2",
+            id: "C3",
             label:
-              "If clarification was needed before responding, did the agent report in Slack and tag the supervisor before sending?",
-            sublabel: "(F2)",
+              "If the issue wasn't fully resolved, did the agent clearly direct the customer to support, escalate, or hand off when applicable?",
+            sublabel: "(C3)",
             points: 10,
             options: [
               { value: "0.00", label: "0.00" },
               { value: "10.00", label: "10.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+        ],
+      },
+      {
+        id: "internal-process",
+        title: "SECTION D: INTERNAL PROCESS",
+        questions: [
+          {
+            id: "D1",
+            label:
+              "If there was an active Slack report about this case, did the agent's response reflect awareness of that information?",
+            sublabel: "(D1)",
+            points: 7,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "7.00", label: "7.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "D2",
+            label:
+              "If clarification was needed before responding, did the agent report in Slack and tag the supervisor before sending?",
+            sublabel: "(D2)",
+            points: 7,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "7.00", label: "7.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+        ],
+      },
+      {
+        id: "compliance",
+        title: "SECTION E: COMPLIANCE",
+        questions: [
+          {
+            id: "E1",
+            label:
+              "Did the agent correctly identify and honor customer opt-out requests, and opt out following the 4-SMS limit rule?",
+            sublabel: "(E1)",
+            points: 7,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "7.00", label: "7.00" },
             ],
             inputType: "select",
             comments: true,
