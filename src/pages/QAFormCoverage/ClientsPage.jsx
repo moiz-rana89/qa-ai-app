@@ -1,17 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Input, Tag, Tooltip } from "antd";
 import { Icon } from "@iconify/react";
 
-import {
-  getAssignedClients,
-  getUnassignedClients,
-} from "../../reduxStore/action/qaFormCoverage";
+import { getAssignedClients } from "../../reduxStore/action/qaFormCoverage";
 import { formatCount } from "./helpers";
 import useApiRequest from "./hooks/useApiRequest";
+import useDebouncedSearch from "./hooks/useDebouncedSearch";
 import CoverageFiltersBar from "./components/CoverageFiltersBar";
+import UnassignedClientsTable from "./components/UnassignedClientsTable";
 import AntDTable from "../../components/AntDTable";
 import GenericAntdTabs from "../../components/GenericAntdTabs";
 
@@ -86,27 +85,6 @@ export default function QAFormClientsPage() {
   );
 }
 
-// Shared search-box behavior — debounced 300ms per the spec, resets to
-// page 1 on every committed change.
-function useDebouncedSearch(setPage) {
-  const [searchInput, setSearchInput] = useState("");
-  const [searchFilter, setSearchFilter] = useState("");
-
-  useEffect(() => {
-    const handle = setTimeout(() => {
-      const trimmed = searchInput.trim();
-      if (trimmed !== searchFilter) {
-        setSearchFilter(trimmed);
-        setPage(1);
-      }
-    }, 300);
-    return () => clearTimeout(handle);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchInput]);
-
-  return { searchInput, setSearchInput, searchFilter };
-}
-
 function AssignedClientsTable({ formType, includeArchivedForms }) {
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(20);
@@ -165,86 +143,6 @@ function AssignedClientsTable({ formType, includeArchivedForms }) {
           </div>
         );
       },
-    },
-  ];
-
-  return (
-    <div>
-      <Input
-        placeholder="Search client name"
-        value={searchInput}
-        onChange={(e) => setSearchInput(e.target.value)}
-        allowClear
-        prefix={<Icon icon="material-symbols:search-rounded" fontSize={16} />}
-        style={{ width: 260, height: 38, borderRadius: 20, marginBottom: 12 }}
-      />
-      <AntDTable
-        columns={columns}
-        data={report.data?.data || []}
-        loading={report.loading}
-        rowKey="client_id"
-        pagination={true}
-        current={report.data?.pagination?.currentPage || page}
-        pageSize={report.data?.pagination?.pageSize || size}
-        total={report.data?.pagination?.totalRecords || 0}
-        onPageChange={setPage}
-        onPageSizeChange={(s) => {
-          setSize(s);
-          setPage(1);
-        }}
-      />
-    </div>
-  );
-}
-
-function UnassignedClientsTable({ formType, includeArchivedForms }) {
-  const [page, setPage] = useState(1);
-  const [size, setSize] = useState(20);
-  const { searchInput, setSearchInput, searchFilter } = useDebouncedSearch(setPage);
-
-  const params = {
-    form_type: [formType],
-    include_archived_forms: includeArchivedForms,
-    search: searchFilter,
-    page,
-    size,
-  };
-
-  const report = useApiRequest(getUnassignedClients, params, true, [
-    formType,
-    includeArchivedForms,
-    searchFilter,
-    page,
-    size,
-  ]);
-
-  const columns = [
-    {
-      title: "Client Name",
-      dataIndex: "client_name",
-      key: "client_name",
-      disableSort: true,
-    },
-    {
-      title: "Helpdesk Client ID",
-      dataIndex: "helpdesk_client_id",
-      key: "helpdesk_client_id",
-      disableSort: true,
-      render: (v) => v || <span className="text-[#7F8A92]">—</span>,
-    },
-    {
-      title: "Helpdesk",
-      dataIndex: "cs_helpdesk",
-      key: "cs_helpdesk",
-      disableSort: true,
-      render: (v) => v || <span className="text-[#7F8A92]">—</span>,
-    },
-    {
-      title: "CSM",
-      dataIndex: "csm",
-      key: "csm",
-      disableSort: true,
-      render: (v) => v || <span className="text-[#7F8A92]">—</span>,
     },
   ];
 

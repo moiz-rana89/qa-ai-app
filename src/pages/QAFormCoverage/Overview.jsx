@@ -21,6 +21,7 @@ import {
 import useApiRequest from "./hooks/useApiRequest";
 import CoverageFiltersBar from "./components/CoverageFiltersBar";
 import FormDetailDrawer from "./components/FormDetailDrawer";
+import UnassignedClientsTable from "./components/UnassignedClientsTable";
 import AntDTable from "../../components/AntDTable";
 import GenericAntdTabs from "../../components/GenericAntdTabs";
 import Skeleton from "../../components/Skeleton";
@@ -111,6 +112,16 @@ export default function QAFormCoverageOverview() {
       <GenericAntdTabs
         defaultActiveKey="client-count"
         items={[
+          {
+            key: "unassigned-clients",
+            label: "Unassigned Clients",
+            content: (
+              <UnassignedClientsTable
+                formType={formType}
+                includeArchivedForms={includeArchivedForms}
+              />
+            ),
+          },
           {
             key: "client-count",
             label: "Forms by Client Count",
