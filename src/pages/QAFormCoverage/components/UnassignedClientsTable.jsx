@@ -63,6 +63,20 @@ export default function UnassignedClientsTable({ formType, includeArchivedForms 
       disableSort: true,
       render: (v) => v || <span className="text-[#7F8A92]">—</span>,
     },
+    {
+      title: "Team Lead",
+      dataIndex: "team_lead",
+      key: "team_lead",
+      disableSort: true,
+      render: (v) => v || <span className="text-[#7F8A92]">—</span>,
+    },
+    {
+      title: "OM",
+      dataIndex: "operations_manager",
+      key: "operations_manager",
+      disableSort: true,
+      render: (v) => v || <span className="text-[#7F8A92]">—</span>,
+    },
   ];
 
   return (
