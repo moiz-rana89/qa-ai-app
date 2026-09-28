@@ -5,6 +5,7 @@ import { formatCount, humanizeMetric } from "./helpers";
 import useApiRequest from "./hooks/useApiRequest";
 import AntDTable from "../../components/AntDTable";
 import Skeleton from "../../components/Skeleton";
+import renderGenericValue from "./components/renderGenericValue";
 
 // Screen D — what could NOT be evaluated (token unhealthy, thin hours
 // data, not synced, tier defaulted). Framed as "not measured" so an
@@ -26,7 +27,7 @@ export default function TriageGapsPage() {
     dataIndex: key,
     key,
     disableSort: true,
-    render: (v) => (Array.isArray(v) ? v.join(", ") : String(v ?? "—")),
+    render: (v) => renderGenericValue(v),
   }));
 
   return (

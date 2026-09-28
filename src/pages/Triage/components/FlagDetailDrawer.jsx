@@ -23,6 +23,7 @@ import useApiRequest from "../hooks/useApiRequest";
 import Skeleton from "../../../components/Skeleton";
 import ResolveFlagModal from "./ResolveFlagModal";
 import DismissFlagModal from "./DismissFlagModal";
+import renderGenericValue from "./renderGenericValue";
 
 const { TextArea } = Input;
 
@@ -73,9 +74,7 @@ function GenericEvidence({ evidence }) {
       {entries.map(([key, value]) => (
         <div key={key} className="bg-[#F8FAFA] rounded-[10px] p-2">
           <div className="text-[11px] text-[#7F8A92]">{humanizeMetric(key)}</div>
-          <div className="text-[13px] text-[#163143]">
-            {Array.isArray(value) ? value.join(", ") : String(value)}
-          </div>
+          <div className="text-[13px] text-[#163143]">{renderGenericValue(value)}</div>
         </div>
       ))}
     </div>
