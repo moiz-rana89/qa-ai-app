@@ -10,6 +10,7 @@ import {
   formatMetricValue,
   signalLabel,
 } from "../helpers";
+import renderGenericValue from "./renderGenericValue";
 
 // Card anatomy per the spec: badge + colored left border, title, meta
 // line, three metric tiles, a "Do next" box (hidden entirely when
@@ -24,7 +25,10 @@ export default function FlagCard({ flag, onOpenDetail, onMarkResolved }) {
   const tiles = [
     {
       value: formatMetricValue(flag.metric, flag.actual_value),
-      caption: flag.window_label || "Actual",
+      caption:
+        typeof flag.window_label === "string" && flag.window_label
+          ? flag.window_label
+          : "Actual",
     },
     {
       value: formatMetricValue(flag.metric, flag.target_value),
@@ -65,7 +69,7 @@ export default function FlagCard({ flag, onOpenDetail, onMarkResolved }) {
         </div>
 
         <div className="text-[15px] font-semibold text-[#163143]">
-          {flag.title}
+          {renderGenericValue(flag.title)}
         </div>
         <div className="text-[12px] text-[#7F8A92] mb-3">
           {[flag.client_name, flag.agent_name, flag.channel_family]
@@ -90,7 +94,7 @@ export default function FlagCard({ flag, onOpenDetail, onMarkResolved }) {
               DO NEXT
             </div>
             <div className="text-[13px] text-[#163143]">
-              {flag.recommended_action}
+              {renderGenericValue(flag.recommended_action)}
             </div>
           </div>
         )}
@@ -109,7 +113,7 @@ export default function FlagCard({ flag, onOpenDetail, onMarkResolved }) {
           </div>
           {flag.team_lead && (
             <div className="text-[11px] text-[#7F8A92] mt-2">
-              Owner: {flag.team_lead}
+              Owner: {renderGenericValue(flag.team_lead)}
             </div>
           )}
         </div>

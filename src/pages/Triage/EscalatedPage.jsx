@@ -8,6 +8,7 @@ import { escalationLevelLabel, formatCount, signalLabel } from "./helpers";
 import useApiRequest from "./hooks/useApiRequest";
 import AntDTable from "../../components/AntDTable";
 import Skeleton from "../../components/Skeleton";
+import renderGenericValue from "./components/renderGenericValue";
 
 // Screen C — flags that went cold (escalated past the TL), plus rollups
 // by team lead and by client. Deliberately not the raw firehose — just
@@ -30,15 +31,33 @@ export default function TriageEscalatedPage() {
       disableSort: true,
       render: (v) => <Tag>{signalLabel(v)}</Tag>,
     },
-    { title: "Title", dataIndex: "title", key: "title", disableSort: true },
-    { title: "Client", dataIndex: "client_name", key: "client_name", disableSort: true },
-    { title: "Agent", dataIndex: "agent_name", key: "agent_name", disableSort: true },
+    {
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
+      disableSort: true,
+      render: (v) => renderGenericValue(v),
+    },
+    {
+      title: "Client",
+      dataIndex: "client_name",
+      key: "client_name",
+      disableSort: true,
+      render: (v) => renderGenericValue(v),
+    },
+    {
+      title: "Agent",
+      dataIndex: "agent_name",
+      key: "agent_name",
+      disableSort: true,
+      render: (v) => renderGenericValue(v),
+    },
     {
       title: "Team Lead",
       dataIndex: "team_lead",
       key: "team_lead",
       disableSort: true,
-      render: (v) => v || <span className="text-[#7F8A92]">—</span>,
+      render: (v) => (v ? renderGenericValue(v) : <span className="text-[#7F8A92]">—</span>),
     },
     {
       title: "Escalation",

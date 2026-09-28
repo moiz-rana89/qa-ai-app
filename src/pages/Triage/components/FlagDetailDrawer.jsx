@@ -143,7 +143,7 @@ export default function FlagDetailDrawer({ flagId, open, onClose, onChanged }) {
 
   return (
     <Drawer
-      title={flag?.title || "Flag Details"}
+      title={flag?.title ? renderGenericValue(flag.title) : "Flag Details"}
       open={open}
       onClose={onClose}
       width={640}
@@ -178,7 +178,9 @@ export default function FlagDetailDrawer({ flagId, open, onClose, onChanged }) {
             <div className="mb-2 text-[13px] font-semibold text-[#163143]">
               Summary
             </div>
-            <div className="text-[13px] text-[#163143] mb-4">{flag.summary}</div>
+            <div className="text-[13px] text-[#163143] mb-4">
+              {renderGenericValue(flag.summary)}
+            </div>
 
             {flag.recommended_action && (
               <div className="bg-[#F1F5F5] rounded-[10px] p-3 mb-4">
@@ -186,7 +188,7 @@ export default function FlagDetailDrawer({ flagId, open, onClose, onChanged }) {
                   DO NEXT
                 </div>
                 <div className="text-[13px] text-[#163143]">
-                  {flag.recommended_action}
+                  {renderGenericValue(flag.recommended_action)}
                 </div>
               </div>
             )}
@@ -272,7 +274,7 @@ export default function FlagDetailDrawer({ flagId, open, onClose, onChanged }) {
                         )}
                       </div>
                       {ev.detail && (
-                        <div className="text-[#7F8A92]">{ev.detail}</div>
+                        <div className="text-[#7F8A92]">{renderGenericValue(ev.detail)}</div>
                       )}
                       <div className="text-[11px] text-[#9CA3AF]">
                         {formatDateTimeEnglish(ev.created_at)}
@@ -289,7 +291,7 @@ export default function FlagDetailDrawer({ flagId, open, onClose, onChanged }) {
             <div className="mb-3 space-y-2">
               {(flag.notes || []).map((n) => (
                 <div key={n.id} className="bg-[#F8FAFA] rounded-[10px] p-2">
-                  <div className="text-[13px] text-[#163143]">{n.body}</div>
+                  <div className="text-[13px] text-[#163143]">{renderGenericValue(n.body)}</div>
                   <div className="text-[11px] text-[#9CA3AF]">
                     {n.created_by} · {formatDateTimeEnglish(n.created_at)}
                   </div>
@@ -317,7 +319,7 @@ export default function FlagDetailDrawer({ flagId, open, onClose, onChanged }) {
               <Tooltip title="Source and rule-set version this flag was evaluated against.">
                 <Icon icon="mdi:information-outline" fontSize={13} />
               </Tooltip>
-              {flag.sla_source} · {flag.config_version}
+              {renderGenericValue(flag.sla_source)} · {renderGenericValue(flag.config_version)}
             </div>
           </div>
         )}
