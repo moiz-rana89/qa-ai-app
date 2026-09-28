@@ -155,19 +155,19 @@ export default function TriageFeed() {
         </button>
         {accounts.map((c) => (
           <button
-            key={c.id ?? c.value ?? c}
+            key={c.account}
             type="button"
             onClick={() => {
-              setAccount(c.value ?? c.id ?? c);
+              setAccount(c.account);
               setPage(1);
             }}
             className={`text-[12px] px-3 py-1 rounded-full border ${
-              account === (c.value ?? c.id ?? c)
+              account === c.account
                 ? "bg-[#163143] text-white border-[#163143]"
                 : "border-[#D7E6E7] text-[#163143] hover:border-[#69C920]"
             }`}
           >
-            {c.label ?? c.name ?? c}
+            {c.client_name}
           </button>
         ))}
       </div>
@@ -184,8 +184,8 @@ export default function TriageFeed() {
           >
             <option value="">All team leads</option>
             {teamLeads.map((tl) => (
-              <option key={tl.id ?? tl.value} value={tl.id ?? tl.value}>
-                {tl.label ?? tl.name}
+              <option key={tl.team_lead_id} value={tl.team_lead_id}>
+                {tl.team_lead}
               </option>
             ))}
           </select>
