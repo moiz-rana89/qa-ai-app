@@ -368,6 +368,39 @@ const menuList = [
     ],
   },
   {
+    title: "Triage",
+    icon: "mdi:alert-decagram-outline",
+    route: "triage",
+    roles: ["admin", "dev", "tl", "dtl", "om", "som", "aom"],
+    submenu: [
+      {
+        title: "My Triage Feed",
+        route: "triage",
+        roles: ["admin", "dev", "tl", "dtl", "om", "som", "aom"],
+      },
+      {
+        title: "OM Portfolio",
+        route: "triage/escalated",
+        roles: ["admin", "dev", "om", "som", "aom"],
+      },
+      {
+        title: "Coverage Gaps",
+        route: "triage/gaps",
+        roles: ["admin", "dev", "om", "som", "aom"],
+      },
+      {
+        title: "SLA Reference",
+        route: "triage/sla-reference",
+        roles: ["admin", "dev", "tl", "dtl", "om", "som", "aom"],
+      },
+      {
+        title: "Playbook",
+        route: "triage/playbook",
+        roles: ["admin", "dev", "om", "som", "aom"],
+      },
+    ],
+  },
+  {
     title: "Quality Assurance",
     icon: "icon-park-outline:success",
     route: "quality-assurance",

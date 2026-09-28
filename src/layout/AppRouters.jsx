@@ -44,6 +44,7 @@ import NeedHelpPage from "../pages/NeedHelp";
 import DataIntegrity from "../pages/DataIntegrity";
 import ReportingPage from "../pages/Reporting";
 import QAFormCoveragePage from "../pages/QAFormCoverage";
+import TriagePage from "../pages/Triage";
 // QA Sandbox — temporarily disabled. Uncomment to restore.
 // import SandboxTickets from "../pages/Sandbox/SandboxTickets";
 // import SandboxEvaluate from "../pages/Sandbox/SandboxEvaluate";
@@ -77,6 +78,7 @@ const ROUTE_ROLES = {
   ],
   "qa-settings": ["admin", "dev", "om", "aom", "qa", "qa-dm", "qa-tl"],
   "qa-form-coverage": ["admin", "dev", "om", "aom", "qa", "qa-dm", "qa-tl"],
+  "triage": ["admin", "dev", "tl", "dtl", "om", "som", "aom"],
   "shadowing-form": [
     "admin",
     "dev",
@@ -728,6 +730,17 @@ export default function AppRouter() {
                   routeRoles={ROUTE_ROLES}
                 >
                   <QAFormCoveragePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/triage/*"
+              element={
+                <ProtectedRoute
+                  requiredRoles={ROUTE_ROLES["triage"]}
+                  routeRoles={ROUTE_ROLES}
+                >
+                  <TriagePage />
                 </ProtectedRoute>
               }
             />
