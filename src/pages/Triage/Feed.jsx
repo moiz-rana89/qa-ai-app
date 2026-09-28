@@ -16,6 +16,7 @@ import FlagCard from "./components/FlagCard";
 import FlagDetailDrawer from "./components/FlagDetailDrawer";
 import ResolveFlagModal from "./components/ResolveFlagModal";
 import Skeleton from "../../components/Skeleton";
+import UnifiedDropdown from "../../components/Dropdown/UnifiedDropdown";
 
 const COUNTER_TILES = [
   { key: "today", label: "Act today" },
@@ -38,8 +39,8 @@ export default function TriageFeed() {
   useTick(60000);
 
   const [urgencyFilter, setUrgencyFilter] = useState(null);
-  const [account, setAccount] = useState(null);
-  const [selectedTL, setSelectedTL] = useState(null);
+  const [selectedAccount, setSelectedAccount] = useState([]);
+  const [selectedTeamLead, setSelectedTeamLead] = useState([]);
   const [page, setPage] = useState(1);
   const [size] = useState(25);
   const [openFlagId, setOpenFlagId] = useState(null);
@@ -48,17 +49,20 @@ export default function TriageFeed() {
   const filtersReport = useApiRequest(getTriageFilters, {}, true, []);
   const summaryReport = useApiRequest(getTriageSummary, {}, true, []);
 
+  const account = selectedAccount[0]?.account;
+  const teamLeadId = selectedTeamLead[0]?.team_lead_id;
+
   const feedParams = {
     urgency: urgencyFilter ? [urgencyFilter] : undefined,
     account: account ? [account] : undefined,
-    team_lead_id: selectedTL || undefined,
+    team_lead_id: teamLeadId || undefined,
     page,
     size,
   };
   const feedReport = useApiRequest(getTriageFeed, feedParams, true, [
     urgencyFilter,
     account,
-    selectedTL,
+    teamLeadId,
     page,
     size,
   ]);
@@ -102,7 +106,9 @@ export default function TriageFeed() {
         </span>
       </div>
       <div className="text-[12px] text-[#7F8A92] mb-4">
-        {account ? `Account: ${account}` : "All your accounts"}
+        {selectedAccount[0]?.client_name
+          ? `Account: ${selectedAccount[0].client_name}`
+          : "All your accounts"}
         {lastRunAt && <> · Last run: {formatDateTimeEnglish(lastRunAt)}</>}
       </div>
 
@@ -138,59 +144,43 @@ export default function TriageFeed() {
         </div>
       )}
 
-      <div className="flex flex-wrap gap-2 mb-2">
-        <button
-          type="button"
-          onClick={() => {
-            setAccount(null);
+      <div className="flex flex-wrap items-center gap-3 mb-4">
+        <UnifiedDropdown
+          placeholder="Search accounts"
+          name="Account"
+          data={accounts}
+          isLoading={filtersReport.loading}
+          selectedList={selectedAccount}
+          setselectedList={(v) => {
+            setSelectedAccount(v);
             setPage(1);
           }}
-          className={`text-[12px] px-3 py-1 rounded-full border ${
-            !account
-              ? "bg-[#163143] text-white border-[#163143]"
-              : "border-[#D7E6E7] text-[#163143] hover:border-[#69C920]"
-          }`}
-        >
-          All accounts
-        </button>
-        {accounts.map((c) => (
-          <button
-            key={c.account}
-            type="button"
-            onClick={() => {
-              setAccount(c.account);
-              setPage(1);
-            }}
-            className={`text-[12px] px-3 py-1 rounded-full border ${
-              account === c.account
-                ? "bg-[#163143] text-white border-[#163143]"
-                : "border-[#D7E6E7] text-[#163143] hover:border-[#69C920]"
-            }`}
-          >
-            {c.client_name}
-          </button>
-        ))}
-      </div>
+          multiSelect={false}
+          displayKey="client_name"
+          valueKey="account"
+          searchKeys={["client_name"]}
+          className="h-9 border-[#d9d9d9] bg-white"
+        />
 
-      {scope?.unrestricted && teamLeads.length > 0 && (
-        <div className="mb-4">
-          <select
-            value={selectedTL || ""}
-            onChange={(e) => {
-              setSelectedTL(e.target.value || null);
+        {scope?.unrestricted && teamLeads.length > 0 && (
+          <UnifiedDropdown
+            placeholder="Search team leads"
+            name="Team Lead"
+            data={teamLeads}
+            isLoading={filtersReport.loading}
+            selectedList={selectedTeamLead}
+            setselectedList={(v) => {
+              setSelectedTeamLead(v);
               setPage(1);
             }}
-            className="h-9 rounded-full border border-[#d9d9d9] px-3 text-[13px]"
-          >
-            <option value="">All team leads</option>
-            {teamLeads.map((tl) => (
-              <option key={tl.team_lead_id} value={tl.team_lead_id}>
-                {tl.team_lead}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
+            multiSelect={false}
+            displayKey="team_lead"
+            valueKey="team_lead_id"
+            searchKeys={["team_lead"]}
+            className="h-9 border-[#d9d9d9] bg-white"
+          />
+        )}
+      </div>
 
       {feedReport.loading ? (
         <Skeleton className="w-full h-[50vh]" rounded="rounded-[16px]" />
