@@ -150,7 +150,12 @@ export default function FlagDetailDrawer({ flagId, open, onClose, onChanged }) {
       width={640}
     >
       <div className="px-6 py-6">
-        {report.loading ? (
+        {/* !flag is the important guard here, not just report.loading —
+            on first render (or while the drawer is closed and its fetch
+            is inactive) loading is still false and data is still null at
+            the same time, so checking loading alone fell through to the
+            "flag is ready" branch and crashed reading flag.signal. */}
+        {report.loading || !flag ? (
           <Skeleton className="w-full h-[60vh]" rounded="rounded-[16px]" />
         ) : report.error ? (
           <div className="bg-[#F8FAFA] rounded-[16px] border border-[#D7E6E7] p-6 text-center text-[#7F8A92]">

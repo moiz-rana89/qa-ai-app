@@ -38,7 +38,7 @@ export default function FormDetailDrawer({ formId, open, onClose }) {
           the body itself can never win that fight, so the padding lives
           on this wrapper div instead, one level inside the body. */}
       <div className="px-6 py-6">
-      {report.loading ? (
+      {report.loading || !form ? (
         <Skeleton className="w-full h-[60vh]" rounded="rounded-[16px]" />
       ) : notFound || report.error ? (
         <div className="bg-[#F8FAFA] rounded-[16px] border border-[#D7E6E7] p-6 text-center text-[#7F8A92]">
