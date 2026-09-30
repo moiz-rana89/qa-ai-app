@@ -178,7 +178,7 @@ const ROUTE_ROLES = {
     "dtl",
     "qas",
   ],
-  "custom-monitoring-form": ["admin", "dev", "dtl", "om", "aom", "tl"],
+  "custom-monitoring-form": ["admin", "dev", "dtl", "om", "aom", "tl", "qas"],
   "other-coaching-types": [
     "om",
     "som",
