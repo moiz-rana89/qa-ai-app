@@ -155,6 +155,7 @@ const menuList = [
       "aom",
       "dtl",
       "qas",
+      "qa-dm",
     ],
     submenu: [
       {
@@ -211,7 +212,7 @@ const menuList = [
       {
         title: "Client Specific Forms",
         route: "custom-monitoring-form",
-        roles: ["admin", "dev", "dtl", "om", "aom", "tl", "qas", "qa-dm"],
+        roles: ["admin", "dev", "dtl", "om", "aom", "tl", "qas", "qa-dm", "qa-tl"],
       },
       {
         title: "Client Bonus Request Form",
