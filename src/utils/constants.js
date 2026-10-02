@@ -106,6 +106,7 @@ export const ATT_REASONS = [
   "Unresponded",
   "Power Interruption",
   "Woke Up Late",
+  "Critical Work Day",
   "Others",
   "Agent in live training",
   "On Time", // not        valid
@@ -424,6 +425,14 @@ Power interruption, a raised ticket on any electric company or proof that there'
     reason: "Woke Up Late",
     validity: "INVALID",
     description: "When agent wakes up late and was not able to log in on time",
+    fileReqMessage: "",
+    isFileReq: false,
+  },
+  {
+    reason: "Critical Work Day",
+    validity: "INVALID",
+    description:
+      "Member is absent on a critical workday. Critical Work Days are recurring periods when attendance is particularly important due to anticipated high business demand.",
     fileReqMessage: "",
     isFileReq: false,
   },
