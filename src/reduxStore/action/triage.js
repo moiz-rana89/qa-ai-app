@@ -47,10 +47,21 @@ const makePostThunk = (buildRoute) => {
   };
 };
 
+const makePatchThunk = (buildRoute) => {
+  return (params = {}, body, handleResponse) => {
+    return () => {
+      Api.patch(buildRoute(params), body)
+        .then(({ data }) => handleResponse?.(true, data))
+        .catch((err) => handleResponse?.(false, err));
+    };
+  };
+};
+
 // --- Reads ---
 
-export const getTriageFeed = makeGetThunk((params) => ({
-  route: `${BASE}/feed`,
+// v3 primary screen — agent-grouped, replaces the old flag-grouped /feed.
+export const getTriageAgents = makeGetThunk((params) => ({
+  route: `${BASE}/agents`,
   query: buildParams(params),
 }));
 
@@ -84,37 +95,43 @@ export const getTriageConfig = makeGetThunk(() => ({
   query: {},
 }));
 
-export const getTriageOverrides = makeGetThunk((params) => ({
-  route: `${BASE}/overrides`,
-  query: buildParams(params),
-}));
-
-export const getTriagePlaybook = makeGetThunk(() => ({
-  route: `${BASE}/playbook`,
+export const getAgentRecurrence = makeGetThunk((params) => ({
+  route: `${BASE}/agents/${params.user_id}/recurrence`,
   query: {},
 }));
 
-export const getTriageRuns = makeGetThunk((params) => ({
-  route: `${BASE}/runs`,
+// upcoming_only=true lists booked calls with seconds_until and flag_count.
+export const getTriageCalls = makeGetThunk((params) => ({
+  route: `${BASE}/calls`,
   query: buildParams(params),
 }));
 
 // --- Mutations ---
 
-export const addTriageFlagNote = makePostThunk(
-  (params) => `${BASE}/flags/${params.id}/notes`
-);
-export const acknowledgeTriageFlag = makePostThunk(
-  (params) => `${BASE}/flags/${params.id}/acknowledge`
-);
 export const resolveTriageFlag = makePostThunk(
   (params) => `${BASE}/flags/${params.id}/resolve`
 );
 export const dismissTriageFlag = makePostThunk(
   (params) => `${BASE}/flags/${params.id}/dismiss`
 );
-export const createTriagePlaybookEntry = makePostThunk(() => `${BASE}/playbook`);
-export const approveTriagePlaybookEntry = makePostThunk(
-  (params) => `${BASE}/playbook/${params.id}/approve`
+
+// body: { flag_ids: [...], scheduled_for: isoString } — scheduled_for must
+// be within the next callBookingMaxHours (24h); API 422s outside that
+// window, in the past, or with an empty flag_ids list. All flag_ids must
+// belong to the same agent — mixing agents also 422s.
+export const scheduleTriageCall = makePostThunk(() => `${BASE}/calls`);
+
+// body: { fathom_link?, call_summary, action_plan, expected_resolution_date? }
+// call_summary and action_plan are required (422 otherwise). Does NOT
+// resolve the flags — they stay in_progress until someone resolves them.
+// Completing an already-completed call 422s.
+export const completeTriageCall = makePostThunk(
+  (params) => `${BASE}/calls/${params.id}/complete`
 );
-export const createTriageRun = makePostThunk(() => `${BASE}/runs`);
+
+// body: { workflow_state: "act_today" | "watch" | "trending_up" } — moving
+// to act_today starts a fresh 8h status clock. "resolved"/"dismissed" via
+// this endpoint 422s; use resolveTriageFlag/dismissTriageFlag instead.
+export const moveTriageFlagState = makePatchThunk(
+  (params) => `${BASE}/flags/${params.id}/state`
+);

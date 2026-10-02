@@ -394,11 +394,6 @@ const menuList = [
         route: "triage/sla-reference",
         roles: ["admin", "dev", "tl", "dtl", "om", "som", "aom"],
       },
-      {
-        title: "Playbook",
-        route: "triage/playbook",
-        roles: ["admin", "dev", "om", "som", "aom"],
-      },
     ],
   },
   {

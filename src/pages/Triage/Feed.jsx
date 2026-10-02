@@ -1,88 +1,69 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Pagination } from "antd";
+import { Segmented, Tooltip } from "antd";
 
 import {
-  getTriageFeed,
+  getTriageAgents,
   getTriageFilters,
   getTriageSummary,
 } from "../../reduxStore/action/triage";
 import { formatDateTimeEnglish } from "../../utils/helperFunctions";
-import { URGENCY_LABELS, URGENCY_ORDER, formatCount } from "./helpers";
+import { WORKFLOW_STATE_LABELS, WORKFLOW_STATE_ORDER, formatCount } from "./helpers";
 import useApiRequest from "./hooks/useApiRequest";
 import useTick from "./hooks/useTick";
-import FlagCard from "./components/FlagCard";
+import AgentCard from "./components/AgentCard";
 import FlagDetailDrawer from "./components/FlagDetailDrawer";
-import ResolveFlagModal from "./components/ResolveFlagModal";
+import ScheduleCallModal from "./components/ScheduleCallModal";
 import Skeleton from "../../components/Skeleton";
 import UnifiedDropdown from "../../components/Dropdown/UnifiedDropdown";
 
 const COUNTER_TILES = [
-  { key: "today", label: "Act today" },
-  { key: "next_48_72h", label: "This shift" },
-  { key: "this_week", label: "This week" },
+  { key: "act_today", label: "Act today" },
+  { key: "in_progress", label: "In progress" },
+  { key: "watch", label: "Watch this week" },
+  { key: "trending_up", label: "Trending up" },
 ];
-
-// Maps a summary counter key to the urgency value the feed endpoint
-// actually filters on (the summary and feed use slightly different
-// vocabularies: "next_48_72h" vs "48_72h").
-const COUNTER_TO_URGENCY = {
-  today: "today",
-  next_48_72h: "48_72h",
-  this_week: "this_week",
-};
 
 export default function TriageFeed() {
   // Tick every 60s so countdown labels (e.g. "2h 14m left") stay live
   // without re-fetching data.
   useTick(60000);
 
-  const [urgencyFilter, setUrgencyFilter] = useState(null);
+  const [sectionFilter, setSectionFilter] = useState(null);
+  const [includeResolved, setIncludeResolved] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState([]);
-  const [selectedTeamLead, setSelectedTeamLead] = useState([]);
-  const [page, setPage] = useState(1);
-  const [size] = useState(25);
+  const [viewMode, setViewMode] = useState("cards");
   const [openFlagId, setOpenFlagId] = useState(null);
-  const [resolveFlagId, setResolveFlagId] = useState(null);
+  const [scheduleAgent, setScheduleAgent] = useState(null);
+  const [scheduleFlagId, setScheduleFlagId] = useState(null);
 
   const filtersReport = useApiRequest(getTriageFilters, {}, true, []);
   const summaryReport = useApiRequest(getTriageSummary, {}, true, []);
 
   const account = selectedAccount[0]?.account;
-  const teamLeadId = selectedTeamLead[0]?.team_lead_id;
 
-  const feedParams = {
-    urgency: urgencyFilter ? [urgencyFilter] : undefined,
+  const agentsParams = {
+    section: sectionFilter ? [sectionFilter] : undefined,
     account: account ? [account] : undefined,
-    team_lead_id: teamLeadId || undefined,
-    page,
-    size,
+    include_resolved: includeResolved,
   };
-  const feedReport = useApiRequest(getTriageFeed, feedParams, true, [
-    urgencyFilter,
+  const agentsReport = useApiRequest(getTriageAgents, agentsParams, true, [
+    sectionFilter,
     account,
-    teamLeadId,
-    page,
-    size,
+    includeResolved,
   ]);
 
   const refetchAll = () => {
-    feedReport.refetch();
+    agentsReport.refetch();
     summaryReport.refetch();
   };
 
-  // Group the current page's flat, already-ranked list into the three
-  // urgency sections for display — this never re-sorts, it only clusters
-  // rows that are already in the backend's own order.
-  const grouped = useMemo(() => {
-    const rows = feedReport.data?.data || [];
-    const buckets = { today: [], "48_72h": [], this_week: [] };
-    rows.forEach((row) => {
-      if (buckets[row.urgency]) buckets[row.urgency].push(row);
-    });
-    return buckets;
-  }, [feedReport.data]);
+  const agents = agentsReport.data?.data || [];
+  const sectionCounts = agentsReport.data?.sectionCounts || {};
+  const sourceLabels = agentsReport.data?.sourceLabels || {};
+  const roster = agentsReport.data?.roster;
+  const accounts = filtersReport.data?.clients || [];
 
   const lastRunAt = useMemo(() => {
     const runs = summaryReport.data?.lastRun || [];
@@ -91,12 +72,11 @@ export default function TriageFeed() {
     return new Date(Math.max(...times)).toISOString();
   }, [summaryReport.data]);
 
-  const scope = feedReport.data?.scope;
-  const accounts = filtersReport.data?.clients || [];
-  const teamLeads = filtersReport.data?.teamLeads || [];
+  const summaryCounts = summaryReport.data?.counts || {};
+  const subLine = (key, label) =>
+    summaryCounts[key] != null ? `${formatCount(summaryCounts[key])} ${label}` : null;
 
-  const totalRows = feedReport.data?.data?.length || 0;
-  const showEmpty = !feedReport.loading && totalRows === 0;
+  const showEmpty = !agentsReport.loading && agents.length === 0;
 
   return (
     <div>
@@ -106,29 +86,27 @@ export default function TriageFeed() {
         </span>
       </div>
       <div className="text-[12px] text-[#7F8A92] mb-4">
-        {selectedAccount[0]?.client_name
-          ? `Account: ${selectedAccount[0].client_name}`
-          : "All your accounts"}
+        {roster && (
+          <>
+            {formatCount(roster.agents)} agents across {formatCount(roster.accounts)}{" "}
+            accounts
+          </>
+        )}
         {lastRunAt && <> · Last run: {formatDateTimeEnglish(lastRunAt)}</>}
       </div>
 
-      {summaryReport.loading ? (
+      {agentsReport.loading ? (
         <Skeleton className="w-full h-[90px] mb-4" rounded="rounded-[16px]" />
       ) : (
         <div className="flex flex-wrap gap-3 mb-4">
           {COUNTER_TILES.map((tile) => {
-            const value = summaryReport.data?.counts?.[tile.key];
-            const urgencyValue = COUNTER_TO_URGENCY[tile.key];
-            const active = urgencyFilter === urgencyValue;
+            const active = sectionFilter === tile.key;
             return (
               <button
                 key={tile.key}
                 type="button"
-                onClick={() => {
-                  setUrgencyFilter(active ? null : urgencyValue);
-                  setPage(1);
-                }}
-                className={`flex-1 min-w-[160px] text-left rounded-[16px] border p-4 transition-colors ${
+                onClick={() => setSectionFilter(active ? null : tile.key)}
+                className={`flex-1 min-w-[180px] text-left rounded-[16px] border p-4 transition-colors ${
                   active
                     ? "border-[#69C920] bg-[#F1FAEC]"
                     : "border-[#D7E6E7] bg-white hover:border-[#69C920]"
@@ -136,7 +114,7 @@ export default function TriageFeed() {
               >
                 <div className="text-[12px] text-[#7F8A92]">{tile.label}</div>
                 <div className="text-[24px] font-semibold text-[#163143]">
-                  {formatCount(value)}
+                  {formatCount(sectionCounts[tile.key])}
                 </div>
               </button>
             );
@@ -144,92 +122,118 @@ export default function TriageFeed() {
         </div>
       )}
 
-      <div className="flex flex-wrap items-center gap-3 mb-4">
-        <UnifiedDropdown
-          placeholder="Search accounts"
-          name="Account"
-          data={accounts}
-          isLoading={filtersReport.loading}
-          selectedList={selectedAccount}
-          setselectedList={(v) => {
-            setSelectedAccount(v);
-            setPage(1);
-          }}
-          multiSelect={false}
-          displayKey="client_name"
-          valueKey="account"
-          searchKeys={["client_name"]}
-          className="h-9 border-[#d9d9d9] bg-white"
-        />
+      {(subLine("past_status_deadline", "past the 8-hour deadline") ||
+        subLine("escalated", "escalated") ||
+        subLine("call_scheduled", "call scheduled") ||
+        subLine("re_review_overdue", "re-review overdue")) && (
+        <div className="text-[12px] text-[#7F8A92] mb-4 flex flex-wrap gap-3">
+          {[
+            subLine("past_status_deadline", "past the 8-hour deadline"),
+            subLine("escalated", "escalated"),
+            subLine("call_scheduled", "call scheduled"),
+            subLine("re_review_overdue", "re-review overdue"),
+          ]
+            .filter(Boolean)
+            .map((text) => (
+              <span key={text}>{text}</span>
+            ))}
+        </div>
+      )}
 
-        {scope?.unrestricted && teamLeads.length > 0 && (
-          <UnifiedDropdown
-            placeholder="Search team leads"
-            name="Team Lead"
-            data={teamLeads}
-            isLoading={filtersReport.loading}
-            selectedList={selectedTeamLead}
-            setselectedList={(v) => {
-              setSelectedTeamLead(v);
-              setPage(1);
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setSectionFilter(null);
+              setIncludeResolved(false);
             }}
+            className={`text-[12px] px-3 py-1 rounded-full border ${
+              !sectionFilter && !includeResolved
+                ? "bg-[#163143] text-white border-[#163143]"
+                : "border-[#D7E6E7] text-[#163143] hover:border-[#69C920]"
+            }`}
+          >
+            Everyone
+          </button>
+          {WORKFLOW_STATE_ORDER.map((key) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => setSectionFilter(sectionFilter === key ? null : key)}
+              className={`text-[12px] px-3 py-1 rounded-full border ${
+                sectionFilter === key
+                  ? "bg-[#163143] text-white border-[#163143]"
+                  : "border-[#D7E6E7] text-[#163143] hover:border-[#69C920]"
+              }`}
+            >
+              {WORKFLOW_STATE_LABELS[key]?.label || key} ({formatCount(sectionCounts[key])})
+            </button>
+          ))}
+          <button
+            type="button"
+            onClick={() => setIncludeResolved((v) => !v)}
+            className={`text-[12px] px-3 py-1 rounded-full border ${
+              includeResolved
+                ? "bg-[#163143] text-white border-[#163143]"
+                : "border-[#D7E6E7] text-[#163143] hover:border-[#69C920]"
+            }`}
+          >
+            Resolved
+          </button>
+          {roster?.healthy != null && (
+            <Tooltip title="Agents with no open flags right now.">
+              <span className="text-[12px] px-3 py-1 rounded-full border border-[#D7E6E7] text-[#163143]">
+                Healthy {formatCount(roster.healthy)}
+              </span>
+            </Tooltip>
+          )}
+          <UnifiedDropdown
+            placeholder="Search accounts"
+            name="Account"
+            data={accounts}
+            isLoading={filtersReport.loading}
+            selectedList={selectedAccount}
+            setselectedList={setSelectedAccount}
             multiSelect={false}
-            displayKey="team_lead"
-            valueKey="team_lead_id"
-            searchKeys={["team_lead"]}
+            displayKey="client_name"
+            valueKey="account"
+            searchKeys={["client_name"]}
             className="h-9 border-[#d9d9d9] bg-white"
           />
-        )}
+        </div>
+
+        <Segmented
+          options={[
+            { label: "Cards", value: "cards" },
+            { label: "Compact", value: "compact" },
+          ]}
+          value={viewMode}
+          onChange={setViewMode}
+        />
       </div>
 
-      {feedReport.loading ? (
+      {agentsReport.loading ? (
         <Skeleton className="w-full h-[50vh]" rounded="rounded-[16px]" />
       ) : showEmpty ? (
         <div className="bg-white rounded-[16px] border border-[#D7E6E7] p-8 text-center text-[#7F8A92]">
           Nothing needs you in this window.
         </div>
       ) : (
-        <div className="space-y-6">
-          {URGENCY_ORDER.filter((key) => !urgencyFilter || urgencyFilter === key).map(
-            (urgencyKey) => {
-              const rows = grouped[urgencyKey];
-              if (!rows || rows.length === 0) return null;
-              const meta = URGENCY_LABELS[urgencyKey];
-              return (
-                <div key={urgencyKey}>
-                  <div className="mb-2">
-                    <span
-                      className="text-[13px] font-semibold uppercase tracking-wide"
-                      style={{ color: meta.accent }}
-                    >
-                      {meta.label}
-                    </span>
-                    <div className="text-[12px] text-[#7F8A92]">{meta.subtitle}</div>
-                  </div>
-                  <div className="space-y-3">
-                    {rows.map((flag) => (
-                      <FlagCard
-                        key={flag.id}
-                        flag={flag}
-                        onOpenDetail={(f) => setOpenFlagId(f.id)}
-                        onMarkResolved={(f) => setResolveFlagId(f.id)}
-                      />
-                    ))}
-                  </div>
-                </div>
-              );
-            }
-          )}
-
-          <div className="flex justify-center pt-2">
-            <Pagination
-              current={feedReport.data?.pagination?.currentPage || page}
-              pageSize={feedReport.data?.pagination?.pageSize || size}
-              total={feedReport.data?.pagination?.totalRecords || 0}
-              onChange={(p) => setPage(p)}
-              showSizeChanger={false}
+        <div className="space-y-3">
+          {agents.map((agent) => (
+            <AgentCard
+              key={`${agent.user_id ?? "account"}-${agent.account}`}
+              agent={agent}
+              sourceLabels={sourceLabels}
+              compact={viewMode === "compact"}
+              onOpenFlag={(id) => setOpenFlagId(id)}
+              onScheduleCall={(a) => {
+                setScheduleAgent(a);
+                setScheduleFlagId(null);
+              }}
             />
-          </div>
+          ))}
         </div>
       )}
 
@@ -238,12 +242,24 @@ export default function TriageFeed() {
         open={!!openFlagId}
         onClose={() => setOpenFlagId(null)}
         onChanged={refetchAll}
+        onScheduleCall={(flagId) => {
+          // The single-flag detail endpoint doesn't carry this agent's
+          // other open flags (needed for the multi-flag picker) — look
+          // the owning agent up in the already-loaded agents list instead.
+          const owningAgent = agents.find((a) =>
+            (a.flags || []).some((f) => f.id === flagId)
+          );
+          setScheduleAgent(owningAgent || null);
+          setScheduleFlagId(flagId);
+        }}
       />
-      <ResolveFlagModal
-        flagId={resolveFlagId}
-        open={!!resolveFlagId}
-        onClose={() => setResolveFlagId(null)}
-        onResolved={refetchAll}
+      <ScheduleCallModal
+        agent={scheduleAgent}
+        initialFlagId={scheduleFlagId}
+        open={!!scheduleAgent}
+        onClose={() => setScheduleAgent(null)}
+        onScheduled={refetchAll}
+        maxBookingHours={agentsReport.data?.clock?.callBookingMaxHours || 24}
       />
     </div>
   );
