@@ -62,7 +62,7 @@ export const DownloadClientFormReport = () => {
       getClientsNameForCSFDownload(
         setLoaderForClients,
         user?.name,
-        ["admin", "dev", "wfa"].includes(user?.role)
+        ["admin", "dev", "wfa", "qa-tl", "qa-dm"].includes(user?.role)
       )
     );
   }, []);
