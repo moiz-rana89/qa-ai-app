@@ -16,6 +16,9 @@ import {
 import UnifiedDropdown from "../../components/Dropdown/UnifiedDropdown";
 import Api from "../../reduxStore/lib/api";
 
+// Roles that get admin=true on the client-form client-names and download APIs.
+const ADMIN_API_ROLES = ["admin", "dev", "wfa", "qa-tl", "qa-dm"];
+
 const REPORTCATEGORY = [
   {
     id: "ticket_monitoring_form",
@@ -65,7 +68,7 @@ export const DownloadClientFormReport = () => {
       getClientsNameForCSFDownload(
         setLoaderForClients,
         user?.name,
-        ["admin", "dev", "wfa", "qa-tl", "qa-dm"].includes(user?.role)
+        ADMIN_API_ROLES.includes(user?.role)
       )
     );
   }, [user?.name, user?.role]);
@@ -111,7 +114,7 @@ export const DownloadClientFormReport = () => {
       getDownloadCSFReport(setLoader, toast, {
         ...formData,
         updated_by_tl: user?.name,
-        admin: ["admin", "dev", "wfa"].includes(user?.role),
+        admin: ADMIN_API_ROLES.includes(user?.role),
       })
     );
   };
