@@ -58,6 +58,9 @@ export const DownloadClientFormReport = () => {
   const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
+    // Wait for the user — on first render it can still be empty, which
+    // used to fire the request once with admin=false and never refetch.
+    if (!user?.role) return;
     dispatch(
       getClientsNameForCSFDownload(
         setLoaderForClients,
@@ -65,7 +68,7 @@ export const DownloadClientFormReport = () => {
         ["admin", "dev", "wfa", "qa-tl", "qa-dm"].includes(user?.role)
       )
     );
-  }, []);
+  }, [user?.name, user?.role]);
 
   const handleRefreshClientData = async () => {
     setRefreshLoader(true);
