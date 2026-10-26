@@ -8,6 +8,7 @@ import {
 } from "../../utils/formsConstant";
 import ConversationScreen from "./DynamicForm/ConversationScreen";
 import QAForm from "./DynamicForm/QAForm";
+import { MIN_CUSTOMER_CONCERN_LENGTH } from "./DynamicForm/TicketDetails";
 import EvaluteHeader from "./EvaluteHeader";
 import {
   getTicketTagsAndAiGradedJson,
@@ -160,6 +161,17 @@ export const EvaluteForm = () => {
     // console.log("currentIndex", currentItem?.ticket_id, currentItem?.client_id);
     // removeById(id);
 
+    const concern = customerConcern.trim();
+    if (concern.length < MIN_CUSTOMER_CONCERN_LENGTH) {
+      AntDNotification({
+        status: "error",
+        title: "Customer Concern Required",
+        description: `Please fill in the Customer Concern (at least ${MIN_CUSTOMER_CONCERN_LENGTH} characters) in the Ticket Details tab before submitting.`,
+        duration: 6,
+      });
+      return;
+    }
+
     const role =
       userDetails?.role == "tl" ? "tl_graded_json" : "qas_graded_json";
     dispatch(
@@ -172,10 +184,7 @@ export const EvaluteForm = () => {
             categories: formState?.categories,
             ticket_id: currentItem?.ticket_id,
           },
-          // null = backend keeps the previously stored value (no overwrite
-          // with a blank submission). Send the trimmed string when the
-          // QAS / TL has actually written something.
-          customer_concern: customerConcern.trim() || null,
+          customer_concern: concern,
         },
         handleTicketSubmitSuccess
       )

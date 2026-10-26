@@ -4,11 +4,18 @@ import { formatDateTimeEnglish } from "../../../utils/helperFunctions";
 
 const { TextArea } = Input;
 
+// Customer Concern is a required question — submit is blocked until the
+// trimmed text reaches this length (enforced in EvaluteForm).
+export const MIN_CUSTOMER_CONCERN_LENGTH = 100;
+
 export const TicketDetails = ({
   details,
   customerConcern,
   setCustomerConcern,
 }) => {
+  const concernLength = (customerConcern ?? "").trim().length;
+  const concernTooShort = concernLength < MIN_CUSTOMER_CONCERN_LENGTH;
+
   return (
     <div className="">
       <div className="space-y-6 text-[#163143] font-[400]">
@@ -109,12 +116,12 @@ export const TicketDetails = ({
           />
         </div>
 
-        {/* Customer Concern — editable free-text textarea. Sent on submit
-            as `customer_concern`; empty value submits as null so the
-            backend doesn't overwrite a previously stored concern. */}
+        {/* Customer Concern — required free-text textarea (min
+            MIN_CUSTOMER_CONCERN_LENGTH characters). Sent on submit as
+            `customer_concern`. */}
         <div className="w-[100%]">
           <label className="block text-[14px] font-semibold mb-3">
-            Customer Concern:
+            Customer Concern: <span className="text-red-500">*</span>
           </label>
           <TextArea
             value={customerConcern ?? ""}
@@ -124,8 +131,12 @@ export const TicketDetails = ({
             className="font-poppins text-[#163143] !bg-[#FFFFFF] !border !border-[#D7E6E7] !rounded-[16px] placeholder-gray-400 focus:!outline-none focus:!ring-1 focus:!ring-[#69C920] focus:!border-[#69C920] hover:!border-[#69C920] transition-all duration-200"
             style={{ padding: "12px 14px" }}
           />
-          <div className="text-[12px] text-[#7F8A92] mt-1">
-            Leave blank to keep the existing stored value.
+          <div
+            className={`text-[12px] mt-1 ${
+              concernTooShort ? "text-[#FF5546]" : "text-[#7F8A92]"
+            }`}
+          >
+            {concernLength}/{MIN_CUSTOMER_CONCERN_LENGTH} characters minimum
           </div>
         </div>
 
