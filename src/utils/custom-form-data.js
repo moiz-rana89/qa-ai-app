@@ -1635,6 +1635,541 @@ export const formTypes = [
       },
     ],
   },
+
+  {
+    id: "true-classic-chat",
+    title: "Live Chat/SMS/Social Quality Form",
+    clientId: 321215,
+    clientName: "True Classic",
+    sections: [
+      {
+        id: "greetings",
+        title: "A. GREETINGS",
+        questions: [
+          {
+            id: "A1",
+            label: "Did agent properly greet, thank, and address the customer?",
+            sublabel: "(A1)",
+            points: 2.5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.50", label: "2.50" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "A2",
+            label: "Did agent acknowledge the customer's concern?",
+            sublabel: "(A2)",
+            points: 2.5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.50", label: "2.50" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "A3",
+            label: "Did agent empathize with the customer on their concern(s)",
+            sublabel: "(A3)",
+            points: 2.5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.50", label: "2.50" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "A4",
+            label: "Did agent use client's Brand Tone during discussion?",
+            sublabel: "(A4)",
+            points: 2.5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.50", label: "2.50" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+        ],
+      },
+      {
+        id: "verification-problem-identification",
+        title: "B. VERIFICATION + PROBLEM IDENTIFICATION",
+        questions: [
+          {
+            id: "B1",
+            label:
+              "Did agent take time to verify Customer and their account details?",
+            sublabel: "(B1)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "B2",
+            label:
+              "Did the agent add the customer's email address on the customer's profile?",
+            sublabel: "(B2)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "B3",
+            label:
+              "Did the agent ask relevant questions to identify the concern?",
+            sublabel: "(B3)",
+            points: 5,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "5.00", label: "5.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+        ],
+      },
+      {
+        id: "communication-grammar",
+        title: "C. COMMUNICATION + GRAMMAR",
+        questions: [
+          {
+            id: "C1",
+            label:
+              "Did the agent effectively communicate with the customer and follow appropriate best practices when handling the Live Chat/SMS or Social Media Message?",
+            sublabel: "(C1)",
+            points: 1,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "1.00", label: "1.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "C2",
+            label:
+              "Was the agent empathetic and human-centric in his/her responses?\n*Did the agent paraphrase the concern to confirm understanding, avoid using generic empathy statements, apologize when appropriate, and offer all possible solutions to resolve the customer's issue?",
+            sublabel: "(C2)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "C3",
+            label: "Grammar and Spelling",
+            sublabel: "(C3)",
+            points: 1,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "1.00", label: "1.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "C4",
+            label: "Capitalization, Punctuation Mark, Excessive spacing",
+            sublabel: "(C4)",
+            points: 1,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "1.00", label: "1.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+        ],
+      },
+      {
+        id: "following-client-sop",
+        title: "D. FOLLOWING CLIENT SOP",
+        questions: [
+          {
+            id: "D1",
+            label:
+              "Did the agent responded within the threshold time? (within 2 minutes)",
+            sublabel: "(D1)",
+            points: 3.34,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.34", label: "3.34" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "D2",
+            label:
+              "Is the overall resolution provided within the Client's SOP?",
+            sublabel: "(D2)",
+            points: 3.34,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.34", label: "3.34" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "D3",
+            label: "Did the agent merge the ticket if applicable?",
+            sublabel: "(D3)",
+            points: 3.33,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.33", label: "3.33" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "D4",
+            label:
+              "Did the agent add detailed internal notes in Gorgias, Shopify, Govalo, and Inveterate? (If applicable)",
+            sublabel: "(D4)",
+            points: 3.33,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.33", label: "3.33" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "D5",
+            label:
+              "Did the agent update the customer's profile with the Customer's Name and Email Address? (If applicable)",
+            sublabel: "(D5)",
+            points: 3.33,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.33", label: "3.33" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "D6",
+            label: "Did the agent merge multiple accounts? (If applicable)",
+            sublabel: "(D6)",
+            points: 3.33,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.33", label: "3.33" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+        ],
+      },
+      {
+        id: "resolution",
+        title:
+          "E. RESOLUTION (RED FLAG: 1–2 MARKDOWNS = HALF SCORE (12.5); 3 OR MORE MARKDOWNS = AUTO-ZERO)",
+        questions: [
+          {
+            id: "E1",
+            label:
+              "Was the appropriate and complete solution provided based on the Client's SOP?",
+            sublabel: "(E1)",
+            points: 4.16,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.16", label: "4.16" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "E2",
+            label:
+              "Did the agent inform the customer about any next steps and expectations as needed?",
+            sublabel: "(E2)",
+            points: 4.16,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.16", label: "4.16" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "E3",
+            label:
+              "Did the agent showcase proper attention to detail when handling their concern?",
+            sublabel: "(E3)",
+            points: 4.17,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.17", label: "4.17" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "E4",
+            label: "Did the agent go above and beyond to support the customer?",
+            sublabel: "(E4)",
+            points: 4.17,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.17", label: "4.17" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "E5",
+            label:
+              "Did the agent follow the Client's escalation SOP (Escalated if needed, Escalated if not needed, Added Notes, etc)",
+            sublabel: "(E5)",
+            points: 4.17,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.17", label: "4.17" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "E6",
+            label:
+              "Did the agent add the correct tags, contact reason, and remove incorrect tags?",
+            sublabel: "(E6)",
+            points: 4.17,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "4.17", label: "4.17" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+        ],
+      },
+      {
+        id: "closing-tools-utilization",
+        title: "F. CLOSING + TOOLS UTILIZATION ( AUTO-ZERO )",
+        questions: [
+          {
+            id: "F1",
+            label:
+              "Did the agent provide any reference or self-help resources to solve their situation in the future if applicable?",
+            sublabel: "(F1)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "F2",
+            label:
+              "Did the agent offer further assistance and/or ask if concerns were resolved?",
+            sublabel: "(F2)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "F3",
+            label:
+              "Did the agent have a personalized closing to the customer communication?",
+            sublabel: "(F3)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "F4",
+            label:
+              "Did the agent use the CS Platform tools properly (Appropriate tags, Merging, Snoozing, and Pending)",
+            sublabel: "(F4)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+          {
+            id: "F5",
+            label:
+              "Was grabbing the ticket from AI valid? Did the AI provide inaccurate information, or was the agent’s response personalized?",
+            sublabel: "(F5)",
+            points: 3,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "3.00", label: "3.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: false,
+          },
+        ],
+      },
+      {
+        id: "sales-conversion",
+        title: "G. SALES/CONVERSION (AUTO-ZERO)",
+        questions: [
+          {
+            id: "G1",
+            label:
+              "How well did the representative build rapport and establish a connection with the prospect?",
+            sublabel: "(G1)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "G2",
+            label:
+              "Were relationship-building tactics employed to enhance the customer experience?",
+            sublabel: "(G2)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "G3",
+            label:
+              "Were opportunities for cross-selling or upselling identified and pursued?",
+            sublabel: "(G3)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "G4",
+            label:
+              "How well did the representative educate the prospect on additional offerings?",
+            sublabel: "(G4)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+          {
+            id: "G5",
+            label:
+              "Did the representative effectively use sales tools (e.g., Size charts/fit calculator, website links) during the interaction?",
+            sublabel: "(G5)",
+            points: 2,
+            options: [
+              { value: "0.00", label: "0.00" },
+              { value: "2.00", label: "2.00" },
+            ],
+            inputType: "select",
+            comments: true,
+            isOptional: true,
+          },
+        ],
+      },
+    ],
+    extraSections: [
+      {
+        id: "summary-notes",
+        title: "SUMMARY NOTES",
+        required: true,
+        questions: [
+          {
+            id: "opportunities",
+            label: "OPPORTUNITIES",
+            sublabel: "",
+            points: 0,
+            inputType: "textarea",
+          },
+          {
+            id: "wins",
+            label: "WINS",
+            sublabel: "",
+            points: 0,
+            inputType: "textarea",
+          },
+          {
+            id: "recommendations",
+            label: "RECOMMENDATIONS",
+            sublabel: "",
+            points: 0,
+            inputType: "textarea",
+          },
+        ],
+      },
+    ],
+  },
   // simplehuman 170380 — Email Quality Form V2 replaces the retired
   // email-qa-form-simplehuman entry (same client, superseded rubric).
 
@@ -14510,7 +15045,7 @@ export const formTypes = [
     sections: [
       {
         id: "greeting",
-        title: "GREETING",
+        title: "A. GREETING",
         questions: [
           {
             id: "A1",
@@ -14570,12 +15105,12 @@ export const formTypes = [
       },
       {
         id: "verification",
-        title: "VERIFICATION",
+        title: "B. VERIFICATION",
         questions: [
           {
             id: "B1",
             label:
-              "Did the agent properly identify the customer's account even if no Shopify account was found?",
+              "Did the agent properly identify the customer’s account even if no Shopify account was found?",
             sublabel: "(B1)",
             points: 3,
             options: [
@@ -14590,7 +15125,7 @@ export const formTypes = [
       },
       {
         id: "communication",
-        title: "COMMUNICATION",
+        title: "C. COMMUNICATION",
         questions: [
           {
             id: "C1",
@@ -14610,7 +15145,7 @@ export const formTypes = [
       },
       {
         id: "follow-client-sop",
-        title: "FOLLOW CLIENT SOP",
+        title: "D. FOLLOW CLIENT SOP",
         questions: [
           {
             id: "D1",
@@ -14630,17 +15165,17 @@ export const formTypes = [
       },
       {
         id: "problem-identification",
-        title: "PROBLEM IDENTIFICATION",
+        title: "E. PROBLEM IDENTIFICATION",
         questions: [
           {
             id: "E1",
             label:
               "Did the agent gather all the necessary information at their disposal to make the decision?",
             sublabel: "(E1)",
-            points: 5,
+            points: 4,
             options: [
               { value: "0.00", label: "0.00" },
-              { value: "5.00", label: "5.00" },
+              { value: "4.00", label: "4.00" },
             ],
             inputType: "select",
             comments: true,
@@ -14650,12 +15185,12 @@ export const formTypes = [
       },
       {
         id: "resolution",
-        title: "RESOLUTION",
+        title: "F. RESOLUTION",
         questions: [
           {
             id: "F1",
             label:
-              "Did the agent resolve the issue in as few touches as possible?",
+              "Did the agent resolved the issue in as few touches as possible?",
             sublabel: "(F1)",
             points: 5,
             options: [
@@ -14669,7 +15204,7 @@ export const formTypes = [
           {
             id: "F2",
             label:
-              "Did the agent educate the customer about the issue and highlight what he/she can do? (if applicable)",
+              "Did the agent educate the customer about the issue and highlighted what he/she can do? (if applicable)",
             sublabel: "(F2)",
             points: 5,
             options: [
@@ -14678,17 +15213,17 @@ export const formTypes = [
             ],
             inputType: "select",
             comments: true,
-            isOptional: true,
+            isOptional: false,
           },
           {
             id: "F3",
             label:
-              "Did the agent use the correct and available macro when assisting the customer, and did they adapt it appropriately to address the customer's specific questions?",
+              "Did the agent use the correct and available macro when assisting the customer, and did they adapt it appropriately to address the customer’s specific questions?",
             sublabel: "(F3)",
-            points: 5,
+            points: 6,
             options: [
               { value: "0.00", label: "0.00" },
-              { value: "5.00", label: "5.00" },
+              { value: "6.00", label: "6.00" },
             ],
             inputType: "select",
             comments: true,
@@ -14733,7 +15268,7 @@ export const formTypes = [
             ],
             inputType: "select",
             comments: true,
-            isOptional: true,
+            isOptional: false,
           },
           {
             id: "F7",
@@ -14753,17 +15288,17 @@ export const formTypes = [
       },
       {
         id: "grammar",
-        title: "GRAMMAR",
+        title: "G. GRAMMAR",
         questions: [
           {
             id: "G1",
             label:
               "Did the agent ensure there were no multiple spelling, capitalization, punctuation, excessive spacing, formatting, or other grammatical mistakes? (No more than 2 instances of these issues to avoid a markdown.)",
             sublabel: "(G1)",
-            points: 5,
+            points: 3,
             options: [
               { value: "0.00", label: "0.00" },
-              { value: "5.00", label: "5.00" },
+              { value: "3.00", label: "3.00" },
             ],
             inputType: "select",
             comments: true,
@@ -14786,7 +15321,7 @@ export const formTypes = [
           {
             id: "G3",
             label:
-              "Did the agent match the customer's tone and level of formality?",
+              "Did the agent match the customer’s tone and level of formality?",
             sublabel: "(G3)",
             points: 3,
             options: [
@@ -14801,17 +15336,17 @@ export const formTypes = [
       },
       {
         id: "closing",
-        title: "CLOSING",
+        title: "H. CLOSING",
         questions: [
           {
             id: "H1",
             label:
-              "Did the agent provide an appropriate send-off? For example, adding something to the macro like 'Please feel free to reach out' or for repeat customers, a thoughtful note like 'Hope you enjoy the bar!' or something similar?",
+              "Did the agent provide an appropriate send-off? For example, adding something to the macro like ‘Please feel free to reach out’ or for repeat customers, a thoughtful note like ‘Hope you enjoy the bar!’ or something similar?",
             sublabel: "(H1)",
-            points: 3,
+            points: 5,
             options: [
               { value: "0.00", label: "0.00" },
-              { value: "3.00", label: "3.00" },
+              { value: "5.00", label: "5.00" },
             ],
             inputType: "select",
             comments: true,
@@ -14821,12 +15356,12 @@ export const formTypes = [
       },
       {
         id: "tools-utilization",
-        title: "TOOLS UTILIZATION",
+        title: "I. TOOLS UTILIZATION",
         questions: [
           {
             id: "I1",
             label:
-              "Did the agent properly use snoozes to ensure their inbox are clear? (Tags, Merging, Snooze)",
+              "Did the agent properly use snoozes to ensure their inbox are clear? (Tags, Merging, Snooze )",
             sublabel: "(I1)",
             points: 3,
             options: [
@@ -14854,7 +15389,7 @@ export const formTypes = [
           {
             id: "I3",
             label:
-              "Did the agent complete all the post-ticket work? (eg. cancellation, refund processing, process the replacement, add ons)",
+              "Did the agent complete all the post-ticket work? ( eg. cancellation, refund processing, process the replacement, add ons)",
             sublabel: "(I3)",
             points: 3,
             options: [
@@ -14908,7 +15443,7 @@ export const formTypes = [
     sections: [
       {
         id: "greeting",
-        title: "GREETING",
+        title: "A. GREETING",
         questions: [
           {
             id: "A1",
@@ -14968,12 +15503,12 @@ export const formTypes = [
       },
       {
         id: "verification",
-        title: "VERIFICATION",
+        title: "B. VERIFICATION",
         questions: [
           {
             id: "B1",
             label:
-              "Did the agent properly identify the customer's account even if no Shopify account was found?",
+              "Did the agent properly identify the customer’s account even if no Shopify account was found?",
             sublabel: "(B1)",
             points: 3,
             options: [
@@ -14988,7 +15523,7 @@ export const formTypes = [
       },
       {
         id: "communication",
-        title: "COMMUNICATION",
+        title: "C. COMMUNICATION",
         questions: [
           {
             id: "C1",
@@ -15008,7 +15543,7 @@ export const formTypes = [
       },
       {
         id: "follow-client-sop",
-        title: "FOLLOW CLIENT SOP",
+        title: "D. FOLLOW CLIENT SOP",
         questions: [
           {
             id: "D1",
@@ -15028,17 +15563,17 @@ export const formTypes = [
       },
       {
         id: "problem-identification",
-        title: "PROBLEM IDENTIFICATION",
+        title: "E. PROBLEM IDENTIFICATION",
         questions: [
           {
             id: "E1",
             label:
               "Did the agent gather all the necessary information at their disposal to make the decision?",
             sublabel: "(E1)",
-            points: 5,
+            points: 4,
             options: [
               { value: "0.00", label: "0.00" },
-              { value: "5.00", label: "5.00" },
+              { value: "4.00", label: "4.00" },
             ],
             inputType: "select",
             comments: true,
@@ -15048,12 +15583,12 @@ export const formTypes = [
       },
       {
         id: "resolution",
-        title: "RESOLUTION",
+        title: "F. RESOLUTION",
         questions: [
           {
             id: "F1",
             label:
-              "Did the agent resolve the issue in as few touches as possible?",
+              "Did the agent resolved the issue in as few touches as possible?",
             sublabel: "(F1)",
             points: 5,
             options: [
@@ -15067,7 +15602,7 @@ export const formTypes = [
           {
             id: "F2",
             label:
-              "Did the agent educate the customer about the issue and highlight what he/she can do? (if applicable)",
+              "Did the agent educate the customer about the issue and highlighted what he/she can do? (if applicable)",
             sublabel: "(F2)",
             points: 5,
             options: [
@@ -15076,17 +15611,17 @@ export const formTypes = [
             ],
             inputType: "select",
             comments: true,
-            isOptional: true,
+            isOptional: false,
           },
           {
             id: "F3",
             label:
-              "Did the agent use the correct and available macro when assisting the customer, and did they adapt it appropriately to address the customer's specific questions?",
+              "Did the agent use the correct and available macro when assisting the customer, and did they adapt it appropriately to address the customer’s specific questions?",
             sublabel: "(F3)",
-            points: 5,
+            points: 6,
             options: [
               { value: "0.00", label: "0.00" },
-              { value: "5.00", label: "5.00" },
+              { value: "6.00", label: "6.00" },
             ],
             inputType: "select",
             comments: true,
@@ -15131,7 +15666,7 @@ export const formTypes = [
             ],
             inputType: "select",
             comments: true,
-            isOptional: true,
+            isOptional: false,
           },
           {
             id: "F7",
@@ -15151,17 +15686,17 @@ export const formTypes = [
       },
       {
         id: "grammar",
-        title: "GRAMMAR",
+        title: "G. GRAMMAR",
         questions: [
           {
             id: "G1",
             label:
               "Did the agent ensure there were no multiple spelling, capitalization, punctuation, excessive spacing, formatting, or other grammatical mistakes? (No more than 2 instances of these issues to avoid a markdown.)",
             sublabel: "(G1)",
-            points: 5,
+            points: 3,
             options: [
               { value: "0.00", label: "0.00" },
-              { value: "5.00", label: "5.00" },
+              { value: "3.00", label: "3.00" },
             ],
             inputType: "select",
             comments: true,
@@ -15184,7 +15719,7 @@ export const formTypes = [
           {
             id: "G3",
             label:
-              "Did the agent match the customer's tone and level of formality?",
+              "Did the agent match the customer’s tone and level of formality?",
             sublabel: "(G3)",
             points: 3,
             options: [
@@ -15199,17 +15734,17 @@ export const formTypes = [
       },
       {
         id: "closing",
-        title: "CLOSING",
+        title: "H. CLOSING",
         questions: [
           {
             id: "H1",
             label:
-              "Did the agent provide an appropriate send-off? For example, adding something to the macro like 'Please feel free to reach out' or for repeat customers, a thoughtful note like 'Hope you enjoy the bar!' or something similar?",
+              "Did the agent provide an appropriate send-off? For example, adding something to the macro like ‘Please feel free to reach out’ or for repeat customers, a thoughtful note like ‘Hope you enjoy the bar!’ or something similar?",
             sublabel: "(H1)",
-            points: 3,
+            points: 5,
             options: [
               { value: "0.00", label: "0.00" },
-              { value: "3.00", label: "3.00" },
+              { value: "5.00", label: "5.00" },
             ],
             inputType: "select",
             comments: true,
@@ -15219,12 +15754,12 @@ export const formTypes = [
       },
       {
         id: "tools-utilization",
-        title: "TOOLS UTILIZATION",
+        title: "I. TOOLS UTILIZATION",
         questions: [
           {
             id: "I1",
             label:
-              "Did the agent properly use snoozes to ensure their inbox are clear? (Tags, Merging, Snooze)",
+              "Did the agent properly use snoozes to ensure their inbox are clear? (Tags, Merging, Snooze )",
             sublabel: "(I1)",
             points: 3,
             options: [
@@ -15252,7 +15787,7 @@ export const formTypes = [
           {
             id: "I3",
             label:
-              "Did the agent complete all the post-ticket work? (eg. cancellation, refund processing, process the replacement, add ons)",
+              "Did the agent complete all the post-ticket work? ( eg. cancellation, refund processing, process the replacement, add ons)",
             sublabel: "(I3)",
             points: 3,
             options: [
@@ -15311,7 +15846,7 @@ export const formTypes = [
           {
             id: "A1",
             label:
-              "Did agent properly thank the customer for calling, mention company name, their name and greet the customer?",
+              "Did agent properly thank the customer for calling, their name and greet the customer?",
             sublabel: "(A1)",
             points: 3,
             options: [
@@ -15326,20 +15861,6 @@ export const formTypes = [
             id: "A2",
             label: "Did agent acknowledge the customer's concern?",
             sublabel: "(A2)",
-            points: 3,
-            options: [
-              { value: "0.00", label: "0.00" },
-              { value: "3.00", label: "3.00" },
-            ],
-            inputType: "select",
-            comments: true,
-            isOptional: false,
-          },
-          {
-            id: "A3",
-            label:
-              "Did agent take time to paraphrase concern to confirm understanding?",
-            sublabel: "(A3)",
             points: 3,
             options: [
               { value: "0.00", label: "0.00" },
@@ -15478,7 +15999,7 @@ export const formTypes = [
           {
             id: "F2",
             label:
-              "Did the agent educate the customer about the issue and highlight what he/she can do?",
+              "Did the agent educate the customer about the issue and highlighted what he/she can do?",
             sublabel: "(F2)",
             points: 5,
             options: [
