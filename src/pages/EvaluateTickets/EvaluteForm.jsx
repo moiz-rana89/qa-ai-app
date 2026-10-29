@@ -8,7 +8,7 @@ import {
 } from "../../utils/formsConstant";
 import ConversationScreen from "./DynamicForm/ConversationScreen";
 import QAForm from "./DynamicForm/QAForm";
-import { MIN_CUSTOMER_CONCERN_LENGTH } from "./DynamicForm/TicketDetails";
+import { MAX_CUSTOMER_CONCERN_LENGTH } from "./DynamicForm/TicketDetails";
 import EvaluteHeader from "./EvaluteHeader";
 import {
   getTicketTagsAndAiGradedJson,
@@ -162,11 +162,13 @@ export const EvaluteForm = () => {
     // removeById(id);
 
     const concern = customerConcern.trim();
-    if (concern.length < MIN_CUSTOMER_CONCERN_LENGTH) {
+    if (!concern || concern.length > MAX_CUSTOMER_CONCERN_LENGTH) {
       AntDNotification({
         status: "error",
         title: "Customer Concern Required",
-        description: `Please fill in the Customer Concern (at least ${MIN_CUSTOMER_CONCERN_LENGTH} characters) in the Ticket Details tab before submitting.`,
+        description: !concern
+          ? "Please fill in the Customer Concern in the Ticket Details tab before submitting."
+          : `Customer Concern must be at most ${MAX_CUSTOMER_CONCERN_LENGTH} characters. Please shorten it in the Ticket Details tab.`,
         duration: 6,
       });
       return;

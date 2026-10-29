@@ -4,17 +4,17 @@ import { formatDateTimeEnglish } from "../../../utils/helperFunctions";
 
 const { TextArea } = Input;
 
-// Customer Concern is a required question — submit is blocked until the
-// trimmed text reaches this length (enforced in EvaluteForm).
-export const MIN_CUSTOMER_CONCERN_LENGTH = 100;
+// Customer Concern is a required question capped at this many characters
+// (also checked on submit in EvaluteForm).
+export const MAX_CUSTOMER_CONCERN_LENGTH = 100;
 
 export const TicketDetails = ({
   details,
   customerConcern,
   setCustomerConcern,
 }) => {
-  const concernLength = (customerConcern ?? "").trim().length;
-  const concernTooShort = concernLength < MIN_CUSTOMER_CONCERN_LENGTH;
+  const concernLength = (customerConcern ?? "").length;
+  const concernAtLimit = concernLength >= MAX_CUSTOMER_CONCERN_LENGTH;
 
   return (
     <div className="">
@@ -116,8 +116,8 @@ export const TicketDetails = ({
           />
         </div>
 
-        {/* Customer Concern — required free-text textarea (min
-            MIN_CUSTOMER_CONCERN_LENGTH characters). Sent on submit as
+        {/* Customer Concern — required free-text textarea (max
+            MAX_CUSTOMER_CONCERN_LENGTH characters). Sent on submit as
             `customer_concern`. */}
         <div className="w-[100%]">
           <label className="block text-[14px] font-semibold mb-3">
@@ -127,16 +127,17 @@ export const TicketDetails = ({
             value={customerConcern ?? ""}
             onChange={(e) => setCustomerConcern?.(e.target.value)}
             placeholder="What was the customer actually concerned about?"
+            maxLength={MAX_CUSTOMER_CONCERN_LENGTH}
             autoSize={{ minRows: 3, maxRows: 8 }}
             className="font-poppins text-[#163143] !bg-[#FFFFFF] !border !border-[#D7E6E7] !rounded-[16px] placeholder-gray-400 focus:!outline-none focus:!ring-1 focus:!ring-[#69C920] focus:!border-[#69C920] hover:!border-[#69C920] transition-all duration-200"
             style={{ padding: "12px 14px" }}
           />
           <div
             className={`text-[12px] mt-1 ${
-              concernTooShort ? "text-[#FF5546]" : "text-[#7F8A92]"
+              concernAtLimit ? "text-[#FF5546]" : "text-[#7F8A92]"
             }`}
           >
-            {concernLength}/{MIN_CUSTOMER_CONCERN_LENGTH} characters minimum
+            {concernLength}/{MAX_CUSTOMER_CONCERN_LENGTH} characters maximum
           </div>
         </div>
 
