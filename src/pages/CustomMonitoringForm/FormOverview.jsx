@@ -1,21 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getTicketTypesByClient } from "../../utils/custom-form-data";
-
 export function FormOverview({
+  forms,
+  isLoading,
+  error,
+  onRetry,
   selectedTypes,
   onTypesChange,
-  selectedClient,
   clientName,
 }) {
-  const [ticketTypes, setTicketTypes] = useState([]);
-
-  useEffect(() => {
-    const types = getTicketTypesByClient(selectedClient);
-    setTicketTypes(types);
-  }, [selectedClient]);
-
   const handleTypeChange = (type) => {
     if (selectedTypes.includes(type)) {
       onTypesChange(selectedTypes.filter((t) => t !== type));
@@ -25,9 +18,44 @@ export function FormOverview({
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="space-y-4 text-[#163143]">
+        <p className="text-[18px]">
+          Loading forms for
+          <span className="text-[18px] font-semibold ml-[5px]">
+            {clientName}
+          </span>
+          ...
+        </p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-4 text-[#163143]">
+        <p className="text-[18px] text-[#FF5546]">
+          Failed to load forms for
+          <span className="text-[18px] font-semibold ml-[5px]">
+            {clientName}
+          </span>
+          .
+        </p>
+        <button
+          type="button"
+          onClick={onRetry}
+          className="min-h-[40px] px-6 text-[14px] font-medium rounded-full bg-[#69C920] hover:bg-[#5CB518] text-white transition-colors duration-200"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 text-[#163143]">
-      {ticketTypes?.length == 0 ? (
+      {forms?.length == 0 ? (
         <div className="space-y-4">
           <p className="text-[18px]">
             No Forms found against client
@@ -44,7 +72,7 @@ export function FormOverview({
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {ticketTypes?.map((type) => (
+            {forms?.map((type) => (
               <button
                 key={type?.id}
                 type="button"

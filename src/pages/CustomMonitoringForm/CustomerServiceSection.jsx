@@ -1,11 +1,10 @@
 "use client";
 import { DynamicFormSection } from "./DynamicFormSection.jsx";
-import { getFormTypeById } from "../../utils/custom-form-data.js";
 import { DynamicFormExtraQuestion } from "./DynamicFormExtraQuestion.jsx";
 import { AutoFailSection } from "./AutoFailSection.jsx";
 
 export function CustomerServiceSection({
-  selectedFormType,
+  formType,
   responses,
   includedQuestions,
   onResponseChange,
@@ -21,7 +20,6 @@ export function CustomerServiceSection({
   extraSectionQuestions,
   responsesExtra,
 }) {
-  const formType = getFormTypeById(selectedFormType);
   if (!formType) {
     return (
       <div className="space-y-6">

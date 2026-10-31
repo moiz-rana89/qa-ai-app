@@ -5,11 +5,8 @@ import { useEffect, useState } from "react";
 import { FormOverview } from "./FormOverview";
 import { BasicInfoSection } from "./BasicInfoSection";
 import { CustomerServiceSection } from "./CustomerServiceSection";
-import {
-  getFormTypeById,
-  calculateTotalFormScore,
-  formTypes,
-} from "../../utils/custom-form-data.js";
+import { calculateTotalFormScore } from "../../utils/formScoring.js";
+import { useClientForms } from "./useClientForms";
 
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -51,6 +48,14 @@ export function CustomMonitoringForm() {
 
   const userDetails = useSelector((state) => state.auth.user);
 
+  const {
+    forms: clientForms,
+    isLoading: isLoadingForms,
+    error: formsError,
+    retry: retryForms,
+  } = useClientForms(formData.clientId);
+  const selectedForm = clientForms.find((form) => form.id === selectedFormType);
+
   function findMissingSections(schema, answers) {
     let missingSections = [];
 
@@ -78,7 +83,7 @@ export function CustomMonitoringForm() {
 
     try {
       const selectedFormType = formData.ticketTypes[0];
-      const formType = getFormTypeById(selectedFormType);
+      const formType = clientForms.find((form) => form.id === selectedFormType);
       let finalScore = 0;
       let totalPossible = 0;
 
@@ -113,10 +118,11 @@ export function CustomMonitoringForm() {
         );
         return;
       }
-      const selectedType = formTypes?.find(
-        (item) => item.id == selectedFormType
-      );
-      const isAnswerdAll = findMissingSections(selectedType, responses);
+      if (!formType) {
+        toast.error("Selected form is not loaded yet. Please try again.");
+        return;
+      }
+      const isAnswerdAll = findMissingSections(formType, responses);
       if (isAnswerdAll.length > 1) {
         toast.error(
           `Please fill out all required properties
@@ -279,16 +285,15 @@ export function CustomMonitoringForm() {
     setSelectedFormType(formData.ticketTypes?.[0] || "");
   }, [formData?.ticketTypes]);
   useEffect(() => {
-    if (selectedFormType) {
-      const formType = getFormTypeById(selectedFormType);
+    if (selectedForm) {
       const { current, total } = calculateTotalFormScore(
-        formType,
+        selectedForm,
         responses,
         includedQuestions
       );
       setTypeScores({ current: current, total: total });
     }
-  }, [selectedFormType, responses, includedQuestions]);
+  }, [selectedForm, responses, includedQuestions]);
 
   if (isLoading) {
     return (
@@ -309,7 +314,7 @@ export function CustomMonitoringForm() {
       <div className="flex items-center text-[#163143] min-h-[63px] max-h-[63px] p-5  border-l border-[#EBF3F4] bg-white shadow-[4px_4px_16px_rgba(22,49,67,0.08)]">
         <h1 className="text-[16px] font-semibold">Client Specific Form</h1>
         <div className="ml-5 bg-[#F1F5F5] px-[16px] py-[1px] rounded-[30px] text-[#163143] text-center font-poppins text-[14px] not-italic font-normal leading-6 tracking-[0.14px]">
-          {getFormTypeById(selectedFormType)?.title}
+          {selectedForm?.title}
         </div>
         <div className="flex items-center ml-auto">
           {typeScores.total ? (
@@ -360,11 +365,14 @@ export function CustomMonitoringForm() {
           <div className="bg-[#FCFCFC] rounded-[24px] shadow-sm border border-[#D7E6E7] p-6">
             <form onSubmit={handleSubmit} className="space-y-6">
               <FormOverview
+                forms={clientForms}
+                isLoading={isLoadingForms}
+                error={formsError}
+                onRetry={retryForms}
                 selectedTypes={formData.ticketTypes}
                 onTypesChange={(types) =>
                   updateTypeForm({ ticketTypes: types })
                 }
-                selectedClient={formData?.clientId}
                 clientName={formData.clientVersion}
               />
             </form>
@@ -384,7 +392,7 @@ export function CustomMonitoringForm() {
             </div>
             <div className="bg-[#FCFCFC] rounded-[24px] mt-6 shadow-sm border border-[#D7E6E7] p-6">
               <CustomerServiceSection
-                selectedFormType={selectedFormType}
+                formType={selectedForm}
                 responses={responses}
                 commentResponses={commentResponses}
                 includedQuestions={includedQuestions}

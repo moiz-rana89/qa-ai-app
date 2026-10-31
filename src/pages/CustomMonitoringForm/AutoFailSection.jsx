@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { RatingDropdown } from "./RatingDropdown.jsx";
-import { calculateAutoFailDeduction } from "../../utils/custom-form-data.js";
+import { calculateAutoFailDeduction } from "../../utils/formScoring.js";
 
 // Zero-tolerance / auto-fail checklist — only rendered when a form
 // declares an autoFailSection (currently just Gamer Supps). Unlike the

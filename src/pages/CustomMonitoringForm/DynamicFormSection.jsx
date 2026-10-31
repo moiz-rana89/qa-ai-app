@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { RatingDropdown } from "./RatingDropdown.jsx";
-import { calculateSectionScore } from "../../utils/custom-form-data.js";
+import { calculateSectionScore } from "../../utils/formScoring.js";
 
 export function DynamicFormSection({
   section,
