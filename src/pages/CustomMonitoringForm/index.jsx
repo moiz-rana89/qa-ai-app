@@ -284,6 +284,12 @@ export function CustomMonitoringForm() {
   useEffect(() => {
     setSelectedFormType(formData.ticketTypes?.[0] || "");
   }, [formData?.ticketTypes]);
+  // A client with exactly one form gets it selected automatically.
+  useEffect(() => {
+    if (clientForms.length === 1) {
+      updateTypeForm({ ticketTypes: [clientForms[0].id] });
+    }
+  }, [clientForms]);
   useEffect(() => {
     if (selectedForm) {
       const { current, total } = calculateTotalFormScore(
@@ -357,7 +363,7 @@ export function CustomMonitoringForm() {
 
         <div className="bg-[#FCFCFC] rounded-[24px] shadow-sm border border-[#D7E6E7] p-6">
           <BasicInfoSection
-            clientVersion={formData.clientVersion}
+            clientId={formData.clientId}
             onUpdate={updateFormData}
           />
         </div>
